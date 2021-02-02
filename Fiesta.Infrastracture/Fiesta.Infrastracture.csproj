@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Fiesta.Application\Fiesta.Application.csproj" />
     <ProjectReference Include="..\Fiesta.Domain\Fiesta.Domain.csproj" />
   </ItemGroup>
 

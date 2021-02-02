@@ -1,4 +1,6 @@
+using Fiesta.Application;
 using Fiesta.Infrastracture;
+using Fiesta.WebApi.Middleware.ExceptionHanlding;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -20,6 +22,8 @@ namespace Fiesta.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddInfrastructure(Configuration);
+            services.AddApplication();
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -37,6 +41,7 @@ namespace Fiesta.WebApi
 
             app.UseHttpsRedirection();
 
+            app.UseFiestaExceptionHandlingMiddleware();
             app.UseRouting();
 
             app.UseAuthorization();

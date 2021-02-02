@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Fiesta.Domain.Exceptions
+namespace Fiesta.Application.Common.Exceptions
 {
     public class NotFoundException : Exception
     {
