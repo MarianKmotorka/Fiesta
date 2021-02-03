@@ -34,12 +34,12 @@ namespace Fiesta.WebApi
             {
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fiesta.WebApi v1"));
-                //app.UseCors(config =>
-                //{
-                //    config.AllowAnyOrigin()
-                //    .AllowAnyMethod()
-                //    .AllowAnyHeader();
-                //});
+                app.UseCors(config =>
+                {
+                    config.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+                });
             }
 
             app.UseHttpsRedirection();

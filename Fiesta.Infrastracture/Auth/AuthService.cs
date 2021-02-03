@@ -36,7 +36,7 @@ namespace Fiesta.Infrastracture.Auth
             if (userId is null)
                 throw new BadRequestException("Invalid refresh token.");
 
-            var user = await _db.Users.SingleOrNotFoundAsync(x => x.Id == userId, cancellationToken);
+            var user = await _db.Users.SingleAsync(x => x.Id == userId, cancellationToken);
 
             if (refreshToken != user.RefreshToken)
                 throw new BadRequestException("Invalid refresh token.");
