@@ -24,8 +24,8 @@ namespace Fiesta.Infrastracture.Auth
 
         public AuthService(JwtOptions jwtOptions, FiestaDbContext db, TokenValidationParameters tokenValidationParameters)
         {
-            _jwtOptions = jwtOptions;
             _db = db;
+            _jwtOptions = jwtOptions;
             _tokenValidationParameters = tokenValidationParameters;
         }
 
@@ -45,15 +45,31 @@ namespace Fiesta.Infrastracture.Auth
             await _db.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<(string jwt, string refreshToken)> Login(GoogleUserInfoModel model, CancellationToken cancellationToken)
+        public async Task<(string accessToken, string refreshToken, bool authUserCreated)> LoginOrRegister(GoogleUserInfoModel model, CancellationToken cancellationToken)
         {
-            var user = await _db.Users.SingleOrDefaultAsync(x => x.Email.ToLower() == model.Email.ToLower(), cancellationToken)
-               ?? CreateUser(model);
+            var user = await _db.Users.SingleOrDefaultAsync(x => x.Email == model.Email, cancellationToken);
 
-            return await CreateJwtAndRefreshToken(user, cancellationToken);
+            if (user is not null)
+            {
+                var result = await Login(user, cancellationToken);
+                return (result.accessToken, result.refreshToken, false);
+            }
+
+            var newUser = new AuthUser
+            {
+                Id = Guid.NewGuid().ToString(),
+                Email = model.Email,
+                EmailConfirmed = model.IsEmailVerified,
+            };
+
+            _db.Users.Add(newUser);
+            await _db.SaveChangesAsync(cancellationToken);
+
+            var loginResult = await Login(newUser, cancellationToken);
+            return (loginResult.accessToken, loginResult.refreshToken, true);
         }
 
-        public async Task<(string jwt, string refreshToken)> RefreshJwt(string refreshToken, CancellationToken cancellationToken)
+        public async Task<(string accessToken, string refreshToken)> RefreshJwt(string refreshToken, CancellationToken cancellationToken)
         {
             var validatedRefreshToken = GetPrincipalFromJwt(refreshToken);
 
@@ -76,15 +92,15 @@ namespace Fiesta.Infrastracture.Auth
             if (storedRefreshToken != refreshToken)
                 throw new BadRequestException("Invalid Refresh Token.");
 
-            return await CreateJwtAndRefreshToken(appUser, cancellationToken);
+            return await Login(appUser, cancellationToken);
         }
 
-        private async Task<(string jwt, string refreshToken)> CreateJwtAndRefreshToken(AuthUser authUser, CancellationToken cancellationToken)
+        private async Task<(string accessToken, string refreshToken)> Login(AuthUser user, CancellationToken cancellationToken)
         {
-            var accessToken = CreateAccessToken(authUser);
-            var refreshToken = CreateRefreshToken(authUser);
+            var accessToken = CreateAccessToken(user);
+            var refreshToken = CreateRefreshToken(user);
 
-            authUser.RefreshToken = refreshToken;
+            user.RefreshToken = refreshToken;
             await _db.SaveChangesAsync(cancellationToken);
 
             return (accessToken, refreshToken);
@@ -163,19 +179,6 @@ namespace Fiesta.Infrastracture.Auth
             {
                 return null;
             }
-        }
-
-        private AuthUser CreateUser(GoogleUserInfoModel model)
-        {
-            var newUser = new AuthUser
-            {
-                Id = Guid.NewGuid().ToString(),
-                Email = model.Email,
-                EmailConfirmed = model.IsEmailVerified,
-            };
-
-            _db.Users.Add(newUser);
-            return newUser;
         }
     }
 }

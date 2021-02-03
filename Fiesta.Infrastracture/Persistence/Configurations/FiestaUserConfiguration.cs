@@ -9,6 +9,7 @@ namespace Fiesta.Infrastracture.Persistence.Configurations
         public void Configure(EntityTypeBuilder<FiestaUser> builder)
         {
             builder.Property(x => x.Id).HasMaxLength(36);
+            builder.Property(x => x.Id).ValueGeneratedOnAdd();
         }
     }
 }

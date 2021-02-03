@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Options;
+using Fiesta.Application.Users.Events;
 using MediatR;
 
 namespace Fiesta.Application.Auth.GoogleLogin
@@ -15,20 +16,44 @@ namespace Fiesta.Application.Auth.GoogleLogin
     {
         private readonly GoogleOAuthOptions _oAuthOptions;
         private readonly IAuthService _authService;
+        private readonly IMediator _mediator;
         private readonly HttpClient _httpClient;
 
-        public GoogleLoginCommandHandler(GoogleOAuthOptions oAuthOptions, IHttpClientFactory clientFactory, IAuthService authService)
+        public GoogleLoginCommandHandler(GoogleOAuthOptions oAuthOptions, IHttpClientFactory clientFactory, IAuthService authService, IMediator mediator)
         {
             _oAuthOptions = oAuthOptions;
             _authService = authService;
+            _mediator = mediator;
             _httpClient = clientFactory.CreateClient();
         }
 
         public async Task<GoogleLoginResponse> Handle(GoogleLoginCommand request, CancellationToken cancellationToken)
         {
+            var googleUser = await GetGoogleUser(request.Code);
+
+            var (accessToken, refreshToken, authUserCreated) = await _authService.LoginOrRegister(googleUser, cancellationToken);
+
+            if (authUserCreated)
+                await _mediator.Publish(new AuthUserCreatedEvent
+                {
+                    Email = googleUser.Email,
+                    FirstName = googleUser.GivenName,
+                    LastName = googleUser.FamilyName,
+                    PictureUrl = googleUser.PictureUrl
+                });
+
+            return new GoogleLoginResponse
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken
+            };
+        }
+
+        private async Task<GoogleUserInfoModel> GetGoogleUser(string code)
+        {
             var googleRequest = new
             {
-                code = request.Code,
+                code,
                 client_id = _oAuthOptions.GoogleClientId,
                 client_secret = _oAuthOptions.GoogleClientSecret,
                 grant_type = "authorization_code",
@@ -49,15 +74,11 @@ namespace Fiesta.Application.Auth.GoogleLogin
             };
 
             response = await _httpClient.SendAsync(userInfoRequest);
-            var userInfoResponse = await response.Content.ReadAsAsync<GoogleUserInfoModel>();
 
-            var (accessToken, refreshToken) = await _authService.Login(userInfoResponse, cancellationToken);
+            if (!response.IsSuccessStatusCode)
+                throw new BadRequestException("Google service is unavailable");
 
-            return new GoogleLoginResponse
-            {
-                AccessToken = accessToken,
-                RefreshToken = refreshToken
-            };
+            return await response.Content.ReadAsAsync<GoogleUserInfoModel>();
         }
     }
 }

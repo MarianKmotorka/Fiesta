@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Fiesta.Infrastracture.Migrations
+namespace Fiesta.Infrastracture.Persistence.Migrations
 {
     public partial class Initial : Migration
     {
@@ -26,7 +26,7 @@ namespace Fiesta.Infrastracture.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    RefreshToken = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: true),
+                    RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),

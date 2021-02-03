@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Fiesta.Infrastracture.Migrations
+namespace Fiesta.Infrastracture.Persistence.Migrations
 {
     [DbContext(typeof(FiestaDbContext))]
     partial class FiestaDbContextModelSnapshot : ModelSnapshot
@@ -124,8 +124,7 @@ namespace Fiesta.Infrastracture.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("RefreshToken")
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");

@@ -10,7 +10,6 @@ namespace Fiesta.Infrastracture.Persistence.Configurations
         public void Configure(EntityTypeBuilder<AuthUser> builder)
         {
             builder.ToTable("AuthUser");
-            builder.Property(x => x.RefreshToken).HasMaxLength(36);
         }
     }
 

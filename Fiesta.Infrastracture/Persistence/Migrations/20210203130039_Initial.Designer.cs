@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Fiesta.Infrastracture.Migrations
+namespace Fiesta.Infrastracture.Persistence.Migrations
 {
     [DbContext(typeof(FiestaDbContext))]
-    [Migration("20210203115620_Initial")]
+    [Migration("20210203130039_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -126,8 +126,7 @@ namespace Fiesta.Infrastracture.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("RefreshToken")
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
