@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Fiesta.Infrastracture.Persistence.Migrations
+namespace Fiesta.Infrastracture.Migrations
 {
     public partial class Initial : Migration
     {
@@ -26,6 +26,7 @@ namespace Fiesta.Infrastracture.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    RefreshToken = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -44,6 +45,25 @@ namespace Fiesta.Infrastracture.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AuthUser", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FiestaUser",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PictureUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedById = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifiedById = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FiestaUser", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -208,6 +228,9 @@ namespace Fiesta.Infrastracture.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "AuthUserAuthRole");
+
+            migrationBuilder.DropTable(
+                name: "FiestaUser");
 
             migrationBuilder.DropTable(
                 name: "AuthRole");

@@ -15,4 +15,8 @@
     <ProjectReference Include="..\Fiesta.Domain\Fiesta.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Persistence\Migrations\" />
+  </ItemGroup>
+
 </Project>

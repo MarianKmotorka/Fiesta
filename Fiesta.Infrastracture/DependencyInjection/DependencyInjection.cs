@@ -1,4 +1,6 @@
 ﻿using Fiesta.Application.Common.Interfaces;
+using Fiesta.Application.Options;
+using Fiesta.Infrastracture.Auth;
 using Fiesta.Infrastracture.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,11 +14,16 @@ namespace Fiesta.Infrastracture.DependencyInjection
         {
             services.AddDbContext<FiestaDbContext>(options =>
               options.UseSqlServer(
-                configuration.GetConnectionString("DbConnection"),
+                configuration.GetConnectionString("FiestaDb"),
                 builder => builder.MigrationsAssembly(typeof(FiestaDbContext).Assembly.FullName)));
 
             services.AddJwtAuthentication(configuration);
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<IFiestaDbContext, FiestaDbContext>();
+
+            var cloudinaryOptions = new CloudinaryOptions();
+            configuration.GetSection(nameof(CloudinaryOptions)).Bind(cloudinaryOptions);
+            services.AddSingleton(cloudinaryOptions);
 
             return services;
         }

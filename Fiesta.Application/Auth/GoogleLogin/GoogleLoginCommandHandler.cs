@@ -8,7 +8,6 @@ using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Options;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 
 namespace Fiesta.Application.Auth.GoogleLogin
 {
@@ -16,18 +15,13 @@ namespace Fiesta.Application.Auth.GoogleLogin
     {
         private readonly GoogleOAuthOptions _oAuthOptions;
         private readonly IAuthService _authService;
-        private readonly JwtOptions _jwtOptions;
         private readonly HttpClient _httpClient;
-        private readonly HttpContext _httpContext;
 
-        public GoogleLoginCommandHandler(IHttpContextAccessor httpContextAccessor, GoogleOAuthOptions oAuthOptions,
-            IHttpClientFactory clientFactory, IAuthService authService, JwtOptions jwtOptions)
+        public GoogleLoginCommandHandler(GoogleOAuthOptions oAuthOptions, IHttpClientFactory clientFactory, IAuthService authService)
         {
             _oAuthOptions = oAuthOptions;
             _authService = authService;
-            _jwtOptions = jwtOptions;
             _httpClient = clientFactory.CreateClient();
-            _httpContext = httpContextAccessor.HttpContext;
         }
 
         public async Task<GoogleLoginResponse> Handle(GoogleLoginCommand request, CancellationToken cancellationToken)
@@ -58,7 +52,6 @@ namespace Fiesta.Application.Auth.GoogleLogin
             var userInfoResponse = await response.Content.ReadAsAsync<GoogleUserInfoModel>();
 
             var (accessToken, refreshToken) = await _authService.Login(userInfoResponse, cancellationToken);
-
 
             return new GoogleLoginResponse
             {

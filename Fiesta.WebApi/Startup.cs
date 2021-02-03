@@ -21,6 +21,7 @@ namespace Fiesta.WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpContextAccessor();
             services.AddInfrastructure(Configuration);
             services.AddApplication();
 
