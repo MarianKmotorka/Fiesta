@@ -2,7 +2,7 @@
 
 namespace Fiesta.Infrastracture.Auth
 {
-    internal class AuthRole : IdentityRole<string>
+    public class AuthRole : IdentityRole<string>
     {
     }
 }

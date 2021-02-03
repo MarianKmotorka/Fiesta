@@ -2,7 +2,8 @@
 
 namespace Fiesta.Infrastracture.Auth
 {
-    internal class AuthUser : IdentityUser<string>
+    public class AuthUser : IdentityUser<string>
     {
+        public string RefreshToken { get; set; }
     }
 }

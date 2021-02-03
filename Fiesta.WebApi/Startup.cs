@@ -1,5 +1,5 @@
 using Fiesta.Application;
-using Fiesta.Infrastracture;
+using Fiesta.Infrastracture.DependencyInjection;
 using Fiesta.WebApi.Middleware.ExceptionHanlding;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

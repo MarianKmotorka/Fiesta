@@ -1,9 +1,10 @@
-﻿using Fiesta.Infrastracture.Persistence;
+﻿using Fiesta.Application.Common.Interfaces;
+using Fiesta.Infrastracture.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Fiesta.Infrastracture
+namespace Fiesta.Infrastracture.DependencyInjection
 {
     public static class DependencyInjection
     {
@@ -13,6 +14,9 @@ namespace Fiesta.Infrastracture
               options.UseSqlServer(
                 configuration.GetConnectionString("DbConnection"),
                 builder => builder.MigrationsAssembly(typeof(FiestaDbContext).Assembly.FullName)));
+
+            services.AddJwtAuthentication(configuration);
+            services.AddScoped<IFiestaDbContext, FiestaDbContext>();
 
             return services;
         }
