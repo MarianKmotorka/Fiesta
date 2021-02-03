@@ -1,4 +1,4 @@
-﻿namespace Fiesta.Application.Options
+﻿namespace Fiesta.Application.Common.Options
 {
     public class GoogleOAuthOptions
     {

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Fiesta.Application.Auth.GoogleLogin;
 using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
-using Fiesta.Application.Options;
+using Fiesta.Application.Common.Options;
 using Fiesta.Infrastracture.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

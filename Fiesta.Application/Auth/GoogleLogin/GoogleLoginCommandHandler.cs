@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
-using Fiesta.Application.Options;
+using Fiesta.Application.Common.Options;
 using Fiesta.Application.Users.Events;
 using MediatR;
 

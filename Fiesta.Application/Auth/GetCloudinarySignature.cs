@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using CloudinaryDotNet;
-using Fiesta.Application.Options;
+using Fiesta.Application.Common.Options;
 using MediatR;
 
 namespace Fiesta.Application.Auth

@@ -1,5 +1,5 @@
 ﻿using Fiesta.Application.Common.Interfaces;
-using Fiesta.Application.Options;
+using Fiesta.Application.Common.Options;
 using Fiesta.Infrastracture.Auth;
 using Fiesta.Infrastracture.Persistence;
 using Microsoft.EntityFrameworkCore;

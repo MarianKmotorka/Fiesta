@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Interfaces;
-using Fiesta.Application.Options;
+using Fiesta.Application.Common.Options;
 using Fiesta.Infrastracture.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
