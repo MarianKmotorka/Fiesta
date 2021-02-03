@@ -9,6 +9,9 @@ namespace Fiesta.Domain.Entities
             Email = email;
         }
 
+        public static FiestaUser CreateWithId(string id, string email)
+            => new FiestaUser(email) { Id = id };
+
         public string FirstName { get; set; }
 
         public string LastName { get; set; }

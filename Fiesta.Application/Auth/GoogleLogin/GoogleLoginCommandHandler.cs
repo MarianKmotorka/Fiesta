@@ -31,12 +31,11 @@ namespace Fiesta.Application.Auth.GoogleLogin
         {
             var googleUser = await GetGoogleUser(request.Code);
 
-            var (accessToken, refreshToken, authUserCreated) = await _authService.LoginOrRegister(googleUser, cancellationToken);
+            var (accessToken, refreshToken, authUserCreated, userId) = await _authService.LoginOrRegister(googleUser, cancellationToken);
 
             if (authUserCreated)
-                await _mediator.Publish(new AuthUserCreatedEvent
+                await _mediator.Publish(new AuthUserCreatedEvent(userId, googleUser.Email)
                 {
-                    Email = googleUser.Email,
                     FirstName = googleUser.GivenName,
                     LastName = googleUser.FamilyName,
                     PictureUrl = googleUser.PictureUrl

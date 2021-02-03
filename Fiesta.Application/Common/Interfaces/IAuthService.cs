@@ -6,7 +6,7 @@ namespace Fiesta.Application.Common.Interfaces
 {
     public interface IAuthService
     {
-        Task<(string accessToken, string refreshToken, bool authUserCreated)> LoginOrRegister(GoogleUserInfoModel model, CancellationToken cancellationToken);
+        Task<(string accessToken, string refreshToken, bool authUserCreated, string userId)> LoginOrRegister(GoogleUserInfoModel model, CancellationToken cancellationToken);
 
         Task<(string accessToken, string refreshToken)> RefreshJwt(string refreshToken, CancellationToken cancellationToken);
 

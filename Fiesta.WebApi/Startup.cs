@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 
 namespace Fiesta.WebApi
 {
@@ -26,10 +25,7 @@ namespace Fiesta.WebApi
             services.AddApplication();
 
             services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Fiesta.WebApi", Version = "v1" });
-            });
+            services.AddSwagger();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -38,19 +34,20 @@ namespace Fiesta.WebApi
             {
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fiesta.WebApi v1"));
-                app.UseCors(config =>
-                {
-                    config.AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader();
-                });
+                //app.UseCors(config =>
+                //{
+                //    config.AllowAnyOrigin()
+                //    .AllowAnyMethod()
+                //    .AllowAnyHeader();
+                //});
             }
 
             app.UseHttpsRedirection();
 
             app.UseFiestaExceptionHandlingMiddleware();
-            app.UseRouting();
 
+            app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

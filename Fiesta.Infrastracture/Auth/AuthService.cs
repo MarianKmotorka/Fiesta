@@ -45,14 +45,17 @@ namespace Fiesta.Infrastracture.Auth
             await _db.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<(string accessToken, string refreshToken, bool authUserCreated)> LoginOrRegister(GoogleUserInfoModel model, CancellationToken cancellationToken)
+        public async Task<(string accessToken, string refreshToken, bool authUserCreated, string userId)> LoginOrRegister(GoogleUserInfoModel model, CancellationToken cancellationToken)
         {
             var user = await _db.Users.SingleOrDefaultAsync(x => x.Email == model.Email, cancellationToken);
 
             if (user is not null)
             {
+                if (user.AuthProvider != AuthProvider.Google)
+                    throw new BadRequestException("Invalid auth provider. Use Google login.");
+
                 var result = await Login(user, cancellationToken);
-                return (result.accessToken, result.refreshToken, false);
+                return (result.accessToken, result.refreshToken, false, user.Id);
             }
 
             var newUser = new AuthUser
@@ -60,13 +63,14 @@ namespace Fiesta.Infrastracture.Auth
                 Id = Guid.NewGuid().ToString(),
                 Email = model.Email,
                 EmailConfirmed = model.IsEmailVerified,
+                AuthProvider = AuthProvider.Google
             };
 
             _db.Users.Add(newUser);
             await _db.SaveChangesAsync(cancellationToken);
 
             var loginResult = await Login(newUser, cancellationToken);
-            return (loginResult.accessToken, loginResult.refreshToken, true);
+            return (loginResult.accessToken, loginResult.refreshToken, true, newUser.Id);
         }
 
         public async Task<(string accessToken, string refreshToken)> RefreshJwt(string refreshToken, CancellationToken cancellationToken)
@@ -146,7 +150,7 @@ namespace Fiesta.Infrastracture.Auth
                 new Claim(FiestaClaims.IsAccessToken,"true")
             };
 
-            var refreshTokenObject = new JwtSecurityToken(
+            var accessTokenObject = new JwtSecurityToken(
                 _jwtOptions.Issuer,
                 null,
                 claims,
@@ -155,7 +159,7 @@ namespace Fiesta.Infrastracture.Auth
                 new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
                 );
 
-            return tokenHandler.WriteToken(refreshTokenObject);
+            return tokenHandler.WriteToken(accessTokenObject);
         }
 
         private ClaimsPrincipal GetPrincipalFromJwt(string jwt)

@@ -8,11 +8,19 @@ namespace Fiesta.Application.Users.Events
 {
     public class AuthUserCreatedEvent : INotification
     {
+        public AuthUserCreatedEvent(string userId, string email)
+        {
+            UserId = userId;
+            Email = email;
+        }
+
+        public string UserId { get; }
+
+        public string Email { get; }
+
         public string FirstName { get; set; }
 
         public string LastName { get; set; }
-
-        public string Email { get; set; }
 
         public string PictureUrl { get; set; }
     }
@@ -28,12 +36,11 @@ namespace Fiesta.Application.Users.Events
 
         public async Task Handle(AuthUserCreatedEvent notification, CancellationToken cancellationToken)
         {
-            var fiestaUser = new FiestaUser(notification.Email)
-            {
-                FirstName = notification.FirstName,
-                LastName = notification.LastName,
-                PictureUrl = notification.PictureUrl
-            };
+            var fiestaUser = FiestaUser.CreateWithId(notification.UserId, notification.Email);
+
+            fiestaUser.FirstName = notification.FirstName;
+            fiestaUser.LastName = notification.LastName;
+            fiestaUser.PictureUrl = notification.PictureUrl;
 
             _db.FiestaUsers.Add(fiestaUser);
             await _db.SaveChangesAsync(cancellationToken);
