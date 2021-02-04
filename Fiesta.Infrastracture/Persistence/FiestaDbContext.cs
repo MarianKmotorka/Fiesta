@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Domain.Common;
-using Fiesta.Domain.Entities;
+using Fiesta.Domain.Entities.Users;
 using Fiesta.Infrastracture.Auth;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

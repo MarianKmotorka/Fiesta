@@ -8,7 +8,7 @@ using Fiesta.Application.Auth.CommonDtos;
 using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Options;
-using Fiesta.Application.Users.Events;
+using Fiesta.Domain.Entities.Users;
 using MediatR;
 
 namespace Fiesta.Application.Auth.GoogleLogin

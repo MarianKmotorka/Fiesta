@@ -1,4 +1,4 @@
-﻿using Fiesta.Domain.Entities;
+﻿using Fiesta.Domain.Entities.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

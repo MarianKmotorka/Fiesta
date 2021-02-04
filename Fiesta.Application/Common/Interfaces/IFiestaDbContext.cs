@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Fiesta.Domain.Entities;
+using Fiesta.Domain.Entities.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fiesta.Application.Common.Interfaces

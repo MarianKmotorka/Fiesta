@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
-using Fiesta.Application.Users.Events;
+using Fiesta.Domain.Entities.Users;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

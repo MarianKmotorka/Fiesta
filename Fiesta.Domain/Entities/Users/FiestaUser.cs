@@ -1,6 +1,6 @@
 ﻿using Fiesta.Domain.Common;
 
-namespace Fiesta.Domain.Entities
+namespace Fiesta.Domain.Entities.Users
 {
     public class FiestaUser : AuditableEntity
     {

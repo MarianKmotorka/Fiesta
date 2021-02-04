@@ -1,35 +1,16 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Interfaces;
-using Fiesta.Domain.Entities;
+using Fiesta.Domain.Entities.Users;
 using MediatR;
 
-namespace Fiesta.Application.Users.Events
+namespace Fiesta.Application.Users.EventHandlers
 {
-    public class AuthUserCreatedEvent : INotification
-    {
-        public AuthUserCreatedEvent(string userId, string email)
-        {
-            UserId = userId;
-            Email = email;
-        }
-
-        public string UserId { get; }
-
-        public string Email { get; }
-
-        public string FirstName { get; set; }
-
-        public string LastName { get; set; }
-
-        public string PictureUrl { get; set; }
-    }
-
-    public class AuthUserCreatedEventHanlder : INotificationHandler<AuthUserCreatedEvent>
+    public class OnAuthUserCreatedCreateFiestaUserEventHanlder : INotificationHandler<AuthUserCreatedEvent>
     {
         private readonly IFiestaDbContext _db;
 
-        public AuthUserCreatedEventHanlder(IFiestaDbContext db)
+        public OnAuthUserCreatedCreateFiestaUserEventHanlder(IFiestaDbContext db)
         {
             _db = db;
         }
