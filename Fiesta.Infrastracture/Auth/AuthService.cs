@@ -6,11 +6,14 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Fiesta.Application.Auth;
 using Fiesta.Application.Auth.GoogleLogin;
+using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Options;
 using Fiesta.Infrastracture.Persistence;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -21,12 +24,36 @@ namespace Fiesta.Infrastracture.Auth
         private readonly JwtOptions _jwtOptions;
         private readonly FiestaDbContext _db;
         private readonly TokenValidationParameters _tokenValidationParameters;
+        private readonly UserManager<AuthUser> _userManager;
 
-        public AuthService(JwtOptions jwtOptions, FiestaDbContext db, TokenValidationParameters tokenValidationParameters)
+        public AuthService(JwtOptions jwtOptions, FiestaDbContext db, TokenValidationParameters tokenValidationParameters,
+            UserManager<AuthUser> userManager)
         {
             _db = db;
             _jwtOptions = jwtOptions;
             _tokenValidationParameters = tokenValidationParameters;
+            _userManager = userManager;
+        }
+
+        public async Task<(string accessToken, string refreshToken)> Login(string email, string password, CancellationToken cancellationToken)
+        {
+            var user = await _userManager.FindByEmailAsync(email.Trim());
+
+            if (user is null)
+                throw new BadRequestException(ErrorCodes.InvalidEmailOrPassword);
+
+            if (user.AuthProvider != AuthProvider.EmailAndPassword)
+                throw new BadRequestException(ErrorCodes.InvalidAuthProvider);
+
+            var passValid = await _userManager.CheckPasswordAsync(user, password);
+
+            if (!passValid)
+                throw new BadRequestException(ErrorCodes.InvalidEmailOrPassword);
+
+            if (!user.EmailConfirmed)
+                throw new BadRequestException(ErrorCodes.EmailIsNotVerified);
+
+            return await Login(user, cancellationToken);
         }
 
         public async Task Logout(string refreshToken, CancellationToken cancellationToken)
@@ -52,7 +79,7 @@ namespace Fiesta.Infrastracture.Auth
             if (user is not null)
             {
                 if (user.AuthProvider != AuthProvider.Google)
-                    throw new BadRequestException("Invalid auth provider. Use Google login.");
+                    throw new BadRequestException(ErrorCodes.InvalidAuthProvider);
 
                 var result = await Login(user, cancellationToken);
                 return (result.accessToken, result.refreshToken, false, user.Id);
@@ -61,7 +88,8 @@ namespace Fiesta.Infrastracture.Auth
             var newUser = new AuthUser
             {
                 Id = Guid.NewGuid().ToString(),
-                Email = model.Email,
+                UserName = model.Email.Trim().ToLower(),
+                Email = model.Email.Trim().ToLower(),
                 EmailConfirmed = model.IsEmailVerified,
                 AuthProvider = AuthProvider.Google
             };
@@ -97,6 +125,24 @@ namespace Fiesta.Infrastracture.Auth
                 throw new BadRequestException("Invalid Refresh Token.");
 
             return await Login(appUser, cancellationToken);
+        }
+
+        public async Task<string> Register(RegisterWithEmailAndPassword.Command command, CancellationToken cancellationToken)
+        {
+            var newUser = new AuthUser
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = command.Email.Trim().ToLower(),
+                Email = command.Email.Trim().ToLower(),
+                AuthProvider = AuthProvider.EmailAndPassword
+            };
+
+            var result = await _userManager.CreateAsync(newUser, command.Password);
+            if (!result.Succeeded)
+                throw new BadRequestException(result.Errors.Select(x => x.Description));
+
+            await _db.SaveChangesAsync(cancellationToken);
+            return newUser.Id;
         }
 
         private async Task<(string accessToken, string refreshToken)> Login(AuthUser user, CancellationToken cancellationToken)

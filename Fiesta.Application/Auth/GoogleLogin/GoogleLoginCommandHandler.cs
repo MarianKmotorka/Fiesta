@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Fiesta.Application.Auth.CommonDtos;
 using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Options;
@@ -12,7 +13,7 @@ using MediatR;
 
 namespace Fiesta.Application.Auth.GoogleLogin
 {
-    public class GoogleLoginCommandHandler : IRequestHandler<GoogleLoginCommand, GoogleLoginResponse>
+    public class GoogleLoginCommandHandler : IRequestHandler<GoogleLoginCommand, AuthResponse>
     {
         private readonly GoogleOAuthOptions _oAuthOptions;
         private readonly IAuthService _authService;
@@ -27,7 +28,7 @@ namespace Fiesta.Application.Auth.GoogleLogin
             _httpClient = clientFactory.CreateClient();
         }
 
-        public async Task<GoogleLoginResponse> Handle(GoogleLoginCommand request, CancellationToken cancellationToken)
+        public async Task<AuthResponse> Handle(GoogleLoginCommand request, CancellationToken cancellationToken)
         {
             var googleUser = await GetGoogleUser(request.Code);
 
@@ -41,7 +42,7 @@ namespace Fiesta.Application.Auth.GoogleLogin
                     PictureUrl = googleUser.PictureUrl
                 });
 
-            return new GoogleLoginResponse
+            return new AuthResponse
             {
                 AccessToken = accessToken,
                 RefreshToken = refreshToken

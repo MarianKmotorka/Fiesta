@@ -16,10 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Common\Constants\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Fiesta.Domain\Fiesta.Domain.csproj" />
   </ItemGroup>
 
