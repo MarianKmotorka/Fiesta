@@ -7,7 +7,7 @@ namespace Fiesta.IntegrationTests
         [Fact]
         public void ThisTestPasses()
         {
-
+            Assert.True(true);
         }
     }
 }
