@@ -1,15 +1,15 @@
-﻿using System;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using Fiesta.Application.Auth.CommonDtos;
+﻿using Fiesta.Application.Auth.CommonDtos;
 using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Options;
 using Fiesta.Domain.Entities.Users;
 using MediatR;
+using System;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Fiesta.Application.Auth.GoogleLogin
 {
@@ -40,7 +40,7 @@ namespace Fiesta.Application.Auth.GoogleLogin
                     FirstName = googleUser.GivenName,
                     LastName = googleUser.FamilyName,
                     PictureUrl = googleUser.PictureUrl
-                });
+                }, cancellationToken);
 
             return new AuthResponse
             {
