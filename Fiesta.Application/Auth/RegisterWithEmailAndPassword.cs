@@ -1,11 +1,11 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Fiesta.Application.Common.Constants;
+﻿using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Domain.Entities.Users;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Fiesta.Application.Auth
 {
@@ -41,7 +41,7 @@ namespace Fiesta.Application.Auth
                 {
                     FirstName = request.FirstName,
                     LastName = request.LastName,
-                });
+                }, cancellationToken);
 
                 return Unit.Value;
             }

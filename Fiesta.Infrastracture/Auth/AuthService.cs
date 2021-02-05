@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Fiesta.Application.Auth;
+﻿using Fiesta.Application.Auth;
 using Fiesta.Application.Auth.GoogleLogin;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Exceptions;
@@ -16,6 +8,14 @@ using Fiesta.Infrastracture.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Fiesta.Infrastracture.Auth
 {
@@ -81,8 +81,8 @@ namespace Fiesta.Infrastracture.Auth
                 if (user.AuthProvider != AuthProvider.Google)
                     throw new BadRequestException(ErrorCodes.InvalidAuthProvider);
 
-                var result = await Login(user, cancellationToken);
-                return (result.accessToken, result.refreshToken, false, user.Id);
+                var (accessToken, refreshToken) = await Login(user, cancellationToken);
+                return (accessToken, refreshToken, false, user.Id);
             }
 
             var newUser = new AuthUser
@@ -118,7 +118,7 @@ namespace Fiesta.Infrastracture.Auth
                 throw new BadRequestException("Refresh Token Is Expired.");
 
             var appUserId = validatedRefreshToken.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            var appUser = await _db.Users.SingleAsync(x => x.Id == appUserId);
+            var appUser = await _db.Users.SingleAsync(x => x.Id == appUserId, cancellationToken);
             var storedRefreshToken = appUser.RefreshToken;
 
             if (storedRefreshToken != refreshToken)
