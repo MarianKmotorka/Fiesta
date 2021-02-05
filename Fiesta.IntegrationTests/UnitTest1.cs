@@ -9,11 +9,5 @@ namespace Fiesta.IntegrationTests
         {
 
         }
-
-        [Fact]
-        public void ThisTestFails()
-        {
-            Assert.False(true);
-        }
     }
 }
