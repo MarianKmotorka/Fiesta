@@ -8,6 +8,8 @@ namespace Fiesta.IntegrationTests
         public void ThisTestPasses()
         {
             Assert.True(true);
+            Assert.True(true);
+            Assert.True(true);
         }
     }
 }
