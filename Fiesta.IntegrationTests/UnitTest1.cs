@@ -1,15 +1,30 @@
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Fiesta.IntegrationTests
 {
-    public class UnitTest1
+    public class UnitTest1 : WebAppTestBase
     {
+
         [Fact]
-        public void ThisTestPasses()
+        public async Task ThisTestPasses()
         {
-            Assert.True(true);
-            Assert.True(true);
-            Assert.True(true);
+            var users = AssertDb.FiestaUsers.ToList();
+        }
+
+        [Fact]
+        public async Task ThisTestPassesToo()
+        {
+            var users = AssertDb.FiestaUsers.ToList();
+
+        }
+
+        [Fact]
+        public async Task ThisTestPassesTooo()
+        {
+            var users = AssertDb.FiestaUsers.ToList();
+
         }
     }
 }
