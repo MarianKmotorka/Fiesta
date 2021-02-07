@@ -3,6 +3,7 @@
     public class ErrorCodes
     {
         public const string InvalidEmailAddress = "invalidEmail";
+        public const string InvalidCode = "invalidCode";
         public const string Required = "required";
         public const string MinLength = "minLength";
         public const string MaxLength = "maxLength";

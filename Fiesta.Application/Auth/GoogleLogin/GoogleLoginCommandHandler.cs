@@ -1,15 +1,16 @@
-﻿using Fiesta.Application.Auth.CommonDtos;
-using Fiesta.Application.Common.Exceptions;
-using Fiesta.Application.Common.Interfaces;
-using Fiesta.Application.Common.Options;
-using Fiesta.Domain.Entities.Users;
-using MediatR;
-using System;
+﻿using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Fiesta.Application.Auth.CommonDtos;
+using Fiesta.Application.Common.Constants;
+using Fiesta.Application.Common.Exceptions;
+using Fiesta.Application.Common.Interfaces;
+using Fiesta.Application.Common.Options;
+using Fiesta.Domain.Entities.Users;
+using MediatR;
 
 namespace Fiesta.Application.Auth.GoogleLogin
 {
@@ -64,7 +65,7 @@ namespace Fiesta.Application.Auth.GoogleLogin
             var authResponse = await response.Content.ReadAsAsync<GoogleAuthResponse>();
 
             if (!response.IsSuccessStatusCode)
-                throw new BadRequestException("Invalid code");
+                throw new BadRequestException(ErrorCodes.InvalidCode);
 
             var userInfoRequest = new HttpRequestMessage()
             {
