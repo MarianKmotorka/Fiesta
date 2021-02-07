@@ -2,7 +2,7 @@
 {
     public class ErrorCodes
     {
-        public const string InvalidEmailAddress = "invalidEmailOrPassword";
+        public const string InvalidEmailAddress = "invalidEmail";
         public const string Required = "required";
         public const string MinLength = "minLength";
         public const string MaxLength = "maxLength";

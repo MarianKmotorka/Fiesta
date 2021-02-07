@@ -31,6 +31,7 @@ namespace Fiesta.Application.Users
                     Email = user.Email,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
+                    FullName = $"{user.FirstName} {user.LastName}",
                     PictureUrl = user.PictureUrl
                 };
             }
@@ -43,6 +44,8 @@ namespace Fiesta.Application.Users
             public string FirstName { get; set; }
 
             public string LastName { get; set; }
+
+            public string FullName { get; set; }
 
             public string Email { get; set; }
 
