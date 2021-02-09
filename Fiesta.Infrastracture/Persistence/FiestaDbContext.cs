@@ -13,6 +13,7 @@ namespace Fiesta.Infrastracture.Persistence
 {
     public class FiestaDbContext : IdentityDbContext<AuthUser, AuthRole, string>, IFiestaDbContext
     {
+        public const string TestDbName = "TestDb";
         private readonly ICurrentUserService _currentUserService;
 
         public FiestaDbContext(DbContextOptions<FiestaDbContext> options, ICurrentUserService currentUserService) : base(options)

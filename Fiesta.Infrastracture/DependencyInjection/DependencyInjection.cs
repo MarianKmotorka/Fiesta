@@ -14,9 +14,9 @@ namespace Fiesta.Infrastracture.DependencyInjection
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<FiestaDbContext>(options =>
-              options.UseSqlServer(
-                configuration.GetConnectionString("FiestaDb"),
-                builder => builder.MigrationsAssembly(typeof(FiestaDbContext).Assembly.FullName)));
+                 options.UseSqlServer(
+                     configuration.GetConnectionString("FiestaDb"),
+                     builder => builder.MigrationsAssembly(typeof(FiestaDbContext).Assembly.FullName)));
 
             services.AddIdentity<AuthUser, AuthRole>(o =>
             {
