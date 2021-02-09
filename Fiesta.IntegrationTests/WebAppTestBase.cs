@@ -6,55 +6,39 @@ using Fiesta.Application.Auth;
 using Fiesta.Application.Auth.CommonDtos;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Infrastracture.Persistence;
-using Fiesta.WebApi;
 using Fiesta.WebApi.Controllers;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using Xunit;
 
 namespace Fiesta.IntegrationTests
 {
-    public abstract class WebAppTestBase
+    public abstract class WebAppTestBase : IDisposable
     {
         public HttpClient Client { get; }
-        public WebApplicationFactory<Startup> Factory { get; }
+        public HttpClient NotAuthedClient { get; }
         public FiestaDbContext ArrangeDb { get; }
         public FiestaDbContext ActDb { get; }
         public FiestaDbContext AssertDb { get; }
 
-        public WebAppTestBase()
+        public WebAppTestBase(FiestaAppFactory factory)
         {
-            Factory = new WebApplicationFactory<Startup>()
-               .WithWebHostBuilder(builder =>
-               {
-                   builder.ConfigureServices(services =>
-                   {
-                       var descriptor = services.SingleOrDefault(x => x.ServiceType == typeof(DbContextOptions<FiestaDbContext>));
-
-                       if (descriptor != null)
-                           services.Remove(descriptor);
-
-                       services.AddDbContext<FiestaDbContext>(options => { options.UseInMemoryDatabase(FiestaDbContext.TestDbName); });
-                   });
-               });
-
-
-            Client = Factory.CreateClient();
+            Client = factory.CreateClient();
+            NotAuthedClient = factory.CreateClient();
 
             ActDb = CreateDb();
             ArrangeDb = CreateDb();
             AssertDb = CreateDb();
 
-            Authenticate();
+            Authenticate(Client);
         }
 
         private static FiestaDbContext CreateDb()
         {
             var optionsBuilder = new DbContextOptionsBuilder<FiestaDbContext>().UseInMemoryDatabase(FiestaDbContext.TestDbName);
-            return new FiestaDbContext(optionsBuilder.Options, new CurrentUserServiceStub());
+            return new FiestaDbContext(optionsBuilder.Options, new FakeCurrentUserServiceOnlyForDbContextCreation());
         }
 
-        private void Authenticate()
+        private void Authenticate(HttpClient client)
         {
             var command = new RegisterWithEmailAndPassword.Command
             {
@@ -65,6 +49,7 @@ namespace Fiesta.IntegrationTests
             };
 
             var response = Client.PostAsJsonAsync("api/auth/register", command).Result;
+            var err = response.Content.ReadAsStringAsync().Result;
             response.EnsureSuccessStatusCode();
 
             var authUser = ArrangeDb.Users.Single(x => x.Email == command.Email);
@@ -74,20 +59,31 @@ namespace Fiesta.IntegrationTests
             response = Client.PostAsJsonAsync("api/auth/login", new EmailPasswordRequest { Email = command.Email, Password = command.Password }).Result;
             response.EnsureSuccessStatusCode();
             var accessToken = response.Content.ReadAsAsync<AuthResponse>().Result.AccessToken;
-            Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            // TODO: Create accessToken with long expiration for testing purposes
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        }
+
+        public void Dispose()
+        {
+            ArrangeDb.Database.EnsureDeleted();
+
+            ArrangeDb.Dispose();
+            ActDb.Dispose();
+            AssertDb.Dispose();
         }
     }
 
-    public class CurrentUserServiceStub : ICurrentUserService
+    public class FakeCurrentUserServiceOnlyForDbContextCreation : ICurrentUserService
     {
         public string UserId => Guid.Empty.ToString();
     }
 
-    //[CollectionDefinition(WebAppFactory.WebAppFactoryCollection)]
-    //public class WebAppCollection : ICollectionFixture<WebAppFactory>
-    //{
-    //    // This class has no code, and is never created. Its purpose is simply
-    //    // to be the place to apply [CollectionDefinition] and all the
-    //    // ICollectionFixture<> interfaces.
-    //}
+    [CollectionDefinition(nameof(FiestaAppFactory))]
+    public class WebAppCollection : ICollectionFixture<FiestaAppFactory>
+    {
+        // This class has no code, and is never created. Its purpose is simply
+        // to be the place to apply [CollectionDefinition] and all the
+        // ICollectionFixture<> interfaces.
+    }
 }

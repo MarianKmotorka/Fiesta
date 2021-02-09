@@ -9,13 +9,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{FC2FEEF6-A2D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{C95658A8-DC61-49BD-BD90-B0C54ABB9B41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fiesta.Infrastracture", "Fiesta.Infrastracture\Fiesta.Infrastracture.csproj", "{AE72CB2A-6E73-4927-BA4D-610E819EBEC7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fiesta.Infrastracture", "Fiesta.Infrastracture\Fiesta.Infrastracture.csproj", "{AE72CB2A-6E73-4927-BA4D-610E819EBEC7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fiesta.Application", "Fiesta.Application\Fiesta.Application.csproj", "{714B8DF3-F144-4951-B9FD-976B18EFE597}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fiesta.Application", "Fiesta.Application\Fiesta.Application.csproj", "{714B8DF3-F144-4951-B9FD-976B18EFE597}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fiesta.Domain", "Fiesta.Domain\Fiesta.Domain.csproj", "{C5866FEE-2AD4-4BD1-B28E-5E8CD56D7B81}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fiesta.Domain", "Fiesta.Domain\Fiesta.Domain.csproj", "{C5866FEE-2AD4-4BD1-B28E-5E8CD56D7B81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fiesta.IntegrationTests", "Fiesta.IntegrationTests\Fiesta.IntegrationTests.csproj", "{76CC1857-B6C7-4A3B-BC45-A04F85D23FEB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fiesta.IntegrationTests", "Fiesta.IntegrationTests\Fiesta.IntegrationTests.csproj", "{76CC1857-B6C7-4A3B-BC45-A04F85D23FEB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
