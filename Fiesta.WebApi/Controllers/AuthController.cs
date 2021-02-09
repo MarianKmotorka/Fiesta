@@ -56,7 +56,7 @@ namespace Fiesta.WebApi.Controllers
         public async Task<ActionResult<AuthResponse>> Login(EmailPasswordRequest request, CancellationToken cancellationToken)
         {
             var (accessToken, refreshToken) = await _authService.Login(request.Email, request.Password, cancellationToken);
-            Response.Cookies.Append(Cookie.RefreshToken, refreshToken, GetRefreshTokenCookieOptions(TimeSpan.FromSeconds(0)));
+            Response.Cookies.Append(Cookie.RefreshToken, refreshToken, GetRefreshTokenCookieOptions());
             return Ok(new AuthResponse { AccessToken = accessToken });
         }
 

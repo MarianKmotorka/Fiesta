@@ -5,6 +5,7 @@ using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Auth.CommonDtos;
+using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Options;
@@ -40,7 +41,7 @@ namespace Fiesta.Application.Auth.GoogleLogin
                     FirstName = googleUser.GivenName,
                     LastName = googleUser.FamilyName,
                     PictureUrl = googleUser.PictureUrl
-                });
+                }, cancellationToken);
 
             return new AuthResponse
             {
@@ -64,7 +65,7 @@ namespace Fiesta.Application.Auth.GoogleLogin
             var authResponse = await response.Content.ReadAsAsync<GoogleAuthResponse>();
 
             if (!response.IsSuccessStatusCode)
-                throw new BadRequestException("Invalid code");
+                throw new BadRequestException(ErrorCodes.InvalidCode);
 
             var userInfoRequest = new HttpRequestMessage()
             {
