@@ -35,6 +35,8 @@ namespace Fiesta.IntegrationTests.Auth
             response.EnsureSuccessStatusCode();
 
             var authUser = await AssertDb.Users.SingleAsync(x => x.Email == request.Email);
+            authUser.EmailConfirmed.Should().BeFalse();
+
             var fiestaUser = await AssertDb.FiestaUsers.SingleAsync(x => x.Email == request.Email);
             fiestaUser.FirstName.Should().Be(request.FirstName);
             fiestaUser.LastName.Should().Be(request.LastName);
