@@ -4,9 +4,11 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Fiesta.Application.Auth;
 using Fiesta.Application.Auth.CommonDtos;
+using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Infrastracture.Persistence;
 using Fiesta.WebApi.Controllers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
@@ -54,6 +56,7 @@ namespace Fiesta.IntegrationTests
 
             var authUser = ArrangeDb.Users.Single(x => x.Email == command.Email);
             authUser.EmailConfirmed = true;
+            authUser.Role = FiestaRole.Admin;
             ArrangeDb.SaveChanges();
 
             response = Client.PostAsJsonAsync("api/auth/login", new EmailPasswordRequest { Email = command.Email, Password = command.Password }).Result;
@@ -74,9 +77,16 @@ namespace Fiesta.IntegrationTests
         }
     }
 
+    /// <summary>
+    /// Do not use. It is only for DbContext creation purposes.
+    /// </summary>
     public class FakeCurrentUserServiceOnlyForDbContextCreation : ICurrentUserService
     {
-        public string UserId => Guid.Empty.ToString();
+        public string UserId => throw new NotImplementedException();
+
+        public FiestaRole Role => throw new NotImplementedException();
+
+        public HttpContext HttpContext => throw new NotImplementedException();
     }
 
     [CollectionDefinition(nameof(FiestaAppFactory))]

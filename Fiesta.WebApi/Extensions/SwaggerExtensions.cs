@@ -2,9 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
-namespace Fiesta.WebApi
+namespace Fiesta.WebApi.Extensions
 {
-    public static class StartupExtensions
+    public static class SwaggerExtensions
     {
         public static IServiceCollection AddSwagger(this IServiceCollection services)
         {

@@ -1,15 +1,16 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fiesta.WebApi.Controllers
 {
-    [Authorize]
     [Route("api/users")]
     public class UsersController : BaseController
     {
+        [Authorize(nameof(FiestaRole.BasicUser))]
         [HttpGet("me")]
         public async Task<ActionResult<GetUserDetail.Query>> GetMyDetail(CancellationToken cancellationToken)
         {
@@ -17,6 +18,7 @@ namespace Fiesta.WebApi.Controllers
             return Ok(response);
         }
 
+        [Authorize(nameof(FiestaRole.Admin))]
         [HttpGet("{id}")]
         public async Task<ActionResult<GetUserDetail.Query>> GetMyDetail(string id, CancellationToken cancellationToken)
         {

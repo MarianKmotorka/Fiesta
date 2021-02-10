@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Security.Claims;
+using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
 using Microsoft.AspNetCore.Http;
 
@@ -10,12 +12,18 @@ namespace Fiesta.Infrastracture.Auth
         public CurrentUserService(IHttpContextAccessor httpContextAccessor)
         {
             HttpContext = httpContextAccessor.HttpContext;
-            var userClaims = httpContextAccessor.HttpContext?.User.Claims;
+            var userClaims = HttpContext?.User.Claims;
+
+            var roleString = userClaims?.SingleOrDefault(x => x.Type == FiestaClaims.FiestaRole)?.Value;
+            Enum.TryParse<FiestaRole>(roleString, out var roleEnum);
 
             UserId = userClaims?.SingleOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            Role = roleEnum;
         }
 
         public string UserId { get; }
+
+        public FiestaRole Role { get; }
 
         public HttpContext HttpContext { get; }
     }
