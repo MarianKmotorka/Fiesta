@@ -1,5 +1,6 @@
 using Fiesta.Application;
 using Fiesta.Infrastracture.DependencyInjection;
+using Fiesta.WebApi.Extensions;
 using Fiesta.WebApi.Middleware.ExceptionHanlding;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -20,12 +21,13 @@ namespace Fiesta.WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpContextAccessor();
-            services.AddInfrastructure(Configuration);
-            services.AddApplication();
+            services.AddSwagger()
+                    .AddApplication()
+                    .AddFiestaAuthorization()
+                    .AddInfrastructure(Configuration);
 
+            services.AddHttpContextAccessor();
             services.AddControllers();
-            services.AddSwagger();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

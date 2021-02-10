@@ -2,7 +2,8 @@
 {
     public static class FiestaClaims
     {
-        public const string IsAccessToken = nameof(IsAccessToken);
-        public const string IsRefreshToken = nameof(IsRefreshToken);
+        public const string IsAccessToken = "access-token";
+        public const string IsRefreshToken = "refresh-token";
+        public const string FiestaRole = "fiesta-role";
     }
 }

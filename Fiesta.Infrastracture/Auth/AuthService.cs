@@ -1,4 +1,12 @@
-﻿using Fiesta.Application.Auth;
+﻿using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Fiesta.Application.Auth;
 using Fiesta.Application.Auth.GoogleLogin;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Exceptions;
@@ -8,14 +16,6 @@ using Fiesta.Infrastracture.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Fiesta.Infrastracture.Auth
 {
@@ -85,14 +85,7 @@ namespace Fiesta.Infrastracture.Auth
                 return (accessToken, refreshToken, false, user.Id);
             }
 
-            var newUser = new AuthUser
-            {
-                Id = Guid.NewGuid().ToString(),
-                UserName = model.Email.Trim().ToLower(),
-                Email = model.Email.Trim().ToLower(),
-                EmailConfirmed = model.IsEmailVerified,
-                AuthProvider = AuthProvider.Google
-            };
+            var newUser = new AuthUser(model.Email, AuthProvider.Google) { EmailConfirmed = model.IsEmailVerified };
 
             _db.Users.Add(newUser);
             await _db.SaveChangesAsync(cancellationToken);
@@ -129,13 +122,7 @@ namespace Fiesta.Infrastracture.Auth
 
         public async Task<string> Register(RegisterWithEmailAndPassword.Command command, CancellationToken cancellationToken)
         {
-            var newUser = new AuthUser
-            {
-                Id = Guid.NewGuid().ToString(),
-                UserName = command.Email.Trim().ToLower(),
-                Email = command.Email.Trim().ToLower(),
-                AuthProvider = AuthProvider.EmailAndPassword
-            };
+            var newUser = new AuthUser(command.Email, AuthProvider.EmailAndPassword);
 
             var result = await _userManager.CreateAsync(newUser, command.Password);
             if (!result.Succeeded)
@@ -193,6 +180,7 @@ namespace Fiesta.Infrastracture.Auth
                 new Claim(JwtRegisteredClaimNames.Jti,  jti),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Iss, _jwtOptions.Issuer),
+                new Claim(FiestaClaims.FiestaRole, user.Role.ToString()),
                 new Claim(FiestaClaims.IsAccessToken,"true")
             };
 
