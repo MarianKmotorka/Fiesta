@@ -82,9 +82,9 @@ namespace Fiesta.IntegrationTests
     /// </summary>
     public class FakeCurrentUserServiceOnlyForDbContextCreation : ICurrentUserService
     {
-        public string UserId => throw new NotImplementedException();
+        public string UserId => Guid.Empty.ToString();
 
-        public FiestaRole Role => throw new NotImplementedException();
+        public FiestaRole Role => FiestaRole.None;
 
         public HttpContext HttpContext => throw new NotImplementedException();
     }
