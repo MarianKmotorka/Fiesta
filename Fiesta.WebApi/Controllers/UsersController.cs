@@ -20,7 +20,7 @@ namespace Fiesta.WebApi.Controllers
 
         [Authorize(nameof(FiestaRole.Admin))]
         [HttpGet("{id}")]
-        public async Task<ActionResult<GetUserDetail.Query>> GetMyDetail(string id, CancellationToken cancellationToken)
+        public async Task<ActionResult<GetUserDetail.Query>> GetUserDetail(string id, CancellationToken cancellationToken)
         {
             var response = await Mediator.Send(new GetUserDetail.Query { Id = id }, cancellationToken);
             return Ok(response);
