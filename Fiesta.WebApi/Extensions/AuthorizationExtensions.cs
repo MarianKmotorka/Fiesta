@@ -19,7 +19,7 @@ namespace Fiesta.WebApi.Extensions
                 {
                     options.AddPolicy(requiredRole, x => x.RequireAssertion(ctx =>
                     {
-                        var userRole = ctx.User.Claims.Single(x => x.Type == FiestaClaims.FiestaRole).Value;
+                        var userRole = ctx.User.Claims.SingleOrDefault(x => x.Type == FiestaClaims.FiestaRole)?.Value;
 
                         if (!Enum.TryParse<FiestaRole>(userRole, out var userRoleEnum))
                             return false;
