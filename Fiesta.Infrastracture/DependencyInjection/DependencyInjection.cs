@@ -38,8 +38,8 @@ namespace Fiesta.Infrastracture.DependencyInjection
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<IFiestaDbContext, FiestaDbContext>();
 
-            var emailVerificationOptions = new EmailVerificationOptions();
-            configuration.GetSection(nameof(EmailVerificationOptions)).Bind(emailVerificationOptions);
+            var emailVerificationOptions = new EmailOptions();
+            configuration.GetSection(nameof(EmailOptions)).Bind(emailVerificationOptions);
 
             services
             .AddFluentEmail(emailVerificationOptions.Email)

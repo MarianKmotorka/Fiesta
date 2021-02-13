@@ -1,6 +1,6 @@
 ﻿namespace Fiesta.Application.Common.Options
 {
-    public class EmailVerificationOptions
+    public class EmailOptions
     {
         public string Host { get; set; }
         public int Port { get; set; }
