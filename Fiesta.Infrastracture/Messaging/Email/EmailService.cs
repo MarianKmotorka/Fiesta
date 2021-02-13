@@ -1,4 +1,5 @@
 ﻿using Fiesta.Application.Common.Interfaces;
+using Fiesta.Application.Messaging.Email.Models;
 using FluentEmail.Core;
 using FluentEmail.Core.Models;
 using System.Threading;
@@ -8,7 +9,7 @@ namespace Fiesta.Infrastracture.Messaging.Email
 {
     public class EmailService : IEmailService
     {
-        private readonly string _pathToTemplate = $"./Templates/email-template.cshtml";
+        private readonly string _pathToTemplates = $"./Templates/";
         private readonly IFluentEmail _fluentEmail;
 
 
@@ -17,15 +18,21 @@ namespace Fiesta.Infrastracture.Messaging.Email
             _fluentEmail = fluentEmail;
         }
 
-        public async Task<SendResponse> SendEmailUsingTemplate(string name, string emailAddress, string subject, CancellationToken cancellationToken)
+        public async Task<SendResponse> SendVerificationEmail(string emailAddress, string subject, VerificationModel model, CancellationToken cancellationToken)
         {
-            var result = await _fluentEmail
-            .To(emailAddress)
-            .Subject(subject)
-            .UsingTemplateFromFile(_pathToTemplate, new { Name = name })
-            .SendAsync(cancellationToken);
+            var result = await BuildEmailUsingTemplate(emailAddress, subject, TemplateNames.VerificationEmail, model).SendAsync(cancellationToken);
 
             return result;
+        }
+
+        private IFluentEmail BuildEmailUsingTemplate(string emailAddress, string subject, string template, object model)
+        {
+            var email = _fluentEmail
+            .To(emailAddress)
+            .Subject(subject)
+            .UsingTemplateFromFile(_pathToTemplates + template, AnonymousToExpandoConverter.ToExpando(model));
+
+            return email;
         }
     }
 }

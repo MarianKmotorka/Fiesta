@@ -5,11 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Messaging\Email\Templates\email-template.cshtml" />
+    <None Remove="Messaging\Email\Templates\verification-template.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Messaging\Email\Templates\email-template.cshtml">
+    <EmbeddedResource Include="Messaging\Email\Templates\verification-template.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
