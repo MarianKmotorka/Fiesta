@@ -1,12 +1,12 @@
-﻿using Fiesta.Application.Common.Exceptions;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
-using Fiesta.Application.Messaging.Email.Models;
+using Fiesta.Application.Models.Emails;
 using Fiesta.Application.Utils;
 using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Fiesta.Application.Auth
+namespace Fiesta.Application.Features.Auth
 {
     public class SendVerificationEmail
     {
@@ -32,7 +32,7 @@ namespace Fiesta.Application.Auth
             {
                 var user = await _fiestaDbContext.FiestaUsers.SingleOrNotFoundAsync(x => x.Email == request.Email, cancellationToken);
                 var code = await _authService.GetEmailVerificationCode(user.Email, cancellationToken);
-                var result = await _emailService.SendVerificationEmail(user.Email, new VerificationModel(user.FirstName, code), cancellationToken);
+                var result = await _emailService.SendVerificationEmail(user.Email, new VerificationEmailTemplateModel(user.FirstName, code), cancellationToken);
 
                 if (!result.Successful)
                     throw new BadRequestException(result.ErrorMessages);

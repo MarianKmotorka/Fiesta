@@ -1,7 +1,7 @@
-﻿using Fiesta.Application.Auth.CommonDtos;
+﻿using Fiesta.Application.Features.Auth.CommonDtos;
 using MediatR;
 
-namespace Fiesta.Application.Auth.GoogleLogin
+namespace Fiesta.Application.Features.Auth.GoogleLogin
 {
     public class GoogleLoginCommand : IRequest<AuthResponse>
     {

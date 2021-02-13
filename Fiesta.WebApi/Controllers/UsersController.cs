@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
-using Fiesta.Application.Users;
+using Fiesta.Application.Features.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

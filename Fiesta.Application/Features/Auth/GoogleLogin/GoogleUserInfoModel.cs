@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Fiesta.Application.Auth.GoogleLogin
+namespace Fiesta.Application.Features.Auth.GoogleLogin
 {
     public class GoogleUserInfoModel
     {

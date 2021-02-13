@@ -3,8 +3,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Options;
-using Fiesta.Application.Messaging.Email.Constants;
-using Fiesta.Application.Messaging.Email.Models;
+using Fiesta.Application.Models.Emails;
 using FluentEmail.Core;
 using FluentEmail.Core.Models;
 using Newtonsoft.Json.Linq;
@@ -23,7 +22,7 @@ namespace Fiesta.Infrastracture.Messaging.Email
             _webClientOptions = webClientOptions;
         }
 
-        public async Task<SendResponse> SendVerificationEmail(string emailAddress, VerificationModel model, CancellationToken cancellationToken)
+        public async Task<SendResponse> SendVerificationEmail(string emailAddress, VerificationEmailTemplateModel model, CancellationToken cancellationToken)
         {
             var urlEncodedCode = HttpUtility.UrlEncode(model.Code);
             var redirectUrl = $"{_webClientOptions.BaseUrl}/confirm-email?code={urlEncodedCode}&email={emailAddress}";

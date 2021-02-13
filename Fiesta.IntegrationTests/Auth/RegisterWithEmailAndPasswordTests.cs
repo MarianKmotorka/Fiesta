@@ -2,8 +2,8 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Fiesta.Application.Auth;
 using Fiesta.Application.Common.Constants;
+using Fiesta.Application.Features.Auth;
 using Fiesta.Domain.Entities.Users;
 using Fiesta.WebApi.Middleware.ExceptionHanlding;
 using FluentAssertions;

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Fiesta.Application.Auth.CommonDtos
+namespace Fiesta.Application.Features.Auth.CommonDtos
 {
     public class AuthResponse
     {

@@ -6,7 +6,7 @@ using CloudinaryDotNet;
 using Fiesta.Application.Common.Options;
 using MediatR;
 
-namespace Fiesta.Application.Auth
+namespace Fiesta.Application.Features.Auth
 {
     public class GetCloudinarySignature
     {

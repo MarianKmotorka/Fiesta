@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using Fiesta.Application.Auth;
-using Fiesta.Application.Auth.CommonDtos;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
+using Fiesta.Application.Features.Auth;
+using Fiesta.Application.Features.Auth.CommonDtos;
 using Fiesta.Infrastracture.Persistence;
 using Fiesta.WebApi.Controllers;
 using Microsoft.AspNetCore.Http;
@@ -51,7 +51,6 @@ namespace Fiesta.IntegrationTests
             };
 
             var response = Client.PostAsJsonAsync("api/auth/register", command).Result;
-            var err = response.Content.ReadAsStringAsync().Result;
             response.EnsureSuccessStatusCode();
 
             var authUser = ArrangeDb.Users.Single(x => x.Email == command.Email);
@@ -62,8 +61,6 @@ namespace Fiesta.IntegrationTests
             response = Client.PostAsJsonAsync("api/auth/login", new EmailPasswordRequest { Email = command.Email, Password = command.Password }).Result;
             response.EnsureSuccessStatusCode();
             var accessToken = response.Content.ReadAsAsync<AuthResponse>().Result.AccessToken;
-
-            // TODO: Create accessToken with long expiration for testing purposes
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         }
 

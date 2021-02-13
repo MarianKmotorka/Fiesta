@@ -4,7 +4,7 @@ using Fiesta.Application.Common.Interfaces;
 using Fiesta.Domain.Entities.Users;
 using MediatR;
 
-namespace Fiesta.Application.Users.EventHandlers
+namespace Fiesta.Application.Features.Users.EventHandlers
 {
     public class OnAuthUserCreatedCreateFiestaUserEventHanlder : INotificationHandler<AuthUserCreatedEvent>
     {

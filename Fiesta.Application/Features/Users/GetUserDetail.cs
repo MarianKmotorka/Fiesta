@@ -4,7 +4,7 @@ using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Utils;
 using MediatR;
 
-namespace Fiesta.Application.Users
+namespace Fiesta.Application.Features.Users
 {
     public class GetUserDetail
     {

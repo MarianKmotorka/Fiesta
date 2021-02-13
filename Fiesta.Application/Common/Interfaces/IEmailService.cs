@@ -1,12 +1,12 @@
-﻿using Fiesta.Application.Messaging.Email.Models;
-using FluentEmail.Core.Models;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using Fiesta.Application.Models.Emails;
+using FluentEmail.Core.Models;
 
 namespace Fiesta.Application.Common.Interfaces
 {
     public interface IEmailService
     {
-        Task<SendResponse> SendVerificationEmail(string emailAddress, VerificationModel model, CancellationToken cancellationToken);
+        Task<SendResponse> SendVerificationEmail(string emailAddress, VerificationEmailTemplateModel model, CancellationToken cancellationToken);
     }
 }

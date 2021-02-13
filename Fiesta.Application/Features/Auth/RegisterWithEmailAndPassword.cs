@@ -1,14 +1,14 @@
-﻿using Fiesta.Application.Common.Constants;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
-using Fiesta.Application.Messaging.Email.Models;
+using Fiesta.Application.Models.Emails;
 using Fiesta.Domain.Entities.Users;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Fiesta.Application.Auth
+namespace Fiesta.Application.Features.Auth
 {
     public class RegisterWithEmailAndPassword
     {
@@ -48,7 +48,7 @@ namespace Fiesta.Application.Auth
 
                 var emailCode = await _authService.GetEmailVerificationCode(request.Email, cancellationToken);
 
-                await _emailService.SendVerificationEmail(request.Email, new VerificationModel(request.FirstName, emailCode), cancellationToken);
+                await _emailService.SendVerificationEmail(request.Email, new VerificationEmailTemplateModel(request.FirstName, emailCode), cancellationToken);
 
                 return Unit.Value;
             }

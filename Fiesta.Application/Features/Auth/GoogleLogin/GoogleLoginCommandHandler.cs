@@ -4,15 +4,15 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Fiesta.Application.Auth.CommonDtos;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Options;
+using Fiesta.Application.Features.Auth.CommonDtos;
 using Fiesta.Domain.Entities.Users;
 using MediatR;
 
-namespace Fiesta.Application.Auth.GoogleLogin
+namespace Fiesta.Application.Features.Auth.GoogleLogin
 {
     public class GoogleLoginCommandHandler : IRequestHandler<GoogleLoginCommand, AuthResponse>
     {
