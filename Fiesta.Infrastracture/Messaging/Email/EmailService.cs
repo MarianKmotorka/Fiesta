@@ -2,6 +2,7 @@
 using Fiesta.Application.Messaging.Email.Models;
 using FluentEmail.Core;
 using FluentEmail.Core.Models;
+using Newtonsoft.Json.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,7 +31,7 @@ namespace Fiesta.Infrastracture.Messaging.Email
             var email = _fluentEmail
             .To(emailAddress)
             .Subject(subject)
-            .UsingTemplateFromFile(_pathToTemplates + template, AnonymousToExpandoConverter.ToExpando(model));
+            .UsingTemplateFromFile(_pathToTemplates + template, JObject.FromObject(model));
 
             return email;
         }
