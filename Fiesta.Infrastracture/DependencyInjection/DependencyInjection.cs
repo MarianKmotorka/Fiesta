@@ -51,6 +51,10 @@ namespace Fiesta.Infrastracture.DependencyInjection
 
             services.AddTransient<IEmailService, EmailService>();
 
+            var webClientOptions = new WebClientOptions();
+            configuration.GetSection(nameof(WebClientOptions)).Bind(webClientOptions);
+            services.AddSingleton(webClientOptions);
+
             var cloudinaryOptions = new CloudinaryOptions();
             configuration.GetSection(nameof(CloudinaryOptions)).Bind(cloudinaryOptions);
             services.AddSingleton(cloudinaryOptions);

@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Fiesta.Application.Auth;
+﻿using Fiesta.Application.Auth;
 using Fiesta.Application.Auth.GoogleLogin;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Exceptions;
@@ -16,6 +8,14 @@ using Fiesta.Infrastracture.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Fiesta.Infrastracture.Auth
 {
@@ -130,6 +130,33 @@ namespace Fiesta.Infrastracture.Auth
 
             await _db.SaveChangesAsync(cancellationToken);
             return newUser.Id;
+        }
+
+        public async Task<string> GetEmailVerificationCode(string emailAddress, CancellationToken cancellationToken)
+        {
+            var user = await _userManager.FindByEmailAsync(emailAddress);
+
+            if (user is null)
+                throw new BadRequestException(ErrorCodes.InvalidEmailAddress);
+            if (user.EmailConfirmed)
+                throw new BadRequestException(ErrorCodes.EmailAlreadyVerified);
+
+            return await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        }
+
+        public async Task CheckEmailVerificationCode(string emailAddress, string code, CancellationToken cancellationToken)
+        {
+            var user = await _userManager.FindByEmailAsync(emailAddress);
+
+            if (user is null)
+                throw new BadRequestException(ErrorCodes.InvalidEmailAddress);
+            if (user.EmailConfirmed)
+                throw new BadRequestException(ErrorCodes.EmailAlreadyVerified);
+
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+
+            if (!result.Succeeded)
+                throw new BadRequestException(ErrorCodes.InvalidCode);
         }
 
         private async Task<(string accessToken, string refreshToken)> Login(AuthUser user, CancellationToken cancellationToken)

@@ -2,6 +2,12 @@
 {
     public class VerificationModel
     {
-        public string Name { get; set; }
+        public VerificationModel(string name, string code)
+        {
+            Name = name;
+            Code = code;
+        }
+        public string Name { get; }
+        public string Code { get; }
     }
 }

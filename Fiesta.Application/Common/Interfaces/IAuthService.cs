@@ -1,7 +1,7 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Fiesta.Application.Auth;
+﻿using Fiesta.Application.Auth;
 using Fiesta.Application.Auth.GoogleLogin;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Fiesta.Application.Common.Interfaces
 {
@@ -19,5 +19,9 @@ namespace Fiesta.Application.Common.Interfaces
         Task<(string accessToken, string refreshToken)> RefreshJwt(string refreshToken, CancellationToken cancellationToken);
 
         Task Logout(string refreshToken, CancellationToken cancellationToken);
+
+        Task<string> GetEmailVerificationCode(string emailAddress, CancellationToken cancellationToken);
+
+        Task CheckEmailVerificationCode(string emailAddress, string code, CancellationToken cancellationToken);
     }
 }

@@ -75,6 +75,20 @@ namespace Fiesta.WebApi.Controllers
             return Ok(response);
         }
 
+        [HttpPost("verify-email")]
+        public async Task<ActionResult> VerifyEmail(EmailVerificationRequest request, CancellationToken cancellationToken)
+        {
+            await _authService.CheckEmailVerificationCode(request.Email, request.Code, cancellationToken);
+            return Ok();
+        }
+
+        [HttpPost("send-verification-email")]
+        public async Task<ActionResult> SendVerificationEmail(SendVerificationEmail.Command request, CancellationToken cancellationToken)
+        {
+            await Mediator.Send(request, cancellationToken);
+            return Ok();
+        }
+
         private CookieOptions GetRefreshTokenCookieOptions(TimeSpan? maxAge = null)
             => new CookieOptions
             {
@@ -89,5 +103,11 @@ namespace Fiesta.WebApi.Controllers
     {
         public string Email { get; set; }
         public string Password { get; set; }
+    }
+
+    public class EmailVerificationRequest
+    {
+        public string Email { get; set; }
+        public string Code { get; set; }
     }
 }

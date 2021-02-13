@@ -46,7 +46,9 @@ namespace Fiesta.Application.Auth
                     LastName = request.LastName,
                 }, cancellationToken);
 
-                await _emailService.SendVerificationEmail(request.Email, new VerificationModel() { Name = request.FirstName }, cancellationToken);
+                var emailCode = await _authService.GetEmailVerificationCode(request.Email, cancellationToken);
+
+                await _emailService.SendVerificationEmail(request.Email, new VerificationModel(request.FirstName, emailCode), cancellationToken);
 
                 return Unit.Value;
             }
