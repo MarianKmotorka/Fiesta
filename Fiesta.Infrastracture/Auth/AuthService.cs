@@ -1,4 +1,12 @@
-﻿using Fiesta.Application.Auth;
+﻿using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Fiesta.Application.Auth;
 using Fiesta.Application.Auth.GoogleLogin;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Exceptions;
@@ -8,14 +16,6 @@ using Fiesta.Infrastracture.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Fiesta.Infrastracture.Auth
 {
@@ -150,6 +150,7 @@ namespace Fiesta.Infrastracture.Auth
 
             if (user is null)
                 throw new BadRequestException(ErrorCodes.InvalidEmailAddress);
+
             if (user.EmailConfirmed)
                 throw new BadRequestException(ErrorCodes.EmailAlreadyVerified);
 

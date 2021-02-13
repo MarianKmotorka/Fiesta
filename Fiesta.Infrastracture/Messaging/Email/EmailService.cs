@@ -1,12 +1,13 @@
-﻿using Fiesta.Application.Common.Interfaces;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using System.Web;
+using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Options;
 using Fiesta.Application.Messaging.Email.Constants;
 using Fiesta.Application.Messaging.Email.Models;
 using FluentEmail.Core;
 using FluentEmail.Core.Models;
 using Newtonsoft.Json.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Fiesta.Infrastracture.Messaging.Email
 {
@@ -24,12 +25,18 @@ namespace Fiesta.Infrastracture.Messaging.Email
 
         public async Task<SendResponse> SendVerificationEmail(string emailAddress, VerificationModel model, CancellationToken cancellationToken)
         {
-            var redirectUrl = $"{_webClientOptions.BaseUrl}/confirm-email?code={model.Code}&email={emailAddress}";
+            var urlEncodedCode = HttpUtility.UrlEncode(model.Code);
+            var redirectUrl = $"{_webClientOptions.BaseUrl}/confirm-email?code={urlEncodedCode}&email={emailAddress}";
+
             var result = await BuildEmailUsingTemplate(
                 emailAddress,
                 EmailSubjects.VerificationEmail,
                 TemplateNames.VerificationEmail,
-                new { model.Name, RedirectUrl = redirectUrl }
+                new
+                {
+                    model.Name,
+                    RedirectUrl = redirectUrl
+                }
                 ).SendAsync(cancellationToken);
 
             return result;

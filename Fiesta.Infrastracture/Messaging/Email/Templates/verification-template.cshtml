@@ -1,78 +1,58 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <meta charset='utf-8'>
-    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
-
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+          rel="stylesheet" />
     <style>
         body {
-            width: 99%;
-            text-align: center;
-        }
-
-        .header {
-            padding: 0.5em 0 0.5em 0;
-            color: white;
-            background-color: #ffcc29;
-            border: 1px solid #161d6f;
-            width: 99%;
-            border-bottom: 0;
-        }
-
-        .content {
-            color: #007965;
-            border: 1px solid #161d6f;
-            width: 99%;
-            border-top: 0;
-            border-bottom: 0;
-            padding-top: 2em;
-            padding-bottom: 5em;
-        }
-
-        .footer {
-            border: 1px solid #161d6f;
-            border-top: 0;
-            width: 99%;
+            width: 100%;
+            margin: 15px;
+            font-family: 'Roboto';
+            background-color: #eeeeee;
         }
 
         h1 {
+            font-size: 2rem;
+            color: #fe2c55;
             text-align: center;
         }
 
         p {
-            font-weight: bold;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .btn-container {
+            width: 100%;
             text-align: center;
         }
 
         .button {
             display: inline-block;
-            background-color: #007965;
+            background-color: #fe2c55;
+            color: #eeeeee !important;
             border: none;
-            width: 100%;
-            padding: 0.5em 0 0.5em 0;
+            border-radius: 5px;
+            padding: 20px 35px;
             text-align: center;
-            font-size: 2rem;
+            font-size: 1.8rem;
+            margin-top: 25px;
             text-decoration: none;
-        }
-
-        span {
-            color: white;
-            width: 100%;
+            box-shadow: 2px 5px 20px rgba(0, 0, 0, 0.4);
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Thank you for your registration <soan>@Model.Name</soan>!</h1>
-    </div>
-    <div class="content">
-        <p>Join our never-ending party by verifying your email address here:</p>
-    </div>
-    <div class="footer">
-        <a href=@Model.RedirectUrl class="button"><span>Verify me</span></a>
-    </div>
+    <h1>Thank you for your registration @Model.Name !</h1>
 
+    <p>Join our never-ending party by verifying your email address.</p>
+
+    <div class="btn-container">
+        <a href="@Model.RedirectUrl" class="button"><span>Verify</span></a>
+    </div>
 </body>
 </html>
