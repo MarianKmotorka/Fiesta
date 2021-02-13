@@ -1,16 +1,18 @@
 ﻿using Fiesta.Application.Common.Interfaces;
+using Fiesta.Application.Messaging.Email.Constants;
 using Fiesta.Application.Messaging.Email.Models;
 using FluentEmail.Core;
 using FluentEmail.Core.Models;
 using Newtonsoft.Json.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Antiforgery;
 
 namespace Fiesta.Infrastracture.Messaging.Email
 {
     public class EmailService : IEmailService
     {
-        private readonly string _pathToTemplates = $"./Templates/";
+        private readonly string _pathToTemplates = $"Fiesta.Infrastracture.Messaging.Email.Templates.";
         private readonly IFluentEmail _fluentEmail;
 
 
@@ -19,9 +21,9 @@ namespace Fiesta.Infrastracture.Messaging.Email
             _fluentEmail = fluentEmail;
         }
 
-        public async Task<SendResponse> SendVerificationEmail(string emailAddress, string subject, VerificationModel model, CancellationToken cancellationToken)
+        public async Task<SendResponse> SendVerificationEmail(string emailAddress, VerificationModel model, CancellationToken cancellationToken)
         {
-            var result = await BuildEmailUsingTemplate(emailAddress, subject, TemplateNames.VerificationEmail, model).SendAsync(cancellationToken);
+            var result = await BuildEmailUsingTemplate(emailAddress, EmailSubjects.VerificationEmail, TemplateNames.VerificationEmail, model).SendAsync(cancellationToken);
 
             return result;
         }
@@ -31,7 +33,7 @@ namespace Fiesta.Infrastracture.Messaging.Email
             var email = _fluentEmail
             .To(emailAddress)
             .Subject(subject)
-            .UsingTemplateFromFile(_pathToTemplates + template, JObject.FromObject(model));
+            .UsingTemplateFromEmbedded(_pathToTemplates + template, JObject.FromObject(model), GetType().Assembly);
 
             return email;
         }

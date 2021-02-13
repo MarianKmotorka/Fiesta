@@ -1,4 +1,4 @@
-﻿namespace Fiesta.Infrastracture.Messaging.Email
+﻿namespace Fiesta.Application.Messaging.Email.Constants
 {
     public class TemplateNames
     {

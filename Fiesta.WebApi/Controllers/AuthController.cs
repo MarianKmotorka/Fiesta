@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Fiesta.Application.Auth;
+﻿using Fiesta.Application.Auth;
 using Fiesta.Application.Auth.CommonDtos;
 using Fiesta.Application.Auth.GoogleLogin;
 using Fiesta.Application.Common.Interfaces;
@@ -9,6 +6,9 @@ using Fiesta.Application.Common.Options;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Fiesta.WebApi.Controllers
 {
