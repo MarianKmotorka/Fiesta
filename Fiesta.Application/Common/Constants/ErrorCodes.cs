@@ -11,5 +11,6 @@
         public const string InvalidEmailOrPassword = "invalidEmailOrPassword";
         public const string InvalidAuthProvider = "invalidAuthProvider";
         public const string EmailIsNotVerified = "emailIsNotVerified";
+        public const string EmailAlreadyVerified = "emailAlreadyVerified";
     }
 }

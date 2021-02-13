@@ -1,11 +1,14 @@
 ﻿using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Options;
 using Fiesta.Infrastracture.Auth;
+using Fiesta.Infrastracture.Messaging.Email;
 using Fiesta.Infrastracture.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net;
+using System.Net.Mail;
 
 namespace Fiesta.Infrastracture.DependencyInjection
 {
@@ -34,6 +37,23 @@ namespace Fiesta.Infrastracture.DependencyInjection
             services.AddJwtAuthentication(configuration);
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<IFiestaDbContext, FiestaDbContext>();
+
+            var emailVerificationOptions = new EmailOptions();
+            configuration.GetSection(nameof(EmailOptions)).Bind(emailVerificationOptions);
+
+            services
+            .AddFluentEmail(emailVerificationOptions.Email)
+            .AddRazorRenderer()
+            .AddSmtpSender(
+                new SmtpClient(emailVerificationOptions.Host, emailVerificationOptions.Port)
+                { Credentials = new NetworkCredential(emailVerificationOptions.Email, emailVerificationOptions.Password), EnableSsl = true }
+                );
+
+            services.AddTransient<IEmailService, EmailService>();
+
+            var webClientOptions = new WebClientOptions();
+            configuration.GetSection(nameof(WebClientOptions)).Bind(webClientOptions);
+            services.AddSingleton(webClientOptions);
 
             var cloudinaryOptions = new CloudinaryOptions();
             configuration.GetSection(nameof(CloudinaryOptions)).Bind(cloudinaryOptions);

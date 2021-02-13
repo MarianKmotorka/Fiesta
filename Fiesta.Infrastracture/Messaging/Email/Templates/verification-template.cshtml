@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <style>
+        body {
+            width: 99%;
+            text-align: center;
+        }
+
+        .header {
+            padding: 0.5em 0 0.5em 0;
+            color: white;
+            background-color: #ffcc29;
+            border: 1px solid #161d6f;
+            width: 99%;
+            border-bottom: 0;
+        }
+
+        .content {
+            color: #007965;
+            border: 1px solid #161d6f;
+            width: 99%;
+            border-top: 0;
+            border-bottom: 0;
+            padding-top: 2em;
+            padding-bottom: 5em;
+        }
+
+        .footer {
+            border: 1px solid #161d6f;
+            border-top: 0;
+            width: 99%;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        p {
+            font-weight: bold;
+            font-size: 1.3rem;
+            text-align: center;
+        }
+
+        .button {
+            display: inline-block;
+            background-color: #007965;
+            border: none;
+            width: 100%;
+            padding: 0.5em 0 0.5em 0;
+            text-align: center;
+            font-size: 2rem;
+            text-decoration: none;
+        }
+
+        span {
+            color: white;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Thank you for your registration <soan>@Model.Name</soan>!</h1>
+    </div>
+    <div class="content">
+        <p>Join our never-ending party by verifying your email address here:</p>
+    </div>
+    <div class="footer">
+        <a href=@Model.RedirectUrl class="button"><span>Verify me</span></a>
+    </div>
+
+</body>
+</html>

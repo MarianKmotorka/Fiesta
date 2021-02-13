@@ -1,5 +1,6 @@
 ﻿using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
+using Fiesta.Application.Messaging.Email.Models;
 using Fiesta.Domain.Entities.Users;
 using FluentValidation;
 using MediatR;
@@ -26,11 +27,13 @@ namespace Fiesta.Application.Auth
         {
             private readonly IAuthService _authService;
             private readonly IMediator _mediator;
+            private readonly IEmailService _emailService;
 
-            public Handler(IAuthService authService, IMediator mediator)
+            public Handler(IAuthService authService, IMediator mediator, IEmailService emailService)
             {
                 _authService = authService;
                 _mediator = mediator;
+                _emailService = emailService;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
@@ -42,6 +45,10 @@ namespace Fiesta.Application.Auth
                     FirstName = request.FirstName,
                     LastName = request.LastName,
                 }, cancellationToken);
+
+                var emailCode = await _authService.GetEmailVerificationCode(request.Email, cancellationToken);
+
+                await _emailService.SendVerificationEmail(request.Email, new VerificationModel(request.FirstName, emailCode), cancellationToken);
 
                 return Unit.Value;
             }
