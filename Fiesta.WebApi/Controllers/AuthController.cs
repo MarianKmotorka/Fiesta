@@ -64,7 +64,7 @@ namespace Fiesta.WebApi.Controllers
         public async Task<ActionResult> RegisterWithEmailAndPassword(RegisterWithEmailAndPassword.Command request, CancellationToken cancellationToken)
         {
             await Mediator.Send(request, cancellationToken);
-            return Ok();
+            return NoContent();
         }
 
         [Authorize]
@@ -79,14 +79,28 @@ namespace Fiesta.WebApi.Controllers
         public async Task<ActionResult> VerifyEmail(EmailVerificationRequest request, CancellationToken cancellationToken)
         {
             await _authService.CheckEmailVerificationCode(request.Email, request.Code, cancellationToken);
-            return Ok();
+            return NoContent();
         }
 
         [HttpPost("send-verification-email")]
         public async Task<ActionResult> SendVerificationEmail(SendVerificationEmail.Command request, CancellationToken cancellationToken)
         {
             await Mediator.Send(request, cancellationToken);
-            return Ok();
+            return NoContent();
+        }
+
+        [HttpPost("send-reset-password-email")]
+        public async Task<ActionResult> SendResetPasswordEmail(SendResetPasswordEmail.Command request, CancellationToken cancellationToken)
+        {
+            await Mediator.Send(request, cancellationToken);
+            return NoContent();
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<ActionResult> ResetPassword(ResetPassword.Command request, CancellationToken cancellationToken)
+        {
+            await Mediator.Send(request, cancellationToken);
+            return NoContent();
         }
 
         private CookieOptions GetRefreshTokenCookieOptions(TimeSpan? maxAge = null)

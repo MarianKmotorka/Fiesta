@@ -86,9 +86,10 @@ namespace Fiesta.Infrastracture.Auth
             }
 
             var newUser = new AuthUser(model.Email, AuthProvider.Google) { EmailConfirmed = model.IsEmailVerified };
+            var result = await _userManager.CreateAsync(newUser);
 
-            _db.Users.Add(newUser);
-            await _db.SaveChangesAsync(cancellationToken);
+            if (!result.Succeeded)
+                throw new BadRequestException(result.Errors.Select(x => x.Code));
 
             var loginResult = await Login(newUser, cancellationToken);
             return (loginResult.accessToken, loginResult.refreshToken, true, newUser.Id);
@@ -138,10 +139,40 @@ namespace Fiesta.Infrastracture.Auth
 
             if (user is null)
                 throw new BadRequestException(ErrorCodes.InvalidEmailAddress);
+
             if (user.EmailConfirmed)
                 throw new BadRequestException(ErrorCodes.EmailAlreadyVerified);
 
             return await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        }
+
+        public async Task ResetPassword(string email, string token, string newPassword, CancellationToken cancellationToken)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user is null)
+                throw new BadRequestException(ErrorCodes.InvalidEmailAddress);
+
+            if (user.AuthProvider != AuthProvider.EmailAndPassword)
+                throw new BadRequestException(ErrorCodes.InvalidAuthProvider);
+
+            var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+
+            if (!result.Succeeded)
+                throw new BadRequestException(result.Errors.Select(x => x.Description));
+        }
+
+        public async Task<string> GetResetPasswordToken(string email, CancellationToken cancellationToken)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user is null)
+                throw new BadRequestException(ErrorCodes.InvalidEmailAddress);
+
+            if (user.AuthProvider != AuthProvider.EmailAndPassword)
+                throw new BadRequestException(ErrorCodes.InvalidAuthProvider);
+
+            return await _userManager.GeneratePasswordResetTokenAsync(user);
         }
 
         public async Task CheckEmailVerificationCode(string emailAddress, string code, CancellationToken cancellationToken)

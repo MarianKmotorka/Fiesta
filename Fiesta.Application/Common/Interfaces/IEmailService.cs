@@ -8,5 +8,7 @@ namespace Fiesta.Application.Common.Interfaces
     public interface IEmailService
     {
         Task<SendResponse> SendVerificationEmail(string emailAddress, VerificationEmailTemplateModel model, CancellationToken cancellationToken);
+
+        Task<SendResponse> SendResetPasswordEmail(string emailAddress, ResetPasswordEmailTemplateModel model, CancellationToken cancellationToken);
     }
 }

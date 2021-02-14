@@ -2,6 +2,7 @@
 {
     public class EmailSubjects
     {
-        public static readonly string VerificationEmail = "Verification Email";
+        public const string VerificationEmail = "Verification Email";
+        public const string PasswordReset = "Password Reset";
     }
 }

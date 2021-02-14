@@ -1,4 +1,6 @@
-﻿using Fiesta.Application.Common.Interfaces;
+﻿using System.Net;
+using System.Net.Mail;
+using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Options;
 using Fiesta.Infrastracture.Auth;
 using Fiesta.Infrastracture.Messaging.Email;
@@ -7,8 +9,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Net;
-using System.Net.Mail;
 
 namespace Fiesta.Infrastracture.DependencyInjection
 {

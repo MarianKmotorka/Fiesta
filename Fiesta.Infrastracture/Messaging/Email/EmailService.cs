@@ -22,6 +22,21 @@ namespace Fiesta.Infrastracture.Messaging.Email
             _webClientOptions = webClientOptions;
         }
 
+        public async Task<SendResponse> SendResetPasswordEmail(string emailAddress, ResetPasswordEmailTemplateModel model, CancellationToken cancellationToken)
+        {
+            var urlEncodedToken = HttpUtility.UrlEncode(model.Token);
+            var redirectUrl = $"{_webClientOptions.BaseUrl}/reset-password?token={urlEncodedToken}&email={emailAddress}";
+
+            var result = await BuildEmailUsingTemplate(
+                emailAddress,
+                EmailSubjects.PasswordReset,
+                TemplateNames.ResetPasswordEmail,
+                new { RedirectUrl = redirectUrl }
+                ).SendAsync(cancellationToken);
+
+            return result;
+        }
+
         public async Task<SendResponse> SendVerificationEmail(string emailAddress, VerificationEmailTemplateModel model, CancellationToken cancellationToken)
         {
             var urlEncodedCode = HttpUtility.UrlEncode(model.Code);

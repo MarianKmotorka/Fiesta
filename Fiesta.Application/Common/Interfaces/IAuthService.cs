@@ -23,5 +23,9 @@ namespace Fiesta.Application.Common.Interfaces
         Task<string> GetEmailVerificationCode(string emailAddress, CancellationToken cancellationToken);
 
         Task CheckEmailVerificationCode(string emailAddress, string code, CancellationToken cancellationToken);
+
+        Task ResetPassword(string email, string token, string newPassword, CancellationToken cancellationToken);
+
+        Task<string> GetResetPasswordToken(string email, CancellationToken cancellationToken);
     }
 }
