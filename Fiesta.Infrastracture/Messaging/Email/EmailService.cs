@@ -25,7 +25,7 @@ namespace Fiesta.Infrastracture.Messaging.Email
         public async Task<SendResponse> SendResetPasswordEmail(string emailAddress, ResetPasswordEmailTemplateModel model, CancellationToken cancellationToken)
         {
             var urlEncodedToken = HttpUtility.UrlEncode(model.Token);
-            var redirectUrl = $"{_webClientOptions.BaseUrl}/confirm-email?token={urlEncodedToken}&email={emailAddress}";
+            var redirectUrl = $"{_webClientOptions.BaseUrl}/reset-password?token={urlEncodedToken}&email={emailAddress}";
 
             var result = await BuildEmailUsingTemplate(
                 emailAddress,

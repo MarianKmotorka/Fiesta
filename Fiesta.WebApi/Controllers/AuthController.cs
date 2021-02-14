@@ -96,6 +96,13 @@ namespace Fiesta.WebApi.Controllers
             return NoContent();
         }
 
+        [HttpPost("reset-password")]
+        public async Task<ActionResult> ResetPassword(ResetPassword.Command request, CancellationToken cancellationToken)
+        {
+            await Mediator.Send(request, cancellationToken);
+            return NoContent();
+        }
+
         private CookieOptions GetRefreshTokenCookieOptions(TimeSpan? maxAge = null)
             => new CookieOptions
             {
