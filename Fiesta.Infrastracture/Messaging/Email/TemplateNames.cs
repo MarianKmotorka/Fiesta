@@ -2,6 +2,7 @@
 {
     public class TemplateNames
     {
-        public static readonly string VerificationEmail = "verification-template.cshtml";
+        public const string VerificationEmail = "verification-template.cshtml";
+        public const string ResetPasswordEmail = "reset-password-template.cshtml";
     }
 }
