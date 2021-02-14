@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Infrastracture.Persistence;
 using Fiesta.WebApi;
@@ -14,6 +15,13 @@ namespace Fiesta.IntegrationTests
     public class FiestaAppFactory : WebApplicationFactory<Startup>
     {
         private IEmailService _emailServiceMock = Substitute.For<IEmailService>();
+
+        public FiestaAppFactory()
+        {
+            _emailServiceMock
+                .SendVerificationEmail(default, default, default)
+                .ReturnsForAnyArgs(Task.FromResult(new FluentEmail.Core.Models.SendResponse()));
+        }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
