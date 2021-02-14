@@ -33,7 +33,7 @@ namespace Fiesta.Application.Features.Auth
                 var sendResult = await _emailService.SendResetPasswordEmail(request.Email, new ResetPasswordEmailTemplateModel(token), cancellationToken);
 
                 if (!sendResult.Successful)
-                    _logger.LogError($"Verification email to {request.Email} was not sent. Reason: {string.Join('\n', sendResult.ErrorMessages)}");
+                    _logger.LogError($"ResetPassword email to {request.Email} was not sent. Reason: {string.Join('\n', sendResult.ErrorMessages)}");
 
                 return Unit.Value;
             }
