@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Fiesta.Application.Common.Interfaces;
+﻿using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Options;
 using Fiesta.Application.Features.Auth;
 using Fiesta.Application.Features.Auth.CommonDtos;
@@ -9,6 +6,9 @@ using Fiesta.Application.Features.Auth.GoogleLogin;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Fiesta.WebApi.Controllers
 {
@@ -98,6 +98,13 @@ namespace Fiesta.WebApi.Controllers
 
         [HttpPost("reset-password")]
         public async Task<ActionResult> ResetPassword(ResetPassword.Command request, CancellationToken cancellationToken)
+        {
+            await Mediator.Send(request, cancellationToken);
+            return NoContent();
+        }
+
+        [HttpPost("change-password")]
+        public async Task<ActionResult> ChangePassword(ChangePassword.Command request, CancellationToken cancellationToken)
         {
             await Mediator.Send(request, cancellationToken);
             return NoContent();
