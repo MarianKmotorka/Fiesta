@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Fiesta.Application.Common.Constants;
+﻿using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Options;
@@ -16,6 +8,14 @@ using Fiesta.Infrastracture.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Fiesta.Infrastracture.Auth
 {
@@ -189,6 +189,22 @@ namespace Fiesta.Infrastracture.Auth
 
             if (!result.Succeeded)
                 throw new BadRequestException(ErrorCodes.InvalidCode);
+        }
+
+        public async Task ChangePassword(string userId, string currentPassword, string newPassword, CancellationToken cancellationToken)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user is null)
+                throw new BadRequestException(ErrorCodes.InvalidEmailAddress);
+
+            if (user.AuthProvider != AuthProvider.EmailAndPassword)
+                throw new BadRequestException(ErrorCodes.InvalidAuthProvider);
+
+            var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+
+            if (!result.Succeeded)
+                throw new BadRequestException(ErrorCodes.InvalidPassword);
         }
 
         private async Task<(string accessToken, string refreshToken)> Login(AuthUser user, CancellationToken cancellationToken)
