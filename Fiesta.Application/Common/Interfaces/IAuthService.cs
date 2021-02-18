@@ -1,7 +1,8 @@
-﻿using Fiesta.Application.Features.Auth;
-using Fiesta.Application.Features.Auth.GoogleLogin;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using Fiesta.Application.Common.Constants;
+using Fiesta.Application.Features.Auth;
+using Fiesta.Application.Features.Auth.GoogleLogin;
 
 namespace Fiesta.Application.Common.Interfaces
 {
@@ -29,5 +30,9 @@ namespace Fiesta.Application.Common.Interfaces
         Task<string> GetResetPasswordToken(string email, CancellationToken cancellationToken);
 
         Task ChangePassword(string email, string currentPassword, string newPassword, CancellationToken cancellationToken);
+
+        Task<AuthProviderEnum> GetAuthProvider(string id);
+
+        Task<FiestaRoleEnum> GetRole(string id);
     }
 }

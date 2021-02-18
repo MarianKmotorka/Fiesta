@@ -11,11 +11,11 @@ namespace Fiesta.Application.Utils
         /// <remarks>
         /// E.g.: PremiumUser can access features made for PremiumUser as well as features for BasicUser
         /// </remarks>
-        public static readonly IReadOnlyDictionary<FiestaRole, IEnumerable<FiestaRole>> Map = new Dictionary<FiestaRole, IEnumerable<FiestaRole>>
+        public static readonly IReadOnlyDictionary<FiestaRoleEnum, IEnumerable<FiestaRoleEnum>> Map = new Dictionary<FiestaRoleEnum, IEnumerable<FiestaRoleEnum>>
         {
-            [FiestaRole.BasicUser] = new[] { FiestaRole.BasicUser },
-            [FiestaRole.PremiumUser] = new[] { FiestaRole.PremiumUser, FiestaRole.BasicUser },
-            [FiestaRole.Admin] = new[] { FiestaRole.Admin, FiestaRole.PremiumUser, FiestaRole.BasicUser },
+            [FiestaRoleEnum.BasicUser] = new[] { FiestaRoleEnum.BasicUser },
+            [FiestaRoleEnum.PremiumUser] = new[] { FiestaRoleEnum.PremiumUser, FiestaRoleEnum.BasicUser },
+            [FiestaRoleEnum.Admin] = new[] { FiestaRoleEnum.Admin, FiestaRoleEnum.PremiumUser, FiestaRoleEnum.BasicUser },
         };
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Fiesta.Application.Common.Constants
 {
-    public enum FiestaRole
+    public enum FiestaRoleEnum
     {
         None = 0,
         BasicUser = 1,
