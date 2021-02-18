@@ -164,7 +164,6 @@ namespace Fiesta.Infrastracture.Auth
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Iss, _jwtOptions.Issuer),
                 new Claim(FiestaClaims.FiestaRole, user.Role.ToString()),
-                new Claim(FiestaClaims.AuthProvider, user.AuthProvider.ToString()),
                 new Claim(FiestaClaims.IsAccessToken,"true")
             };
 
