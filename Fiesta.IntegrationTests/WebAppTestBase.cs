@@ -84,8 +84,6 @@ namespace Fiesta.IntegrationTests
         public FiestaRoleEnum Role => FiestaRoleEnum.None;
 
         public HttpContext HttpContext => throw new NotImplementedException();
-
-        public AuthProviderEnum AuthProvider => AuthProviderEnum.None;
     }
 
     [CollectionDefinition(nameof(FiestaAppFactory))]
