@@ -9,8 +9,6 @@ namespace Fiesta.Application.Common.Interfaces
 
         FiestaRoleEnum Role { get; }
 
-        AuthProviderEnum AuthProvider { get; }
-
         HttpContext HttpContext { get; }
     }
 }
