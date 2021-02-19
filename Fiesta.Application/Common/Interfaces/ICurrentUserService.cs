@@ -7,7 +7,7 @@ namespace Fiesta.Application.Common.Interfaces
     {
         string UserId { get; }
 
-        FiestaRole Role { get; }
+        FiestaRoleEnum Role { get; }
 
         HttpContext HttpContext { get; }
     }

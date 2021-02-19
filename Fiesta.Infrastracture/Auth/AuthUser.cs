@@ -5,11 +5,11 @@ namespace Fiesta.Infrastracture.Auth
 {
     public class AuthUser : IdentityUser<string>
     {
-        public AuthUser(string email, AuthProvider authProvider) : this(email, FiestaRole.BasicUser, authProvider)
+        public AuthUser(string email, AuthProviderEnum authProvider) : this(email, FiestaRoleEnum.BasicUser, authProvider)
         {
         }
 
-        public AuthUser(string email, FiestaRole role, AuthProvider authProvider)
+        public AuthUser(string email, FiestaRoleEnum role, AuthProviderEnum authProvider)
         {
             Email = email.Trim().ToLower();
             UserName = Email;
@@ -20,8 +20,8 @@ namespace Fiesta.Infrastracture.Auth
 
         public string RefreshToken { get; set; }
 
-        public AuthProvider AuthProvider { get; set; }
+        public AuthProviderEnum AuthProvider { get; set; }
 
-        public FiestaRole Role { get; set; }
+        public FiestaRoleEnum Role { get; set; }
     }
 }

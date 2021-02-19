@@ -21,7 +21,7 @@ namespace Fiesta.WebApi.Extensions
                     {
                         var userRole = ctx.User.Claims.SingleOrDefault(x => x.Type == FiestaClaims.FiestaRole)?.Value;
 
-                        if (!Enum.TryParse<FiestaRole>(userRole, out var userRoleEnum))
+                        if (!Enum.TryParse<FiestaRoleEnum>(userRole, out var userRoleEnum))
                             return false;
 
                         return RolesHelper.Map[userRoleEnum].Any(x => x.ToString() == requiredRole);

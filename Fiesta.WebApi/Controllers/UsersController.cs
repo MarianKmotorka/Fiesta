@@ -10,7 +10,7 @@ namespace Fiesta.WebApi.Controllers
     [Route("api/users")]
     public class UsersController : BaseController
     {
-        [Authorize(nameof(FiestaRole.BasicUser))]
+        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
         [HttpGet("me")]
         public async Task<ActionResult<GetUserDetail.Query>> GetMyDetail(CancellationToken cancellationToken)
         {
@@ -18,7 +18,7 @@ namespace Fiesta.WebApi.Controllers
             return Ok(response);
         }
 
-        [Authorize(nameof(FiestaRole.Admin))]
+        [Authorize(nameof(FiestaRoleEnum.Admin))]
         [HttpGet("{id}")]
         public async Task<ActionResult<GetUserDetail.Query>> GetUserDetail(string id, CancellationToken cancellationToken)
         {

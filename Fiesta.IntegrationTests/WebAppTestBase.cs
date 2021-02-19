@@ -55,7 +55,7 @@ namespace Fiesta.IntegrationTests
 
             var authUser = ArrangeDb.Users.Single(x => x.Email == command.Email);
             authUser.EmailConfirmed = true;
-            authUser.Role = FiestaRole.Admin;
+            authUser.Role = FiestaRoleEnum.Admin;
             ArrangeDb.SaveChanges();
 
             response = Client.PostAsJsonAsync("api/auth/login", new EmailPasswordRequest { Email = command.Email, Password = command.Password }).Result;
@@ -81,7 +81,7 @@ namespace Fiesta.IntegrationTests
     {
         public string UserId => Guid.Empty.ToString();
 
-        public FiestaRole Role => FiestaRole.None;
+        public FiestaRoleEnum Role => FiestaRoleEnum.None;
 
         public HttpContext HttpContext => throw new NotImplementedException();
     }

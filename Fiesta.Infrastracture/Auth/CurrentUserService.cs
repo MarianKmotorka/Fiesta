@@ -15,7 +15,7 @@ namespace Fiesta.Infrastracture.Auth
             var userClaims = HttpContext?.User.Claims;
 
             var roleString = userClaims?.SingleOrDefault(x => x.Type == FiestaClaims.FiestaRole)?.Value;
-            Enum.TryParse<FiestaRole>(roleString, out var roleEnum);
+            Enum.TryParse<FiestaRoleEnum>(roleString, out var roleEnum);
 
             UserId = userClaims?.SingleOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             Role = roleEnum;
@@ -23,7 +23,9 @@ namespace Fiesta.Infrastracture.Auth
 
         public string UserId { get; }
 
-        public FiestaRole Role { get; }
+        public FiestaRoleEnum Role { get; }
+
+        public AuthProviderEnum AuthProvider { get; }
 
         public HttpContext HttpContext { get; }
     }

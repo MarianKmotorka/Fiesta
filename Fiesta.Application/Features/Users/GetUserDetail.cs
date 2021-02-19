@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Utils;
 using MediatR;
@@ -16,10 +17,12 @@ namespace Fiesta.Application.Features.Users
         public class Handler : IRequestHandler<Query, Response>
         {
             private readonly IFiestaDbContext _db;
+            private readonly IAuthService _authService;
 
-            public Handler(IFiestaDbContext db)
+            public Handler(IFiestaDbContext db, IAuthService authService)
             {
                 _db = db;
+                _authService = authService;
             }
 
             public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
@@ -32,7 +35,9 @@ namespace Fiesta.Application.Features.Users
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     FullName = $"{user.FirstName} {user.LastName}",
-                    PictureUrl = user.PictureUrl
+                    PictureUrl = user.PictureUrl,
+                    AuthProvider = await _authService.GetAuthProvider(user.Id),
+                    Role = await _authService.GetRole(user.Id)
                 };
             }
         }
@@ -50,6 +55,10 @@ namespace Fiesta.Application.Features.Users
             public string Email { get; set; }
 
             public string PictureUrl { get; set; }
+
+            public AuthProviderEnum AuthProvider { get; set; }
+
+            public FiestaRoleEnum Role { get; set; }
         }
     }
 }
