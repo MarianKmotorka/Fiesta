@@ -101,6 +101,18 @@ namespace Fiesta.Infrastracture.Auth
                 throw new BadRequestException(ErrorCodes.InvalidPassword);
         }
 
+        public async Task AddPassword(string userId, string password, CancellationToken cancellationToken)
+        {
+            var user = await _db.Users.FindAsync(userId) ?? throw new BadRequestException($"User with id {userId} not found.");
+
+            var result = await _userManager.AddPasswordAsync(user, password);
+            if (!result.Succeeded)
+                throw new BadRequestException(result.Errors.Select(x => x.Description));
+
+            user.AuthProvider |= AuthProviderEnum.EmailAndPassword;
+            await _db.SaveChangesAsync(cancellationToken);
+        }
+
         public async Task<FiestaRoleEnum> GetRole(string id)
         {
             return (await _db.Users.FindAsync(id)).Role;

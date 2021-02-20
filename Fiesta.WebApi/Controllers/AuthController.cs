@@ -1,4 +1,8 @@
-﻿using Fiesta.Application.Common.Interfaces;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Fiesta.Application.Common.Constants;
+using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Options;
 using Fiesta.Application.Features.Auth;
 using Fiesta.Application.Features.Auth.CommonDtos;
@@ -6,9 +10,6 @@ using Fiesta.Application.Features.Auth.GoogleLogin;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Fiesta.WebApi.Controllers
 {
@@ -67,7 +68,7 @@ namespace Fiesta.WebApi.Controllers
             return NoContent();
         }
 
-        [Authorize]
+        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
         [HttpGet("cloudinary-signature")]
         public async Task<ActionResult<GetCloudinarySignature.Response>> GetCloudinarySignature([FromQuery] GetCloudinarySignature.Query request)
         {
@@ -106,6 +107,15 @@ namespace Fiesta.WebApi.Controllers
         [HttpPost("change-password")]
         public async Task<ActionResult> ChangePassword(ChangePassword.Command request, CancellationToken cancellationToken)
         {
+            await Mediator.Send(request, cancellationToken);
+            return NoContent();
+        }
+
+        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
+        [HttpPost("add-password")]
+        public async Task<ActionResult> AddPassword(AddPassword.Command request, CancellationToken cancellationToken)
+        {
+            request.UserId = CurrentUserService.UserId;
             await Mediator.Send(request, cancellationToken);
             return NoContent();
         }

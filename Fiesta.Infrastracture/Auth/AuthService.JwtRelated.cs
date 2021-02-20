@@ -61,7 +61,10 @@ namespace Fiesta.Infrastracture.Auth
             if (user is not null)
             {
                 if (!user.AuthProvider.HasFlag(AuthProviderEnum.Google))
-                    throw new BadRequestException(ErrorCodes.InvalidAuthProvider);
+                {
+                    user.AuthProvider |= AuthProviderEnum.Google;
+                    user.EmailConfirmed = model.IsEmailVerified;
+                }
 
                 var (accessToken, refreshToken) = await Login(user, cancellationToken);
                 return (accessToken, refreshToken, false, user.Id);

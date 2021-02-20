@@ -34,5 +34,7 @@ namespace Fiesta.Application.Common.Interfaces
         Task<AuthProviderEnum> GetAuthProvider(string id);
 
         Task<FiestaRoleEnum> GetRole(string id);
+
+        Task AddPassword(string userId, string password, CancellationToken cancellationToken);
     }
 }
