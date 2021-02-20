@@ -17,13 +17,22 @@ namespace Fiesta.IntegrationTests
     public abstract class WebAppTestBase : IDisposable
     {
         public HttpClient Client { get; }
+
         public HttpClient NotAuthedClient { get; }
+
+        public FiestaAppFactory Factory { get; }
+
         public FiestaDbContext ArrangeDb { get; }
+
         public FiestaDbContext ActDb { get; }
+
         public FiestaDbContext AssertDb { get; }
+
+        public string LoggedInUserEmail => "admin@fiesta.com";
 
         public WebAppTestBase(FiestaAppFactory factory)
         {
+            Factory = factory;
             Client = factory.CreateClient();
             NotAuthedClient = factory.CreateClient();
 
@@ -44,7 +53,7 @@ namespace Fiesta.IntegrationTests
         {
             var command = new RegisterWithEmailAndPassword.Command
             {
-                Email = "admin@fiesta.com",
+                Email = LoggedInUserEmail,
                 FirstName = "Admin",
                 LastName = "Fiesta",
                 Password = "Password123"
