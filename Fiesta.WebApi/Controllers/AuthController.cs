@@ -6,7 +6,6 @@ using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Options;
 using Fiesta.Application.Features.Auth;
 using Fiesta.Application.Features.Auth.CommonDtos;
-using Fiesta.Application.Features.Auth.GoogleDeleteAccount;
 using Fiesta.Application.Features.Auth.GoogleLogin;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

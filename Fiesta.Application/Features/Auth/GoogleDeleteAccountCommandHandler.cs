@@ -4,7 +4,7 @@ using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
 using MediatR;
 
-namespace Fiesta.Application.Features.Auth.GoogleDeleteAccount
+namespace Fiesta.Application.Features.Auth
 {
     public class GoogleDeleteAccountCommandHandler : IRequestHandler<GoogleDeleteAccountCommand, Unit>
     {
@@ -30,5 +30,10 @@ namespace Fiesta.Application.Features.Auth.GoogleDeleteAccount
 
             return Unit.Value;
         }
+    }
+
+    public class GoogleDeleteAccountCommand : IRequest<Unit>
+    {
+        public string Code { get; set; }
     }
 }

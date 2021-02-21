@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Interfaces;
 using MediatR;
@@ -9,6 +10,7 @@ namespace Fiesta.Application.Features.Auth
     {
         public class Command : IRequest
         {
+            [JsonIgnore]
             public string UserId { get; set; }
             public string Password { get; set; }
         }
