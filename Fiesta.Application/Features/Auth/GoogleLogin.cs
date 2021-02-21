@@ -10,7 +10,6 @@ namespace Fiesta.Application.Features.Auth
 {
     public class GoogleLogin
     {
-
         public class Command : IRequest<AuthResponse>
         {
             public string Code { get; set; }
