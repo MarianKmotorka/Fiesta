@@ -25,7 +25,7 @@ namespace Fiesta.IntegrationTests.Auth
         public async Task GivenUserRegisteredWithGoogle_WhenAddingPassword_PasswordIsAdded()
         {
             using var client = Factory.CreateClient();
-            var bearer = await GetGoogleUserBearer();
+            var bearer = await SeedAndGetGoogleUserBearer();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearer);
 
             var addPassResponse = await client.PostAsJsonAsync("/api/auth/add-password", new { Password = "AddedPassword" });
@@ -42,7 +42,7 @@ namespace Fiesta.IntegrationTests.Auth
         public async Task GivenUserRegisteredWithGoogle_WhenAddingInvalidPassword_BadRequestIsReturned()
         {
             using var client = Factory.CreateClient();
-            var bearer = await GetGoogleUserBearer();
+            var bearer = await SeedAndGetGoogleUserBearer();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearer);
 
             var addPassResponse = await client.PostAsJsonAsync("/api/auth/add-password", new { Password = "short" });
@@ -65,14 +65,13 @@ namespace Fiesta.IntegrationTests.Auth
         }
 
         [Fact]
-        public async Task GivenUserWithPassword_WhenAddingPassword_BadRequestIsReturned()
+        public async Task GivenUserWithEmailAndPassword_WhenAddingPassword_BadRequestIsReturned()
         {
             var addPassResponse = await Client.PostAsJsonAsync("/api/auth/add-password", new { Password = "AddedPassword" });
             addPassResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
-        // TODO: use this also in webAppTestBase
-        private async Task<string> GetGoogleUserBearer()
+        private async Task<string> SeedAndGetGoogleUserBearer()
         {
             var user = new AuthUser("google@user.com", AuthProviderEnum.Google) { EmailConfirmed = true };
             ArrangeDb.Users.Add(user);
