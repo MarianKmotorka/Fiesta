@@ -1,9 +1,11 @@
 ﻿using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Infrastracture.Auth;
 using Fiesta.IntegrationTests.Assets;
+using Fiesta.IntegrationTests.Helpers;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -43,6 +45,23 @@ namespace Fiesta.IntegrationTests.Features.Auth
             var user = await AssertDb.Users.SingleAsync(x => x.Id == LoggedInUserId);
             user.AuthProvider.Should().Be(AuthProviderEnum.EmailAndPassword);
             user.GoogleEmail.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task GivenUserWithoutConfirmedEmail_WhenConnectingGoogleAccountWithSameEmail_EmailIsVerified()
+        {
+            var unverifiedEmailUser = new AuthUser(GoogleAssets.JohnyUserInfoModel.Email, AuthProviderEnum.EmailAndPassword);
+            ArrangeDb.Add(unverifiedEmailUser);
+            await ArrangeDb.SaveChangesAsync();
+
+            using var client = Factory.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", unverifiedEmailUser.GetAccessToken(Factory));
+
+            var response = await client.PostAsJsonAsync("/api/auth/connect-google-account", new { Code = "validCode" });
+            response.EnsureSuccessStatusCode();
+
+            var user = await AssertDb.Users.SingleAsync(x => x.Id == unverifiedEmailUser.Id);
+            user.EmailConfirmed.Should().BeTrue();
         }
     }
 }

@@ -119,7 +119,11 @@ namespace Fiesta.Infrastracture.Auth
 
         public async Task<Result> AddGoogleAccount(string userId, GoogleUserInfoModel model, CancellationToken cancellationToken)
         {
-            var isEmailUsed = await _db.Users.AsQueryable().WhereSomeEmailIs(model.Email).AnyAsync(cancellationToken);
+            var isEmailUsed = await _db.Users
+                .Where(x => x.Id != userId)
+                .WhereSomeEmailIs(model.Email)
+                .AnyAsync(cancellationToken);
+
             if (isEmailUsed)
                 return Result.Failure(ErrorCodes.MustBeUnique);
 
