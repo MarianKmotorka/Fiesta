@@ -110,5 +110,26 @@ namespace Fiesta.Infrastracture.Auth
         {
             return (await _db.Users.FindAsync(id)).AuthProvider;
         }
+
+        public async Task DeleteAccountWithPassword(string userId, string password, CancellationToken cancellationToken)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user is null)
+                throw new BadRequestException(ErrorCodes.InvalidEmailAddress);
+
+            if (!user.AuthProvider.HasFlag(AuthProviderEnum.EmailAndPassword))
+                throw new BadRequestException(ErrorCodes.InvalidAuthProvider);
+
+            var passValid = await _userManager.CheckPasswordAsync(user, password);
+
+            if (!passValid)
+                throw new BadRequestException(ErrorCodes.InvalidPassword);
+
+            var result = await _userManager.DeleteAsync(user);
+
+            if (!result.Succeeded)
+                throw new BadRequestException(result.Errors.Select(x => x.Description));
+        }
     }
 }
