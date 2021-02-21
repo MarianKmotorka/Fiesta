@@ -110,13 +110,6 @@ namespace Fiesta.WebApi.Controllers
             return NoContent();
         }
 
-        [HttpDelete("delete-account")]
-        public async Task<ActionResult> DeleteAccount(DeleteAccountWithPassword.Command request, CancellationToken cancellationToken)
-        {
-            await Mediator.Send(request, cancellationToken);
-            return NoContent();
-        }
-
         private CookieOptions GetRefreshTokenCookieOptions(TimeSpan? maxAge = null)
             => new CookieOptions
             {
