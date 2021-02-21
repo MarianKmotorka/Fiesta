@@ -37,6 +37,7 @@ namespace Fiesta.Infrastracture.DependencyInjection
             services.AddJwtAuthentication(configuration);
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<IFiestaDbContext, FiestaDbContext>();
+            services.AddScoped<IGoogleService, GoogleService>();
 
             var emailVerificationOptions = new EmailOptions();
             configuration.GetSection(nameof(EmailOptions)).Bind(emailVerificationOptions);
