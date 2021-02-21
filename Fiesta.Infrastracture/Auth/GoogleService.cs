@@ -34,10 +34,10 @@ namespace Fiesta.Infrastracture.Auth
             };
 
             var response = await _client.PostAsJsonAsync(_authOptions.TokenEndpoint, request, cancellationToken);
-            var authResponse = await response.Content.ReadAsAsync<GoogleAuthResponse>();
-
             if (!response.IsSuccessStatusCode)
                 return Result<GoogleUserInfoModel>.Failure(ErrorCodes.InvalidCode);
+
+            var authResponse = await response.Content.ReadAsAsync<GoogleAuthResponse>();
 
             var userInfoRequest = new HttpRequestMessage()
             {
