@@ -37,7 +37,7 @@ namespace Fiesta.Infrastracture.Auth
             if (!response.IsSuccessStatusCode)
                 return Result<GoogleUserInfoModel>.Failure(ErrorCodes.InvalidCode);
 
-            var authResponse = await response.Content.ReadAsAsync<GoogleAuthResponse>();
+            var authResponse = await response.Content.ReadAsAsync<GoogleAuthResponse>(cancellationToken);
 
             var userInfoRequest = new HttpRequestMessage()
             {

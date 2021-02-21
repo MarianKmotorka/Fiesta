@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Options;
 using Fiesta.Application.Features.Auth;
 using Fiesta.Application.Features.Auth.CommonDtos;
+using Fiesta.Application.Features.Auth.GoogleDeleteAccount;
 using Fiesta.Application.Features.Auth.GoogleLogin;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -108,6 +110,22 @@ namespace Fiesta.WebApi.Controllers
         {
             await Mediator.Send(request, cancellationToken);
             return NoContent();
+        }
+
+        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
+        [HttpDelete("delete-account-with-password")]
+        public async Task<ActionResult> DeleteAccountWithPassword(string password, CancellationToken cancellationToken)
+        {
+            await Mediator.Send(new DeleteAccountWithPassword.Command { UserId = CurrentUserService.UserId, Password = password }, cancellationToken);
+            return Ok();
+        }
+
+        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
+        [HttpDelete("delete-account-with-code")]
+        public async Task<ActionResult> DeleteAccountWithCode(string code, CancellationToken cancellationToken)
+        {
+            await Mediator.Send(new GoogleDeleteAccountCommand { Code = code }, cancellationToken);
+            return Ok();
         }
 
         private CookieOptions GetRefreshTokenCookieOptions(TimeSpan? maxAge = null)

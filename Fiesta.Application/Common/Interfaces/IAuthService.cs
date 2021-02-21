@@ -36,5 +36,7 @@ namespace Fiesta.Application.Common.Interfaces
         Task<FiestaRoleEnum> GetRole(string id);
 
         Task DeleteAccountWithPassword(string userId, string password, CancellationToken cancellationToken);
+
+        Task DeleteAccountWithGoogle(string email, CancellationToken cancellationToken);
     }
 }

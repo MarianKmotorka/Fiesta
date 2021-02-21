@@ -1,7 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
-using Fiesta.Application.Features.Auth;
 using Fiesta.Application.Features.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,14 +24,6 @@ namespace Fiesta.WebApi.Controllers
         {
             var response = await Mediator.Send(new GetUserDetail.Query { Id = id }, cancellationToken);
             return Ok(response);
-        }
-
-        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
-        [HttpDelete("delete-me")]
-        public async Task<ActionResult> DeleteAccount(string password, CancellationToken cancellationToken)
-        {
-            await Mediator.Send(new DeleteAccountWithPassword.Query { UserId = CurrentUserService.UserId, Password = password }, cancellationToken);
-            return NoContent();
         }
     }
 }

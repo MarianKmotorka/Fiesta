@@ -131,5 +131,21 @@ namespace Fiesta.Infrastracture.Auth
             if (!result.Succeeded)
                 throw new BadRequestException(result.Errors.Select(x => x.Description));
         }
+
+        public async Task DeleteAccountWithGoogle(string email, CancellationToken cancellationToken)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user is null)
+                throw new BadRequestException(ErrorCodes.InvalidEmailAddress);
+
+            if (!user.AuthProvider.HasFlag(AuthProviderEnum.Google))
+                throw new BadRequestException(ErrorCodes.InvalidAuthProvider);
+
+            var result = await _userManager.DeleteAsync(user);
+
+            if (!result.Succeeded)
+                throw new BadRequestException(result.Errors.Select(x => x.Description));
+        }
     }
 }

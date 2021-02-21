@@ -7,13 +7,13 @@ namespace Fiesta.Application.Features.Auth
 {
     public class DeleteAccountWithPassword
     {
-        public class Query : IRequest
+        public class Command : IRequest
         {
             public string UserId { get; set; }
             public string Password { get; set; }
         }
 
-        public class Handler : IRequestHandler<Query>
+        public class Handler : IRequestHandler<Command>
         {
             private readonly IAuthService _authService;
 
@@ -22,7 +22,7 @@ namespace Fiesta.Application.Features.Auth
                 _authService = authService;
             }
 
-            public async Task<Unit> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 await _authService.DeleteAccountWithPassword(request.UserId, request.Password, cancellationToken);
                 return Unit.Value;
