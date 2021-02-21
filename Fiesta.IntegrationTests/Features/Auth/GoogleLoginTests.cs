@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Features.Auth.CommonDtos;
+using Fiesta.Infrastracture.Auth;
 using Fiesta.IntegrationTests.Assets;
+using Fiesta.IntegrationTests.Helpers;
 using Fiesta.WebApi.Middleware.ExceptionHanlding;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -48,6 +51,25 @@ namespace Fiesta.IntegrationTests.Features.Auth
                 ErrorCode = "BadRequest",
                 ErrorMessage = ErrorCodes.InvalidCode
             });
+        }
+
+        [Fact]
+        public async Task GivenEmailAndPasswordUser_WhenLoggingInWithSameEmailGoogleAccount_GoogleAccountIsConnected()
+        {
+            var emailAndPasswordUser = new AuthUser(GoogleAssets.JohnyUserInfoModel.Email, AuthProviderEnum.EmailAndPassword);
+            ArrangeDb.Add(emailAndPasswordUser);
+            await ArrangeDb.SaveChangesAsync();
+
+            using var client = Factory.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", emailAndPasswordUser.GetAccessToken(Factory));
+
+            var response = await client.GetAsync("/api/auth/google-code-callback?code=validCode");
+            response.EnsureSuccessStatusCode();
+
+            var user = await AssertDb.Users.SingleAsync(x => x.Email == GoogleAssets.JohnyUserInfoModel.Email);
+            user.AuthProvider.Should().HaveFlag(AuthProviderEnum.Google);
+            user.AuthProvider.Should().HaveFlag(AuthProviderEnum.EmailAndPassword);
+            user.GoogleEmail.Should().Be(GoogleAssets.JohnyUserInfoModel.Email);
         }
     }
 }

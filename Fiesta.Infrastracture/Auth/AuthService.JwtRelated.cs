@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Features.Auth;
-using Fiesta.Application.Features.Auth.GoogleLogin;
+using Fiesta.Application.Features.Auth.CommonDtos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -56,12 +56,15 @@ namespace Fiesta.Infrastracture.Auth
 
         public async Task<(string accessToken, string refreshToken, bool authUserCreated, string userId)> LoginOrRegister(GoogleUserInfoModel model, CancellationToken cancellationToken)
         {
-            var user = await _db.Users.SingleOrDefaultAsync(x => x.Email == model.Email, cancellationToken);
+            var user = await _db.Users.SingleOrDefaultAsync(x => x.Email == model.Email || x.GoogleEmail == model.Email, cancellationToken);
 
             if (user is not null)
             {
                 if (!user.AuthProvider.HasFlag(AuthProviderEnum.Google))
-                    throw new BadRequestException(ErrorCodes.InvalidAuthProvider);
+                {
+                    user.AddGoogleAuthProvider(model.Email);
+                    user.EmailConfirmed = model.IsEmailVerified;
+                }
 
                 var (accessToken, refreshToken) = await Login(user, cancellationToken);
                 return (accessToken, refreshToken, false, user.Id);

@@ -7,7 +7,8 @@ using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Models;
 using Fiesta.Application.Common.Options;
-using Fiesta.Application.Features.Auth.GoogleLogin;
+using Fiesta.Application.Features.Auth.CommonDtos;
+using Fiesta.Infrastracture.Auth.Models;
 
 namespace Fiesta.Infrastracture.Auth
 {

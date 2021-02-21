@@ -1,4 +1,4 @@
-﻿using Fiesta.Application.Features.Auth.GoogleLogin;
+﻿using Fiesta.Application.Features.Auth.CommonDtos;
 
 namespace Fiesta.IntegrationTests.Assets
 {

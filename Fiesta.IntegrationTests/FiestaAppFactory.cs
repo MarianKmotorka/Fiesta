@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Models;
-using Fiesta.Application.Features.Auth.GoogleLogin;
+using Fiesta.Application.Features.Auth.CommonDtos;
 using Fiesta.Infrastracture.Persistence;
 using Fiesta.IntegrationTests.Assets;
 using Fiesta.WebApi;

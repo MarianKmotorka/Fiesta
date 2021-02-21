@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Features.Auth;
-using Fiesta.Domain.Entities.Users;
+using Fiesta.Infrastracture.Auth;
 using Fiesta.WebApi.Middleware.ExceptionHanlding;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -91,7 +91,7 @@ namespace Fiesta.IntegrationTests.Features.Auth
         [Fact]
         public async Task GivenDuplicateEmailRequest_WhenRegisteringNewUser_ErrorResponseIsReturend()
         {
-            ArrangeDb.FiestaUsers.Add(new FiestaUser("duplicate@email.com"));
+            ArrangeDb.Users.Add(new AuthUser("duplicate@email.com", AuthProviderEnum.EmailAndPassword));
             await ArrangeDb.SaveChangesAsync();
 
             var request = new RegisterWithEmailAndPassword.Command

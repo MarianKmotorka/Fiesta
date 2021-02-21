@@ -13,15 +13,30 @@ namespace Fiesta.Infrastracture.Auth
         {
             Email = email.Trim().ToLower();
             UserName = Email;
-
             Role = role;
             AuthProvider = authProvider;
+
+            if (authProvider == AuthProviderEnum.Google)
+                GoogleEmail = Email;
         }
+
+        public string GoogleEmail { get; private set; }
 
         public string RefreshToken { get; set; }
 
-        public AuthProviderEnum AuthProvider { get; set; }
+        public AuthProviderEnum AuthProvider { get; private set; }
 
-        public FiestaRoleEnum Role { get; set; }
+        public FiestaRoleEnum Role { get; private set; }
+
+        public void AddGoogleAuthProvider(string googleEmail)
+        {
+            GoogleEmail = googleEmail.ToLower();
+            AuthProvider |= AuthProviderEnum.Google;
+        }
+
+        public void AddEmailAndPasswordAuthProvider()
+        {
+            AuthProvider |= AuthProviderEnum.EmailAndPassword;
+        }
     }
 }

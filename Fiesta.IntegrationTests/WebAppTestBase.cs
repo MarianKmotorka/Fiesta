@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
-using Fiesta.Application.Features.Auth;
-using Fiesta.Application.Features.Auth.CommonDtos;
+using Fiesta.Infrastracture.Auth;
 using Fiesta.Infrastracture.Persistence;
-using Fiesta.WebApi.Controllers;
+using Fiesta.IntegrationTests.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -17,13 +15,22 @@ namespace Fiesta.IntegrationTests
     public abstract class WebAppTestBase : IDisposable
     {
         public HttpClient Client { get; }
+
         public HttpClient NotAuthedClient { get; }
+
+        public FiestaAppFactory Factory { get; }
+
         public FiestaDbContext ArrangeDb { get; }
+
         public FiestaDbContext ActDb { get; }
+
         public FiestaDbContext AssertDb { get; }
+
+        public string LoggedInUserId => "9d86035e-3e83-42f4-a319-0a7235212e6a";
 
         public WebAppTestBase(FiestaAppFactory factory)
         {
+            Factory = factory;
             Client = factory.CreateClient();
             NotAuthedClient = factory.CreateClient();
 
@@ -42,35 +49,28 @@ namespace Fiesta.IntegrationTests
 
         private void Authenticate(HttpClient client)
         {
-            var command = new RegisterWithEmailAndPassword.Command
+            var user = new AuthUser("admin@test.com", FiestaRoleEnum.Admin, AuthProviderEnum.EmailAndPassword)
             {
-                Email = "admin@fiesta.com",
-                FirstName = "Admin",
-                LastName = "Fiesta",
-                Password = "Password123"
+                Id = LoggedInUserId,
+                PasswordHash = "some_fake_passsword_hash",
             };
 
-            var response = Client.PostAsJsonAsync("api/auth/register", command).Result;
-            response.EnsureSuccessStatusCode();
-
-            var authUser = ArrangeDb.Users.Single(x => x.Email == command.Email);
-            authUser.EmailConfirmed = true;
-            authUser.Role = FiestaRoleEnum.Admin;
+            ArrangeDb.Users.Add(user);
             ArrangeDb.SaveChanges();
 
-            response = Client.PostAsJsonAsync("api/auth/login", new EmailPasswordRequest { Email = command.Email, Password = command.Password }).Result;
-            response.EnsureSuccessStatusCode();
-            var accessToken = response.Content.ReadAsAsync<AuthResponse>().Result.AccessToken;
+            var accessToken = user.GetAccessToken(Factory);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         }
 
         public void Dispose()
         {
             ArrangeDb.Database.EnsureDeleted();
-
             ArrangeDb.Dispose();
             ActDb.Dispose();
             AssertDb.Dispose();
+
+            Client.Dispose();
+            NotAuthedClient.Dispose();
         }
     }
 

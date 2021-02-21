@@ -16,7 +16,7 @@ namespace Fiesta.Application.Common.Models
             Data = default;
         }
 
-        internal Result(T data = default)
+        internal Result(T data)
         {
             Data = data;
             Succeeded = true;
@@ -24,6 +24,8 @@ namespace Fiesta.Application.Common.Models
         }
 
         public bool Succeeded { get; }
+
+        public bool Failed { get => !Succeeded; }
 
         public T Data { get; }
 
@@ -47,5 +49,18 @@ namespace Fiesta.Application.Common.Models
 
     public class Result : Result<object>
     {
+        internal Result(IEnumerable<string> errors) : base(errors)
+        {
+        }
+
+        private Result() : base((object)null)
+        {
+        }
+
+        public static Result Success() => new Result();
+
+        public new static Result Failure(IEnumerable<string> errors) => new Result(errors);
+
+        public new static Result Failure(string error) => new Result(new[] { error });
     }
 }

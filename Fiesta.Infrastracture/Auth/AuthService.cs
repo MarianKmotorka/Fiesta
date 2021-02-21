@@ -4,9 +4,13 @@ using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
+using Fiesta.Application.Common.Models;
 using Fiesta.Application.Common.Options;
+using Fiesta.Application.Features.Auth.CommonDtos;
+using Fiesta.Infrastracture.Helpers;
 using Fiesta.Infrastracture.Persistence;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Fiesta.Infrastracture.Auth
@@ -101,6 +105,41 @@ namespace Fiesta.Infrastracture.Auth
                 throw new BadRequestException(ErrorCodes.InvalidPassword);
         }
 
+        public async Task AddPassword(string userId, string password, CancellationToken cancellationToken)
+        {
+            var user = await _db.Users.FindAsync(userId) ?? throw new BadRequestException($"User with id {userId} not found.");
+
+            var result = await _userManager.AddPasswordAsync(user, password);
+            if (!result.Succeeded)
+                throw new BadRequestException(result.Errors.Select(x => x.Description));
+
+            user.AddEmailAndPasswordAuthProvider();
+            await _db.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task<Result> AddGoogleAccount(string userId, GoogleUserInfoModel model, CancellationToken cancellationToken)
+        {
+            var isEmailUsed = await _db.Users
+                .Where(x => x.Id != userId)
+                .WhereSomeEmailIs(model.Email)
+                .AnyAsync(cancellationToken);
+
+            if (isEmailUsed)
+                return Result.Failure(ErrorCodes.MustBeUnique);
+
+            var user = await _db.Users.FindAsync(userId);
+            if (user is null)
+                return Result.Failure($"User with id {userId} not found.");
+
+            user.AddGoogleAuthProvider(model.Email);
+
+            if (user.Email == user.GoogleEmail && model.IsEmailVerified)
+                user.EmailConfirmed = true;
+
+            await _db.SaveChangesAsync(cancellationToken);
+            return Result.Success();
+        }
+
         public async Task<FiestaRoleEnum> GetRole(string id)
         {
             return (await _db.Users.FindAsync(id)).Role;
@@ -109,6 +148,12 @@ namespace Fiesta.Infrastracture.Auth
         public async Task<AuthProviderEnum> GetAuthProvider(string id)
         {
             return (await _db.Users.FindAsync(id)).AuthProvider;
+        }
+
+        public async Task<bool> IsEmailUnique(string email, CancellationToken cancellationToken)
+        {
+            var emailExists = await _db.Users.AsQueryable().WhereSomeEmailIs(email).AnyAsync(cancellationToken);
+            return !emailExists;
         }
 
         public async Task DeleteAccountWithPassword(string userId, string password, CancellationToken cancellationToken)
@@ -147,5 +192,6 @@ namespace Fiesta.Infrastracture.Auth
             if (!result.Succeeded)
                 throw new BadRequestException(result.Errors.Select(x => x.Description));
         }
+
     }
 }
