@@ -133,15 +133,15 @@ namespace Fiesta.WebApi.Controllers
         public async Task<ActionResult> DeleteAccountWithPassword(string password, CancellationToken cancellationToken)
         {
             await Mediator.Send(new DeleteAccountWithPassword.Command { UserId = CurrentUserService.UserId, Password = password }, cancellationToken);
-            return Ok();
+            return NoContent();
         }
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
         [HttpDelete("delete-account-with-code")]
         public async Task<ActionResult> DeleteAccountWithCode(string code, CancellationToken cancellationToken)
         {
-            await Mediator.Send(new GoogleDeleteAccountCommand { Code = code }, cancellationToken);
-            return Ok();
+            await Mediator.Send(new DeleteAccountWithGoogle.Command { Code = code }, cancellationToken);
+            return NoContent();
         }
 
         private CookieOptions GetRefreshTokenCookieOptions(TimeSpan? maxAge = null)
