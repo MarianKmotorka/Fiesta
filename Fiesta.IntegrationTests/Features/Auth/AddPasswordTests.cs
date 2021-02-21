@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
-using Fiesta.Application.Common.Options;
 using Fiesta.Infrastracture.Auth;
 using Fiesta.IntegrationTests.Helpers;
 using Fiesta.WebApi.Middleware.ExceptionHanlding;
@@ -12,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace Fiesta.IntegrationTests.Auth
+namespace Fiesta.IntegrationTests.Features.Auth
 {
     [Collection(nameof(FiestaAppFactory))]
     public class AddPasswordTests : WebAppTestBase
@@ -77,8 +76,7 @@ namespace Fiesta.IntegrationTests.Auth
             ArrangeDb.Users.Add(user);
             await ArrangeDb.SaveChangesAsync();
 
-            var options = Factory.Services.GetService(typeof(JwtOptions)) as JwtOptions;
-            return user.GetAccessToken(options);
+            return user.GetAccessToken(Factory);
         }
     }
 }

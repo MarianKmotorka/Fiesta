@@ -1,8 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
+using Fiesta.Application.Common.Models;
 using Fiesta.Application.Features.Auth;
-using Fiesta.Application.Features.Auth.GoogleLogin;
+using Fiesta.Application.Features.Auth.CommonDtos;
 
 namespace Fiesta.Application.Common.Interfaces
 {
@@ -36,5 +37,9 @@ namespace Fiesta.Application.Common.Interfaces
         Task<FiestaRoleEnum> GetRole(string id);
 
         Task AddPassword(string userId, string password, CancellationToken cancellationToken);
+
+        Task<Result> AddGoogleAccount(string userId, GoogleUserInfoModel model, CancellationToken cancellationToken);
+
+        Task<bool> IsEmailUnique(string email, CancellationToken cancellationToken);
     }
 }

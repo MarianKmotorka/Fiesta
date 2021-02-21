@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Fiesta.Application.Features.Auth.GoogleLogin
+namespace Fiesta.Infrastracture.Auth.Models
 {
     public class GoogleAuthResponse
     {

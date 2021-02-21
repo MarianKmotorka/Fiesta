@@ -6,7 +6,6 @@ using Fiesta.Application.Models.Emails;
 using Fiesta.Domain.Entities.Users;
 using FluentValidation;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Fiesta.Application.Features.Auth
@@ -62,11 +61,12 @@ namespace Fiesta.Application.Features.Auth
         public class Validator : AbstractValidator<Command>
         {
             private readonly IFiestaDbContext _db;
+            private readonly IAuthService _authService;
 
-            public Validator(IFiestaDbContext db)
+            public Validator(IFiestaDbContext db, IAuthService authService)
             {
                 _db = db;
-
+                _authService = authService;
                 RuleFor(x => x.Email)
                     .NotEmpty().WithErrorCode(ErrorCodes.Required)
                     .EmailAddress().WithErrorCode(ErrorCodes.InvalidEmailAddress)
@@ -90,7 +90,7 @@ namespace Fiesta.Application.Features.Auth
 
             private async Task<bool> BeUnique(string email, CancellationToken cancellationToken)
             {
-                return await _db.FiestaUsers.AllAsync(x => x.Email != email, cancellationToken);
+                return await _authService.IsEmailUnique(email, cancellationToken);
             }
         }
     }

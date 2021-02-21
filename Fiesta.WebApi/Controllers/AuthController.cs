@@ -6,7 +6,6 @@ using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Options;
 using Fiesta.Application.Features.Auth;
 using Fiesta.Application.Features.Auth.CommonDtos;
-using Fiesta.Application.Features.Auth.GoogleLogin;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,9 +25,9 @@ namespace Fiesta.WebApi.Controllers
         }
 
         [HttpGet("google-code-callback")]
-        public async Task<ActionResult<AuthResponse>> GoogleCodeCallback(string code, CancellationToken ct)
+        public async Task<ActionResult<AuthResponse>> GoogleCodeCallback(string code, CancellationToken cancellationToken)
         {
-            var response = await Mediator.Send(new GoogleLoginCommand { Code = code }, ct);
+            var response = await Mediator.Send(new GoogleLogin.Command { Code = code }, cancellationToken);
             Response.Cookies.Append(Cookie.RefreshToken, response.RefreshToken, GetRefreshTokenCookieOptions());
             return Ok(response);
         }
@@ -114,6 +113,15 @@ namespace Fiesta.WebApi.Controllers
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
         [HttpPost("add-password")]
         public async Task<ActionResult> AddPassword(AddPassword.Command request, CancellationToken cancellationToken)
+        {
+            request.UserId = CurrentUserService.UserId;
+            await Mediator.Send(request, cancellationToken);
+            return NoContent();
+        }
+
+        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
+        [HttpPost("connect-google-account")]
+        public async Task<ActionResult> ConnectGoogleAccount(ConnectGoogleAccount.Command request, CancellationToken cancellationToken)
         {
             request.UserId = CurrentUserService.UserId;
             await Mediator.Send(request, cancellationToken);

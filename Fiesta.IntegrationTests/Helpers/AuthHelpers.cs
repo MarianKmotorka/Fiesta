@@ -12,8 +12,10 @@ namespace Fiesta.IntegrationTests.Helpers
 {
     public static class AuthHelpers
     {
-        public static string GetAccessToken(this AuthUser user, JwtOptions options)
+        public static string GetAccessToken(this AuthUser user, FiestaAppFactory factory)
         {
+            var options = factory.Services.GetService(typeof(JwtOptions)) as JwtOptions;
+
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(options.Secret);
             var jti = Guid.NewGuid().ToString();

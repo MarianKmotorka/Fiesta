@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
-using Fiesta.Application.Common.Options;
 using Fiesta.Infrastracture.Auth;
 using Fiesta.Infrastracture.Persistence;
 using Fiesta.IntegrationTests.Helpers;
@@ -59,7 +58,7 @@ namespace Fiesta.IntegrationTests
             ArrangeDb.Users.Add(user);
             ArrangeDb.SaveChanges();
 
-            var accessToken = user.GetAccessToken(Factory.Services.GetService(typeof(JwtOptions)) as JwtOptions);
+            var accessToken = user.GetAccessToken(Factory);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         }
 
