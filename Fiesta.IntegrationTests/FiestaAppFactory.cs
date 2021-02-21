@@ -1,7 +1,12 @@
 ﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
+using Fiesta.Application.Common.Models;
+using Fiesta.Application.Features.Auth.GoogleLogin;
 using Fiesta.Infrastracture.Persistence;
+using Fiesta.IntegrationTests.Assets;
 using Fiesta.WebApi;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -15,12 +20,21 @@ namespace Fiesta.IntegrationTests
     public class FiestaAppFactory : WebApplicationFactory<Startup>
     {
         private IEmailService _emailServiceMock = Substitute.For<IEmailService>();
+        private IGoogleService _googleServiceMock = Substitute.For<IGoogleService>();
 
         public FiestaAppFactory()
         {
             _emailServiceMock
                 .SendVerificationEmail(default, default, default)
                 .ReturnsForAnyArgs(Task.FromResult(new FluentEmail.Core.Models.SendResponse()));
+
+            _googleServiceMock
+                .GetUserInfoModel(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(x => x.Args()[0].ToString() == "validCode"
+                    ? Task.FromResult(Result.Success(GoogleAssets.JohnyUserInfoModel))
+                    : Task.FromResult(Result<GoogleUserInfoModel>.Failure(ErrorCodes.InvalidCode)));
+
+
         }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -31,6 +45,7 @@ namespace Fiesta.IntegrationTests
             {
                 ReplaceDb(services);
                 ReplaceEmailService(services);
+                ReplaceGoogleService(services);
             })
                 .ConfigureAppConfiguration(config =>
                 {
@@ -44,7 +59,7 @@ namespace Fiesta.IntegrationTests
             if (descriptor is not null)
                 services.Remove(descriptor);
 
-            services.AddTransient(x => _emailServiceMock);
+            services.AddTransient(_ => _emailServiceMock);
         }
 
         private void ReplaceDb(IServiceCollection services)
@@ -54,6 +69,15 @@ namespace Fiesta.IntegrationTests
                 services.Remove(dbContextDescriptor);
 
             services.AddDbContext<FiestaDbContext>(options => { options.UseInMemoryDatabase(FiestaDbContext.TestDbName); });
+        }
+
+        private void ReplaceGoogleService(IServiceCollection services)
+        {
+            var descriptor = services.SingleOrDefault(x => x.ServiceType == typeof(IGoogleService));
+            if (descriptor is not null)
+                services.Remove(descriptor);
+
+            services.AddScoped(_ => _googleServiceMock);
         }
     }
 

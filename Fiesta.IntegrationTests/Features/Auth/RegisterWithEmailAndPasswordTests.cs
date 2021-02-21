@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace Fiesta.IntegrationTests.Auth
+namespace Fiesta.IntegrationTests.Features.Auth
 {
     [Collection(nameof(FiestaAppFactory))]
     public class RegisterWithEmailAndPasswordTests : WebAppTestBase
