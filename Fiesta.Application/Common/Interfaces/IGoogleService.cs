@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Models;
-using Fiesta.Application.Features.Auth.GoogleLogin;
+using Fiesta.Application.Features.Auth.CommonDtos;
 
 namespace Fiesta.Application.Common.Interfaces
 {
