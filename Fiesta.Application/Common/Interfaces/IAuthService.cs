@@ -44,6 +44,6 @@ namespace Fiesta.Application.Common.Interfaces
 
         Task DeleteAccountWithPassword(string userId, string password, CancellationToken cancellationToken);
 
-        Task DeleteAccountWithGoogle(string userId, string googleEmail, CancellationToken cancellationToken);
+        Task DeleteAccountWithGoogle(string userId, GoogleUserInfoModel googleUser, CancellationToken cancellationToken);
     }
 }

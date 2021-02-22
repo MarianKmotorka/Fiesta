@@ -36,7 +36,7 @@ namespace Fiesta.Application.Features.Auth
 
                 var googleUser = googleUserResult.Data;
 
-                await _authService.DeleteAccountWithGoogle(request.UserId, googleUser.Email, cancellationToken);
+                await _authService.DeleteAccountWithGoogle(request.UserId, googleUser, cancellationToken);
 
                 return Unit.Value;
             }
