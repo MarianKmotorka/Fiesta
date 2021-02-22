@@ -175,6 +175,10 @@ namespace Fiesta.Infrastracture.Auth
 
             if (!result.Succeeded)
                 throw new BadRequestException(result.Errors.Select(x => x.Description));
+
+            var fiestaUser = await _db.FiestaUsers.FindAsync(userId, cancellationToken);
+            fiestaUser.IsDeleted = true;
+            await _db.SaveChangesAsync(cancellationToken);
         }
 
         public async Task DeleteAccountWithGoogle(string userId, GoogleUserInfoModel googleUser, CancellationToken cancellationToken)
@@ -191,6 +195,10 @@ namespace Fiesta.Infrastracture.Auth
 
             if (!result.Succeeded)
                 throw new BadRequestException(result.Errors.Select(x => x.Description));
+
+            var fiestaUser = await _db.FiestaUsers.FindAsync(userId, cancellationToken);
+            fiestaUser.IsDeleted = true;
+            await _db.SaveChangesAsync(cancellationToken);
         }
 
     }
