@@ -10,6 +10,7 @@ using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Features.Auth;
 using Fiesta.Application.Features.Auth.CommonDtos;
+using Fiesta.Infrastracture.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -56,7 +57,7 @@ namespace Fiesta.Infrastracture.Auth
 
         public async Task<(string accessToken, string refreshToken, bool authUserCreated, string userId)> LoginOrRegister(GoogleUserInfoModel model, CancellationToken cancellationToken)
         {
-            var user = await _db.Users.SingleOrDefaultAsync(x => x.Email == model.Email || x.GoogleEmail == model.Email, cancellationToken);
+            var user = await _db.Users.WhereSomeEmailIs(model.Email).SingleOrDefaultAsync(cancellationToken);
 
             if (user is not null)
             {
@@ -65,6 +66,9 @@ namespace Fiesta.Infrastracture.Auth
                     user.AddGoogleAuthProvider(model.Email);
                     user.EmailConfirmed = model.IsEmailVerified;
                 }
+                else if (user.GoogleEmail != model.Email)
+                    throw new BadRequestException(ErrorCodes.AccountAlreadyConnectedToGoogleWithDifferentEmail);
+
 
                 var (accessToken, refreshToken) = await Login(user, cancellationToken);
                 return (accessToken, refreshToken, false, user.Id);

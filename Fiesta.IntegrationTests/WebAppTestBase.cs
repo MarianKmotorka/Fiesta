@@ -41,6 +41,13 @@ namespace Fiesta.IntegrationTests
             Authenticate(Client);
         }
 
+        public HttpClient CreateClientForUser(AuthUser user)
+        {
+            var client = Factory.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user.GetAccessToken(Factory));
+            return client;
+        }
+
         private static FiestaDbContext CreateDb()
         {
             var optionsBuilder = new DbContextOptionsBuilder<FiestaDbContext>().UseInMemoryDatabase(FiestaDbContext.TestDbName);
