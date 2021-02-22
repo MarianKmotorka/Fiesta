@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
@@ -10,6 +11,8 @@ namespace Fiesta.Application.Features.Auth
     {
         public class Command : IRequest<Unit>
         {
+            [JsonIgnore]
+            public string UserId { get; set; }
             public string Code { get; set; }
         }
 
@@ -33,7 +36,7 @@ namespace Fiesta.Application.Features.Auth
 
                 var googleUser = googleUserResult.Data;
 
-                await _authService.DeleteAccountWithGoogle(googleUser.Email, cancellationToken);
+                await _authService.DeleteAccountWithGoogle(request.UserId, googleUser.Email, cancellationToken);
 
                 return Unit.Value;
             }

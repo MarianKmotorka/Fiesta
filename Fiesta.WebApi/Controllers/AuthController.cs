@@ -140,7 +140,7 @@ namespace Fiesta.WebApi.Controllers
         [HttpDelete("delete-account-with-code")]
         public async Task<ActionResult> DeleteAccountWithCode(string code, CancellationToken cancellationToken)
         {
-            await Mediator.Send(new DeleteAccountWithGoogle.Command { Code = code }, cancellationToken);
+            await Mediator.Send(new DeleteAccountWithGoogle.Command { UserId = CurrentUserService.UserId, Code = code }, cancellationToken);
             return NoContent();
         }
 
