@@ -69,7 +69,6 @@ namespace Fiesta.Infrastracture.Auth
                 else if (user.GoogleEmail != model.Email)
                     throw new BadRequestException(ErrorCodes.AccountAlreadyConnectedToGoogleWithDifferentEmail);
 
-
                 var (accessToken, refreshToken) = await Login(user, cancellationToken);
                 return (accessToken, refreshToken, false, user.Id);
             }
