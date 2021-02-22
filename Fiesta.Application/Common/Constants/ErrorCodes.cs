@@ -8,6 +8,7 @@
         public const string MinLength = "minLength";
         public const string MaxLength = "maxLength";
         public const string MustBeUnique = "mustBeUnique";
+        public const string EmailAreadyInUse = "emailAlreadyInUse";
         public const string InvalidEmailOrPassword = "invalidEmailOrPassword";
         public const string InvalidAuthProvider = "invalidAuthProvider";
         public const string EmailIsNotVerified = "emailIsNotVerified";
