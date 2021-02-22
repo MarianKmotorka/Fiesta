@@ -119,5 +119,39 @@ namespace Fiesta.IntegrationTests.Features.Auth
                 }
             });
         }
+
+        [Fact]
+        public async Task GivenExistingUserWithConnectedGoogleAccount_WhenRegisteringWithSameEmailAsGoogleAccount_ErrorResponseIsReturend()
+        {
+            var user = new AuthUser("unique@email.com", AuthProviderEnum.EmailAndPassword);
+            user.AddGoogleAuthProvider("duplicate@email.com");
+            ArrangeDb.Users.Add(user);
+            await ArrangeDb.SaveChangesAsync();
+
+            var request = new RegisterWithEmailAndPassword.Command
+            {
+                Email = "duplicate@email.com",
+                FirstName = "Jozko",
+                LastName = "Javorsky",
+                Password = "Pass123###"
+            };
+
+            var response = await NotAuthedClient.PostAsJsonAsync("api/auth/register", request);
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+            var errorResposne = await response.Content.ReadAsAsync<ErrorResponse>();
+            errorResposne.Should().BeEquivalentTo(new
+            {
+                ErrorCode = "ValidationError",
+                ErrorDetails = new object[]
+                {
+                    new
+                    {
+                        Code = ErrorCodes.MustBeUnique,
+                        PropertyName = "email",
+                    }
+                }
+            });
+        }
     }
 }

@@ -1,11 +1,9 @@
 ﻿using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Infrastracture.Auth;
 using Fiesta.IntegrationTests.Assets;
-using Fiesta.IntegrationTests.Helpers;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -54,14 +52,24 @@ namespace Fiesta.IntegrationTests.Features.Auth
             ArrangeDb.Add(unverifiedEmailUser);
             await ArrangeDb.SaveChangesAsync();
 
-            using var client = Factory.CreateClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", unverifiedEmailUser.GetAccessToken(Factory));
-
+            using var client = CreateClientForUser(unverifiedEmailUser);
             var response = await client.PostAsJsonAsync("/api/auth/connect-google-account", new { Code = "validCode" });
             response.EnsureSuccessStatusCode();
 
             var user = await AssertDb.Users.SingleAsync(x => x.Id == unverifiedEmailUser.Id);
             user.EmailConfirmed.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task GivenUserWithGoogleAccount_WhenConnectingAnotherGoogleAccount_BadRequestIsReturned()
+        {
+            var user = new AuthUser("user@gmail.com", AuthProviderEnum.Google);
+            ArrangeDb.Add(user);
+            await ArrangeDb.SaveChangesAsync();
+
+            using var client = CreateClientForUser(user);
+            var response = await client.PostAsJsonAsync("/api/auth/connect-google-account", new { Code = "validCode" });
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
     }
 }

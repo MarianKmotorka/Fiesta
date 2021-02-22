@@ -1,4 +1,5 @@
-﻿using Fiesta.Application.Common.Constants;
+﻿using System;
+using Fiesta.Application.Common.Constants;
 using Microsoft.AspNetCore.Identity;
 
 namespace Fiesta.Infrastracture.Auth
@@ -30,6 +31,9 @@ namespace Fiesta.Infrastracture.Auth
 
         public void AddGoogleAuthProvider(string googleEmail)
         {
+            if (AuthProvider.HasFlag(AuthProviderEnum.Google))
+                throw new InvalidOperationException("User already has a google account");
+
             GoogleEmail = googleEmail.ToLower();
             AuthProvider |= AuthProviderEnum.Google;
         }

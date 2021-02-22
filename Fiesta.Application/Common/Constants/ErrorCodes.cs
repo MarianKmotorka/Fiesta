@@ -13,5 +13,6 @@
         public const string EmailIsNotVerified = "emailIsNotVerified";
         public const string EmailAlreadyVerified = "emailAlreadyVerified";
         public const string InvalidPassword = "invalidPassword";
+        public const string AccountAlreadyConnectedToGoogleWithDifferentEmail = "accounutAlreadyConnectedToGoogleWithDifferentEmail";
     }
 }
