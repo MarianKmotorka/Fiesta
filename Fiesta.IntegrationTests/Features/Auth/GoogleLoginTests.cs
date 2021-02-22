@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Features.Auth.CommonDtos;
 using Fiesta.Infrastracture.Auth;
 using Fiesta.IntegrationTests.Assets;
-using Fiesta.IntegrationTests.Helpers;
 using Fiesta.WebApi.Middleware.ExceptionHanlding;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -60,9 +58,7 @@ namespace Fiesta.IntegrationTests.Features.Auth
             ArrangeDb.Add(emailAndPasswordUser);
             await ArrangeDb.SaveChangesAsync();
 
-            using var client = Factory.CreateClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", emailAndPasswordUser.GetAccessToken(Factory));
-
+            using var client = CreateClientForUser(emailAndPasswordUser);
             var response = await client.GetAsync("/api/auth/google-code-callback?code=validCode");
             response.EnsureSuccessStatusCode();
 
@@ -70,6 +66,26 @@ namespace Fiesta.IntegrationTests.Features.Auth
             user.AuthProvider.Should().HaveFlag(AuthProviderEnum.Google);
             user.AuthProvider.Should().HaveFlag(AuthProviderEnum.EmailAndPassword);
             user.GoogleEmail.Should().Be(GoogleAssets.JohnyUserInfoModel.Email);
+        }
+
+        [Fact]
+        public async Task GivenUserWithEmailAndPasswordAndDifferentEmailGoogleAccount_WhenLoggingInWithSameEmailGoogleAccountAsEmailAndPassword_BadRequestIsReturned()
+        {
+            var user = new AuthUser(GoogleAssets.JohnyUserInfoModel.Email, AuthProviderEnum.EmailAndPassword);
+            user.AddGoogleAuthProvider("some@gmail.com");
+            ArrangeDb.Add(user);
+            await ArrangeDb.SaveChangesAsync();
+
+            using var client = CreateClientForUser(user);
+            var response = await client.GetAsync("/api/auth/google-code-callback?code=validCode");
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+            var content = await response.Content.ReadAsAsync<ErrorResponse>();
+            content.Should().BeEquivalentTo(new
+            {
+                ErrorCode = "BadRequest",
+                ErrorMessage = ErrorCodes.AccountAlreadyConnectedToGoogleWithDifferentEmail
+            });
         }
     }
 }
