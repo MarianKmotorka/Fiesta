@@ -62,13 +62,9 @@ namespace Fiesta.Infrastracture.Auth
             if (user is not null)
             {
                 if (!user.AuthProvider.HasFlag(AuthProviderEnum.Google))
-                {
-                    user.AddGoogleAuthProvider(model.Email);
-                    user.EmailConfirmed = model.IsEmailVerified;
-                }
+                    throw new BadRequestException(ErrorCodes.InvalidAuthProvider);
                 else if (user.GoogleEmail != model.Email)
                     throw new BadRequestException(ErrorCodes.AccountAlreadyConnectedToGoogleWithDifferentEmail);
-
 
                 var (accessToken, refreshToken) = await Login(user, cancellationToken);
                 return (accessToken, refreshToken, false, user.Id);

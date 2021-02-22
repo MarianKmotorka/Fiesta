@@ -52,7 +52,7 @@ namespace Fiesta.IntegrationTests.Features.Auth
         }
 
         [Fact]
-        public async Task GivenEmailAndPasswordUser_WhenLoggingInWithSameEmailGoogleAccount_GoogleAccountIsConnected()
+        public async Task GivenEmailAndPasswordUser_WhenLoggingInWithSameEmailGoogleAccount_BadRequestIsReturned()
         {
             var emailAndPasswordUser = new AuthUser(GoogleAssets.JohnyUserInfoModel.Email, AuthProviderEnum.EmailAndPassword);
             ArrangeDb.Add(emailAndPasswordUser);
@@ -60,12 +60,14 @@ namespace Fiesta.IntegrationTests.Features.Auth
 
             using var client = CreateClientForUser(emailAndPasswordUser);
             var response = await client.GetAsync("/api/auth/google-code-callback?code=validCode");
-            response.EnsureSuccessStatusCode();
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-            var user = await AssertDb.Users.SingleAsync(x => x.Email == GoogleAssets.JohnyUserInfoModel.Email);
-            user.AuthProvider.Should().HaveFlag(AuthProviderEnum.Google);
-            user.AuthProvider.Should().HaveFlag(AuthProviderEnum.EmailAndPassword);
-            user.GoogleEmail.Should().Be(GoogleAssets.JohnyUserInfoModel.Email);
+            var content = await response.Content.ReadAsAsync<ErrorResponse>();
+            content.Should().BeEquivalentTo(new
+            {
+                ErrorCode = "BadRequest",
+                ErrorMessage = ErrorCodes.InvalidAuthProvider
+            });
         }
 
         [Fact]
