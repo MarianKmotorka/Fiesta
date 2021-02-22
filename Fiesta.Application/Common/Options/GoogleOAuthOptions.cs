@@ -11,5 +11,9 @@
         public string TokenEndpoint { get; set; }
 
         public string ClientRedirectUri { get; set; }
+
+        public string ClientConnectAccountRedirectUri { get; set; }
+
+        public string ClientDeleteAccountRedirectUri { get; set; }
     }
 }

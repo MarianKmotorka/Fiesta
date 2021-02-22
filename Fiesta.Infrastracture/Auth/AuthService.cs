@@ -125,7 +125,7 @@ namespace Fiesta.Infrastracture.Auth
                 .AnyAsync(cancellationToken);
 
             if (isEmailUsed)
-                return Result.Failure(ErrorCodes.MustBeUnique);
+                return Result.Failure(ErrorCodes.EmailAreadyInUse);
 
             var user = await _db.Users.FindAsync(userId);
             if (user is null)

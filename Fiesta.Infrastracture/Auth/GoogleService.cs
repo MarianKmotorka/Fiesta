@@ -23,7 +23,17 @@ namespace Fiesta.Infrastracture.Auth
             _client = clientFactory.CreateClient();
         }
 
-        public async Task<Result<GoogleUserInfoModel>> GetUserInfoModel(string code, CancellationToken cancellationToken)
+        public async Task<Result<GoogleUserInfoModel>> GetUserInfoModelForLogin(string code, CancellationToken cancellationToken)
+        {
+            return await GetModel(code, _authOptions.ClientRedirectUri, cancellationToken);
+        }
+
+        public async Task<Result<GoogleUserInfoModel>> GetUserInfoModelForConnectAccount(string code, CancellationToken cancellationToken)
+        {
+            return await GetModel(code, _authOptions.ClientConnectAccountRedirectUri, cancellationToken);
+        }
+
+        private async Task<Result<GoogleUserInfoModel>> GetModel(string code, string redirectUri, CancellationToken cancellationToken)
         {
             var request = new
             {
@@ -31,7 +41,7 @@ namespace Fiesta.Infrastracture.Auth
                 client_id = _authOptions.GoogleClientId,
                 client_secret = _authOptions.GoogleClientSecret,
                 grant_type = "authorization_code",
-                redirect_uri = _authOptions.ClientRedirectUri
+                redirect_uri = redirectUri
             };
 
             var response = await _client.PostAsJsonAsync(_authOptions.TokenEndpoint, request, cancellationToken);

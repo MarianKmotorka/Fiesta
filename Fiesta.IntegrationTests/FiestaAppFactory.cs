@@ -29,7 +29,12 @@ namespace Fiesta.IntegrationTests
                 .ReturnsForAnyArgs(Task.FromResult(new FluentEmail.Core.Models.SendResponse()));
 
             _googleServiceMock
-                .GetUserInfoModel(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .GetUserInfoModelForLogin(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(x => x.Args()[0].ToString() == "validCode"
+                    ? Task.FromResult(Result.Success(GoogleAssets.JohnyUserInfoModel))
+                    : Task.FromResult(Result<GoogleUserInfoModel>.Failure(ErrorCodes.InvalidCode)));
+            _googleServiceMock
+                .GetUserInfoModelForConnectAccount(Arg.Any<string>(), Arg.Any<CancellationToken>())
                 .Returns(x => x.Args()[0].ToString() == "validCode"
                     ? Task.FromResult(Result.Success(GoogleAssets.JohnyUserInfoModel))
                     : Task.FromResult(Result<GoogleUserInfoModel>.Failure(ErrorCodes.InvalidCode)));

@@ -30,7 +30,7 @@ namespace Fiesta.Application.Features.Auth
 
             public async Task<AuthResponse> Handle(Command request, CancellationToken cancellationToken)
             {
-                var googleUserResult = await _googleService.GetUserInfoModel(request.Code, cancellationToken);
+                var googleUserResult = await _googleService.GetUserInfoModelForLogin(request.Code, cancellationToken);
 
                 if (!googleUserResult.Succeeded)
                     throw new BadRequestException(googleUserResult.Errors);
