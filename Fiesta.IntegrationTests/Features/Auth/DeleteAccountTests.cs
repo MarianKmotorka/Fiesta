@@ -141,7 +141,7 @@ namespace Fiesta.IntegrationTests.Features.Auth
             errorResposne.Should().BeEquivalentTo(new
             {
                 ErrorCode = "BadRequest",
-                ErrorMessage = ErrorCodes.InvalidGoogleAccount
+                ErrorMessage = ErrorCodes.GoogleAccountNotConnected
             });
         }
     }

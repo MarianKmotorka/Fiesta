@@ -189,7 +189,7 @@ namespace Fiesta.Infrastracture.Auth
                 throw new BadRequestException(ErrorCodes.InvalidAuthProvider);
 
             if (user.GoogleEmail != googleUser.Email)
-                throw new BadRequestException(ErrorCodes.InvalidGoogleAccount);
+                throw new BadRequestException(ErrorCodes.GoogleAccountNotConnected);
 
             var result = await _userManager.DeleteAsync(user);
 
