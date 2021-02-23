@@ -32,13 +32,15 @@ namespace Fiesta.Application.Common.Interfaces
 
         Task ChangePassword(string email, string currentPassword, string newPassword, CancellationToken cancellationToken);
 
-        Task<AuthProviderEnum> GetAuthProvider(string id);
+        Task<AuthProviderEnum> GetAuthProvider(string userId, CancellationToken cancellationToken);
 
-        Task<FiestaRoleEnum> GetRole(string id);
+        Task<FiestaRoleEnum> GetRole(string userId, CancellationToken cancellationToken);
 
         Task AddPassword(string userId, string password, CancellationToken cancellationToken);
 
         Task<Result> AddGoogleAccount(string userId, GoogleUserInfoModel model, CancellationToken cancellationToken);
+
+        Task<string> GetGoogleEmail(string userId, CancellationToken cancellationToken);
 
         Task<bool> IsEmailUnique(string email, CancellationToken cancellationToken);
 

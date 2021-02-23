@@ -140,14 +140,19 @@ namespace Fiesta.Infrastracture.Auth
             return Result.Success();
         }
 
-        public async Task<FiestaRoleEnum> GetRole(string id)
+        public async Task<FiestaRoleEnum> GetRole(string userId, CancellationToken cancellationToken)
         {
-            return (await _db.Users.FindAsync(id)).Role;
+            return (await _db.Users.FindAsync(new[] { userId }, cancellationToken)).Role;
         }
 
-        public async Task<AuthProviderEnum> GetAuthProvider(string id)
+        public async Task<AuthProviderEnum> GetAuthProvider(string userId, CancellationToken cancellationToken)
         {
-            return (await _db.Users.FindAsync(id)).AuthProvider;
+            return (await _db.Users.FindAsync(new[] { userId }, cancellationToken)).AuthProvider;
+        }
+
+        public async Task<string> GetGoogleEmail(string userId, CancellationToken cancellationToken)
+        {
+            return (await _db.Users.FindAsync(new[] { userId }, cancellationToken)).GoogleEmail;
         }
 
         public async Task<bool> IsEmailUnique(string email, CancellationToken cancellationToken)

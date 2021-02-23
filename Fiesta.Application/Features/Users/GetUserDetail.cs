@@ -36,8 +36,9 @@ namespace Fiesta.Application.Features.Users
                     LastName = user.LastName,
                     FullName = $"{user.FirstName} {user.LastName}",
                     PictureUrl = user.PictureUrl,
-                    AuthProvider = await _authService.GetAuthProvider(user.Id),
-                    Role = await _authService.GetRole(user.Id)
+                    Role = await _authService.GetRole(user.Id, cancellationToken),
+                    GoogleEmail = await _authService.GetGoogleEmail(user.Id, cancellationToken),
+                    AuthProvider = await _authService.GetAuthProvider(user.Id, cancellationToken),
                 };
             }
         }
@@ -59,6 +60,8 @@ namespace Fiesta.Application.Features.Users
             public AuthProviderEnum AuthProvider { get; set; }
 
             public FiestaRoleEnum Role { get; set; }
+
+            public string GoogleEmail { get; set; }
         }
     }
 }
