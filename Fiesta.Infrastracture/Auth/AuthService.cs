@@ -176,7 +176,7 @@ namespace Fiesta.Infrastracture.Auth
             if (!result.Succeeded)
                 throw new BadRequestException(result.Errors.Select(x => x.Description));
 
-            var fiestaUser = await _db.FiestaUsers.FindAsync(userId, cancellationToken);
+            var fiestaUser = await _db.FiestaUsers.FindAsync(new[] { userId }, cancellationToken);
             fiestaUser.IsDeleted = true;
             await _db.SaveChangesAsync(cancellationToken);
         }
@@ -196,7 +196,7 @@ namespace Fiesta.Infrastracture.Auth
             if (!result.Succeeded)
                 throw new BadRequestException(result.Errors.Select(x => x.Description));
 
-            var fiestaUser = await _db.FiestaUsers.FindAsync(userId, cancellationToken);
+            var fiestaUser = await _db.FiestaUsers.FindAsync(new[] { userId }, cancellationToken);
             fiestaUser.IsDeleted = true;
             await _db.SaveChangesAsync(cancellationToken);
         }
