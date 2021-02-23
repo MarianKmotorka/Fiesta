@@ -10,5 +10,7 @@ namespace Fiesta.Application.Common.Interfaces
         Task<Result<GoogleUserInfoModel>> GetUserInfoModelForLogin(string code, CancellationToken cancellationToken);
 
         Task<Result<GoogleUserInfoModel>> GetUserInfoModelForConnectAccount(string code, CancellationToken cancellationToken);
+
+        Task<Result<GoogleUserInfoModel>> GetUserInfoModelForDeleteAccount(string code, CancellationToken cancellationToken);
     }
 }

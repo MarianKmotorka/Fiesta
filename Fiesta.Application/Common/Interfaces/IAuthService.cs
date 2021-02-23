@@ -41,5 +41,9 @@ namespace Fiesta.Application.Common.Interfaces
         Task<Result> AddGoogleAccount(string userId, GoogleUserInfoModel model, CancellationToken cancellationToken);
 
         Task<bool> IsEmailUnique(string email, CancellationToken cancellationToken);
+
+        Task DeleteAccountWithPassword(string userId, string password, CancellationToken cancellationToken);
+
+        Task DeleteAccountWithGoogle(string userId, GoogleUserInfoModel googleUser, CancellationToken cancellationToken);
     }
 }

@@ -38,7 +38,11 @@ namespace Fiesta.IntegrationTests
                 .Returns(x => x.Args()[0].ToString() == "validCode"
                     ? Task.FromResult(Result.Success(GoogleAssets.JohnyUserInfoModel))
                     : Task.FromResult(Result<GoogleUserInfoModel>.Failure(ErrorCodes.InvalidCode)));
-
+            _googleServiceMock
+                .GetUserInfoModelForDeleteAccount(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(x => x.Args()[0].ToString() == "validCode"
+                    ? Task.FromResult(Result.Success(GoogleAssets.JohnyUserInfoModel))
+                    : Task.FromResult(Result<GoogleUserInfoModel>.Failure(ErrorCodes.InvalidCode)));
 
         }
 

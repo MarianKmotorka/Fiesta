@@ -128,6 +128,22 @@ namespace Fiesta.WebApi.Controllers
             return NoContent();
         }
 
+        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
+        [HttpDelete("delete-account-with-password")]
+        public async Task<ActionResult> DeleteAccountWithPassword(string password, CancellationToken cancellationToken)
+        {
+            await Mediator.Send(new DeleteAccountWithPassword.Command { UserId = CurrentUserService.UserId, Password = password }, cancellationToken);
+            return NoContent();
+        }
+
+        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
+        [HttpDelete("delete-account-with-code")]
+        public async Task<ActionResult> DeleteAccountWithCode(string code, CancellationToken cancellationToken)
+        {
+            await Mediator.Send(new DeleteAccountWithGoogle.Command { UserId = CurrentUserService.UserId, Code = code }, cancellationToken);
+            return NoContent();
+        }
+
         private CookieOptions GetRefreshTokenCookieOptions(TimeSpan? maxAge = null)
             => new CookieOptions
             {

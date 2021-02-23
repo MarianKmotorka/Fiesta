@@ -155,5 +155,51 @@ namespace Fiesta.Infrastracture.Auth
             var emailExists = await _db.Users.AsQueryable().WhereSomeEmailIs(email).AnyAsync(cancellationToken);
             return !emailExists;
         }
+
+        public async Task DeleteAccountWithPassword(string userId, string password, CancellationToken cancellationToken)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user is null)
+                throw new BadRequestException(ErrorCodes.InvalidEmailAddress);
+
+            if (!user.AuthProvider.HasFlag(AuthProviderEnum.EmailAndPassword))
+                throw new BadRequestException(ErrorCodes.InvalidAuthProvider);
+
+            var passValid = await _userManager.CheckPasswordAsync(user, password);
+
+            if (!passValid)
+                throw new BadRequestException(ErrorCodes.InvalidPassword);
+
+            var result = await _userManager.DeleteAsync(user);
+
+            if (!result.Succeeded)
+                throw new BadRequestException(result.Errors.Select(x => x.Description));
+
+            var fiestaUser = await _db.FiestaUsers.FindAsync(new[] { userId }, cancellationToken);
+            fiestaUser.IsDeleted = true;
+            await _db.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task DeleteAccountWithGoogle(string userId, GoogleUserInfoModel googleUser, CancellationToken cancellationToken)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (!user.AuthProvider.HasFlag(AuthProviderEnum.Google))
+                throw new BadRequestException(ErrorCodes.InvalidAuthProvider);
+
+            if (user.GoogleEmail != googleUser.Email)
+                throw new BadRequestException(ErrorCodes.GoogleAccountNotConnected);
+
+            var result = await _userManager.DeleteAsync(user);
+
+            if (!result.Succeeded)
+                throw new BadRequestException(result.Errors.Select(x => x.Description));
+
+            var fiestaUser = await _db.FiestaUsers.FindAsync(new[] { userId }, cancellationToken);
+            fiestaUser.IsDeleted = true;
+            await _db.SaveChangesAsync(cancellationToken);
+        }
+
     }
 }
