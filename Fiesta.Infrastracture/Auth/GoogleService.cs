@@ -33,6 +33,11 @@ namespace Fiesta.Infrastracture.Auth
             return await GetModel(code, _authOptions.ClientConnectAccountRedirectUri, cancellationToken);
         }
 
+        public async Task<Result<GoogleUserInfoModel>> GetUserInfoModelForDeleteAccount(string code, CancellationToken cancellationToken)
+        {
+            return await GetModel(code, _authOptions.ClientDeleteAccountRedirectUri, cancellationToken);
+        }
+
         private async Task<Result<GoogleUserInfoModel>> GetModel(string code, string redirectUri, CancellationToken cancellationToken)
         {
             var request = new
