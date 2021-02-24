@@ -50,16 +50,18 @@ namespace Fiesta.IntegrationTests
         {
             base.ConfigureWebHost(builder);
 
-            builder.ConfigureServices(services =>
-            {
-                ReplaceDb(services);
-                ReplaceEmailService(services);
-                ReplaceGoogleService(services);
-            })
+            builder
+                .ConfigureServices(services =>
+                {
+                    ReplaceDb(services);
+                    ReplaceEmailService(services);
+                    ReplaceGoogleService(services);
+                })
                 .ConfigureAppConfiguration(config =>
                 {
                     config.Add(new TestConfigSource());
-                });
+                })
+                .UseEnvironment("Testing");
         }
 
         private void ReplaceEmailService(IServiceCollection services)

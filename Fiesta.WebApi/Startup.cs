@@ -22,8 +22,8 @@ namespace Fiesta.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSwagger()
-                    .AddApplication()
                     .AddFiestaAuthorization()
+                    .AddApplication(Configuration)
                     .AddInfrastructure(Configuration);
 
             services.AddHttpContextAccessor();
