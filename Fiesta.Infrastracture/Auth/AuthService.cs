@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
-using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Models;
 using Fiesta.Application.Common.Options;
@@ -31,90 +30,98 @@ namespace Fiesta.Infrastracture.Auth
             _userManager = userManager;
         }
 
-        public async Task<string> GetEmailVerificationCode(string emailAddress, CancellationToken cancellationToken)
+        public async Task<Result<string>> GetEmailVerificationCode(string emailAddress, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByEmailAsync(emailAddress);
 
             if (user is null)
-                throw new BadRequestException(ErrorCodes.InvalidEmailAddress);
+                return Result<string>.Failure(ErrorCodes.InvalidEmailAddress);
 
             if (user.EmailConfirmed)
-                throw new BadRequestException(ErrorCodes.EmailAlreadyVerified);
+                return Result<string>.Failure(ErrorCodes.EmailAlreadyVerified);
 
-            return await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            return Result.Success(token);
         }
 
-        public async Task ResetPassword(string email, string token, string newPassword, CancellationToken cancellationToken)
+        public async Task<Result> ResetPassword(string email, string token, string newPassword, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByEmailAsync(email);
 
             if (user is null)
-                throw new BadRequestException(ErrorCodes.InvalidEmailAddress);
+                return Result.Failure(ErrorCodes.InvalidEmailAddress);
 
             if (!user.AuthProvider.HasFlag(AuthProviderEnum.EmailAndPassword))
-                throw new BadRequestException(ErrorCodes.InvalidAuthProvider);
+                return Result.Failure(ErrorCodes.InvalidAuthProvider);
 
             var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
-
             if (!result.Succeeded)
-                throw new BadRequestException(result.Errors.Select(x => x.Description));
+                return Result.Failure(result.Errors.Select(x => x.Description));
+
+            return Result.Success();
         }
 
-        public async Task<string> GetResetPasswordToken(string email, CancellationToken cancellationToken)
+        public async Task<Result<string>> GetResetPasswordToken(string email, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByEmailAsync(email);
 
             if (user is null)
-                throw new BadRequestException(ErrorCodes.InvalidEmailAddress);
+                return Result<string>.Failure(ErrorCodes.InvalidEmailAddress);
 
             if (!user.AuthProvider.HasFlag(AuthProviderEnum.EmailAndPassword))
-                throw new BadRequestException(ErrorCodes.InvalidAuthProvider);
+                return Result<string>.Failure(ErrorCodes.InvalidAuthProvider);
 
-            return await _userManager.GeneratePasswordResetTokenAsync(user);
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            return Result.Success(token);
         }
 
-        public async Task CheckEmailVerificationCode(string emailAddress, string code, CancellationToken cancellationToken)
+        public async Task<Result> CheckEmailVerificationCode(string emailAddress, string code, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByEmailAsync(emailAddress);
 
             if (user is null)
-                throw new BadRequestException(ErrorCodes.InvalidEmailAddress);
+                return Result.Failure(ErrorCodes.InvalidEmailAddress);
 
             if (user.EmailConfirmed)
-                throw new BadRequestException(ErrorCodes.EmailAlreadyVerified);
+                return Result.Failure(ErrorCodes.EmailAlreadyVerified);
 
             var result = await _userManager.ConfirmEmailAsync(user, code);
-
             if (!result.Succeeded)
-                throw new BadRequestException(ErrorCodes.InvalidCode);
+                return Result.Failure(ErrorCodes.InvalidCode);
+
+            return Result.Success();
         }
 
-        public async Task ChangePassword(string userId, string currentPassword, string newPassword, CancellationToken cancellationToken)
+        public async Task<Result> ChangePassword(string userId, string currentPassword, string newPassword, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByIdAsync(userId);
 
             if (user is null)
-                throw new BadRequestException(ErrorCodes.InvalidEmailAddress);
+                return Result.Failure(ErrorCodes.InvalidEmailAddress);
 
             if (!user.AuthProvider.HasFlag(AuthProviderEnum.EmailAndPassword))
-                throw new BadRequestException(ErrorCodes.InvalidAuthProvider);
+                return Result.Failure(ErrorCodes.InvalidAuthProvider);
 
             var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
-
             if (!result.Succeeded)
-                throw new BadRequestException(ErrorCodes.InvalidPassword);
+                return Result.Failure(ErrorCodes.InvalidPassword);
+
+            return Result.Success();
         }
 
-        public async Task AddPassword(string userId, string password, CancellationToken cancellationToken)
+        public async Task<Result> AddPassword(string userId, string password, CancellationToken cancellationToken)
         {
-            var user = await _db.Users.FindAsync(userId) ?? throw new BadRequestException($"User with id {userId} not found.");
+            var user = await _db.Users.FindAsync(userId);
+            if (user is null)
+                return Result.Failure($"User with id {userId} not found.");
 
             var result = await _userManager.AddPasswordAsync(user, password);
             if (!result.Succeeded)
-                throw new BadRequestException(result.Errors.Select(x => x.Description));
+                return Result.Failure(result.Errors.Select(x => x.Description));
 
             user.AddEmailAndPasswordAuthProvider();
             await _db.SaveChangesAsync(cancellationToken);
+            return Result.Success();
         }
 
         public async Task<Result> AddGoogleAccount(string userId, GoogleUserInfoModel model, CancellationToken cancellationToken)
@@ -161,50 +168,50 @@ namespace Fiesta.Infrastracture.Auth
             return !emailExists;
         }
 
-        public async Task DeleteAccountWithPassword(string userId, string password, CancellationToken cancellationToken)
+        public async Task<Result> DeleteAccountWithPassword(string userId, string password, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByIdAsync(userId);
 
             if (user is null)
-                throw new BadRequestException(ErrorCodes.InvalidEmailAddress);
+                return Result.Failure(ErrorCodes.InvalidEmailAddress);
 
             if (!user.AuthProvider.HasFlag(AuthProviderEnum.EmailAndPassword))
-                throw new BadRequestException(ErrorCodes.InvalidAuthProvider);
+                return Result.Failure(ErrorCodes.InvalidAuthProvider);
 
             var passValid = await _userManager.CheckPasswordAsync(user, password);
-
             if (!passValid)
-                throw new BadRequestException(ErrorCodes.InvalidPassword);
+                return Result.Failure(ErrorCodes.InvalidPassword);
 
             var result = await _userManager.DeleteAsync(user);
-
             if (!result.Succeeded)
-                throw new BadRequestException(result.Errors.Select(x => x.Description));
+                return Result.Failure(result.Errors.Select(x => x.Description));
 
             var fiestaUser = await _db.FiestaUsers.FindAsync(new[] { userId }, cancellationToken);
             fiestaUser.IsDeleted = true;
+
             await _db.SaveChangesAsync(cancellationToken);
+            return Result.Success();
         }
 
-        public async Task DeleteAccountWithGoogle(string userId, GoogleUserInfoModel googleUser, CancellationToken cancellationToken)
+        public async Task<Result> DeleteAccountWithGoogle(string userId, GoogleUserInfoModel googleUser, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByIdAsync(userId);
 
             if (!user.AuthProvider.HasFlag(AuthProviderEnum.Google))
-                throw new BadRequestException(ErrorCodes.InvalidAuthProvider);
+                return Result.Failure(ErrorCodes.InvalidAuthProvider);
 
             if (user.GoogleEmail != googleUser.Email)
-                throw new BadRequestException(ErrorCodes.GoogleAccountNotConnected);
+                return Result.Failure(ErrorCodes.GoogleAccountNotConnected);
 
             var result = await _userManager.DeleteAsync(user);
-
             if (!result.Succeeded)
-                throw new BadRequestException(result.Errors.Select(x => x.Description));
+                return Result.Failure(result.Errors.Select(x => x.Description));
 
             var fiestaUser = await _db.FiestaUsers.FindAsync(new[] { userId }, cancellationToken);
             fiestaUser.IsDeleted = true;
-            await _db.SaveChangesAsync(cancellationToken);
-        }
 
+            await _db.SaveChangesAsync(cancellationToken);
+            return Result.Success();
+        }
     }
 }

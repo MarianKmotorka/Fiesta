@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Exceptions;
+using Fiesta.Application.Common.Models;
 using Fiesta.Application.Features.Auth;
 using Fiesta.Application.Features.Auth.CommonDtos;
 using Fiesta.Infrastracture.Helpers;
@@ -18,74 +19,74 @@ namespace Fiesta.Infrastracture.Auth
 {
     public partial class AuthService
     {
-        public async Task<(string accessToken, string refreshToken)> Login(string email, string password, CancellationToken cancellationToken)
+        public async Task<Result<(string accessToken, string refreshToken)>> Login(string email, string password, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByEmailAsync(email.Trim());
 
             if (user is null)
-                throw new BadRequestException(ErrorCodes.InvalidEmailOrPassword);
+                return Result<(string, string)>.Failure(ErrorCodes.InvalidEmailOrPassword);
 
             if (!user.AuthProvider.HasFlag(AuthProviderEnum.EmailAndPassword))
-                throw new BadRequestException(ErrorCodes.InvalidAuthProvider);
+                return Result<(string, string)>.Failure(ErrorCodes.InvalidAuthProvider);
 
             var passValid = await _userManager.CheckPasswordAsync(user, password);
-
             if (!passValid)
-                throw new BadRequestException(ErrorCodes.InvalidEmailOrPassword);
+                return Result<(string, string)>.Failure(ErrorCodes.InvalidEmailOrPassword);
 
             if (!user.EmailConfirmed)
                 throw new BadRequestException(ErrorCodes.EmailIsNotVerified);
 
-            return await Login(user, cancellationToken);
+            return Result.Success(await Login(user, cancellationToken));
         }
 
-        public async Task Logout(string refreshToken, CancellationToken cancellationToken)
+        public async Task<Result> Logout(string refreshToken, CancellationToken cancellationToken)
         {
             var userId = GetPrincipalFromJwt(refreshToken)?.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
 
             if (userId is null)
-                throw new BadRequestException("Invalid refresh token.");
+                return Result.Failure(ErrorCodes.InvalidRefreshToken);
 
             var user = await _db.Users.SingleAsync(x => x.Id == userId, cancellationToken);
 
             if (refreshToken != user.RefreshToken)
-                throw new BadRequestException("Invalid refresh token.");
+                return Result.Failure(ErrorCodes.InvalidRefreshToken);
 
             user.RefreshToken = null;
             await _db.SaveChangesAsync(cancellationToken);
+            return Result.Success();
         }
 
-        public async Task<(string accessToken, string refreshToken, bool authUserCreated, string userId)> LoginOrRegister(GoogleUserInfoModel model, CancellationToken cancellationToken)
+        public async Task<Result<(string accessToken, string refreshToken, bool authUserCreated, string userId)>> LoginOrRegister(GoogleUserInfoModel model, CancellationToken cancellationToken)
         {
             var user = await _db.Users.WhereSomeEmailIs(model.Email).SingleOrDefaultAsync(cancellationToken);
 
             if (user is not null)
             {
                 if (!user.AuthProvider.HasFlag(AuthProviderEnum.Google))
-                    throw new BadRequestException(ErrorCodes.InvalidAuthProvider);
+                    return Result<(string, string, bool, string)>.Failure(ErrorCodes.InvalidAuthProvider);
                 else if (user.GoogleEmail != model.Email)
-                    throw new BadRequestException(ErrorCodes.AccountAlreadyConnectedToGoogleWithDifferentEmail);
+                    return Result<(string, string, bool, string)>.Failure(ErrorCodes.AccountAlreadyConnectedToGoogleWithDifferentEmail);
 
                 var (accessToken, refreshToken) = await Login(user, cancellationToken);
-                return (accessToken, refreshToken, false, user.Id);
+                return Result.Success((accessToken, refreshToken, false, user.Id));
             }
 
             var newUser = new AuthUser(model.Email, AuthProviderEnum.Google) { EmailConfirmed = model.IsEmailVerified };
             var result = await _userManager.CreateAsync(newUser);
 
             if (!result.Succeeded)
-                throw new BadRequestException(result.Errors.Select(x => x.Code));
+                return Result<(string, string, bool, string)>.Failure(result.Errors.Select(x => x.Code));
 
             var loginResult = await Login(newUser, cancellationToken);
-            return (loginResult.accessToken, loginResult.refreshToken, true, newUser.Id);
+            return Result.Success((loginResult.accessToken, loginResult.refreshToken, true, newUser.Id));
         }
 
-        public async Task<(string accessToken, string refreshToken)> RefreshJwt(string refreshToken, CancellationToken cancellationToken)
+        public async Task<Result<(string accessToken, string refreshToken)>> RefreshJwt(string refreshToken, CancellationToken cancellationToken)
         {
             var validatedRefreshToken = GetPrincipalFromJwt(refreshToken);
 
             if (validatedRefreshToken?.Claims.SingleOrDefault(x => x.Type == FiestaClaims.IsRefreshToken) is null)
-                throw new BadRequestException("Invalid Refresh Token");
+                return Result<(string, string)>.Failure(ErrorCodes.InvalidRefreshToken);
 
             var expiryDateUnix =
                     long.Parse(validatedRefreshToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
@@ -94,28 +95,28 @@ namespace Fiesta.Infrastracture.Auth
                 new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(expiryDateUnix);
 
             if (expiryDateUtc < DateTime.UtcNow)
-                throw new BadRequestException("Refresh Token Is Expired.");
+                return Result<(string, string)>.Failure(ErrorCodes.RefreshTokenExpired);
 
             var appUserId = validatedRefreshToken.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value;
             var appUser = await _db.Users.SingleAsync(x => x.Id == appUserId, cancellationToken);
             var storedRefreshToken = appUser.RefreshToken;
 
             if (storedRefreshToken != refreshToken)
-                throw new BadRequestException("Invalid Refresh Token.");
+                return Result<(string, string)>.Failure(ErrorCodes.InvalidRefreshToken);
 
-            return await Login(appUser, cancellationToken);
+            return Result.Success(await Login(appUser, cancellationToken));
         }
 
-        public async Task<string> Register(RegisterWithEmailAndPassword.Command command, CancellationToken cancellationToken)
+        public async Task<Result<string>> Register(RegisterWithEmailAndPassword.Command command, CancellationToken cancellationToken)
         {
             var newUser = new AuthUser(command.Email, AuthProviderEnum.EmailAndPassword);
 
             var result = await _userManager.CreateAsync(newUser, command.Password);
             if (!result.Succeeded)
-                throw new BadRequestException(result.Errors.Select(x => x.Description));
+                return Result<string>.Failure(result.Errors.Select(x => x.Description));
 
             await _db.SaveChangesAsync(cancellationToken);
-            return newUser.Id;
+            return Result.Success(newUser.Id);
         }
 
         private async Task<(string accessToken, string refreshToken)> Login(AuthUser user, CancellationToken cancellationToken)

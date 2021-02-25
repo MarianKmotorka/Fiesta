@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
 using MediatR;
 
@@ -26,7 +27,10 @@ namespace Fiesta.Application.Features.Auth
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                await _authService.DeleteAccountWithPassword(request.UserId, request.Password, cancellationToken);
+                var result = await _authService.DeleteAccountWithPassword(request.UserId, request.Password, cancellationToken);
+                if (result.Failed)
+                    throw new BadRequestException(result.Errors);
+
                 return Unit.Value;
             }
         }

@@ -31,11 +31,18 @@ namespace Fiesta.Application.Features.Auth
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 var user = await _fiestaDbContext.FiestaUsers.SingleOrNotFoundAsync(x => x.Email == request.Email, cancellationToken);
-                var code = await _authService.GetEmailVerificationCode(user.Email, cancellationToken);
-                var result = await _emailService.SendVerificationEmail(user.Email, new VerificationEmailTemplateModel(user.FirstName, code), cancellationToken);
 
-                if (!result.Successful)
-                    throw new BadRequestException(result.ErrorMessages);
+                var codeResult = await _authService.GetEmailVerificationCode(user.Email, cancellationToken);
+                if (codeResult.Failed)
+                    throw new BadRequestException(codeResult.Errors);
+
+                var emailResult = await _emailService.SendVerificationEmail(
+                    user.Email,
+                    new VerificationEmailTemplateModel(user.FirstName, codeResult.Data),
+                    cancellationToken);
+
+                if (!emailResult.Successful)
+                    throw new BadRequestException(emailResult.ErrorMessages);
 
                 return Unit.Value;
             }

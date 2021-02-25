@@ -31,12 +31,16 @@ namespace Fiesta.Application.Features.Auth
             public async Task<AuthResponse> Handle(Command request, CancellationToken cancellationToken)
             {
                 var googleUserResult = await _googleService.GetUserInfoModelForLogin(request.Code, cancellationToken);
-
                 if (!googleUserResult.Succeeded)
                     throw new BadRequestException(googleUserResult.Errors);
 
                 var googleUser = googleUserResult.Data;
-                var (accessToken, refreshToken, authUserCreated, userId) = await _authService.LoginOrRegister(googleUser, cancellationToken);
+
+                var loginResult = await _authService.LoginOrRegister(googleUser, cancellationToken);
+                if (loginResult.Failed)
+                    throw new BadRequestException(loginResult.Errors);
+
+                var (accessToken, refreshToken, authUserCreated, userId) = loginResult.Data;
 
                 if (authUserCreated)
                     await _mediator.Publish(new AuthUserCreatedEvent(userId, googleUser.Email)

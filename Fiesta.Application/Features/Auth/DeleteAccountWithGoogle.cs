@@ -30,13 +30,14 @@ namespace Fiesta.Application.Features.Auth
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 var googleUserResult = await _googleService.GetUserInfoModelForDeleteAccount(request.Code, cancellationToken);
-
                 if (!googleUserResult.Succeeded)
                     throw new BadRequestException(googleUserResult.Errors);
 
                 var googleUser = googleUserResult.Data;
 
-                await _authService.DeleteAccountWithGoogle(request.UserId, googleUser, cancellationToken);
+                var result = await _authService.DeleteAccountWithGoogle(request.UserId, googleUser, cancellationToken);
+                if (result.Failed)
+                    throw new BadRequestException(result.Errors);
 
                 return Unit.Value;
             }

@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
+using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Options;
 using Fiesta.Application.Features.Auth;
@@ -36,8 +37,11 @@ namespace Fiesta.WebApi.Controllers
         public async Task<ActionResult<AuthResponse>> RefreshToken(CancellationToken cancellationToken)
         {
             Request.Cookies.TryGetValue(Cookie.RefreshToken, out string refreshToken);
-            var (accessToken, newRefreshToken) = await _authService.RefreshJwt(refreshToken, cancellationToken);
+            var result = await _authService.RefreshJwt(refreshToken, cancellationToken);
+            if (result.Failed)
+                throw new BadRequestException(result.Errors);
 
+            var (accessToken, newRefreshToken) = result.Data;
             Response.Cookies.Append(Cookie.RefreshToken, newRefreshToken, GetRefreshTokenCookieOptions());
             return Ok(new AuthResponse { AccessToken = accessToken });
         }
@@ -46,7 +50,9 @@ namespace Fiesta.WebApi.Controllers
         public async Task<ActionResult> Logout(CancellationToken cancellationToken)
         {
             Request.Cookies.TryGetValue(Cookie.RefreshToken, out string refreshToken);
-            await _authService.Logout(refreshToken, cancellationToken);
+            var result = await _authService.Logout(refreshToken, cancellationToken);
+            if (result.Failed)
+                throw new BadRequestException(result.Errors);
 
             Response.Cookies.Append(Cookie.RefreshToken, string.Empty, GetRefreshTokenCookieOptions(TimeSpan.FromSeconds(0)));
             return NoContent();
@@ -55,7 +61,11 @@ namespace Fiesta.WebApi.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<AuthResponse>> Login(EmailPasswordRequest request, CancellationToken cancellationToken)
         {
-            var (accessToken, refreshToken) = await _authService.Login(request.Email, request.Password, cancellationToken);
+            var result = await _authService.Login(request.Email, request.Password, cancellationToken);
+            if (result.Failed)
+                throw new BadRequestException(result.Errors);
+
+            var (accessToken, refreshToken) = result.Data;
             Response.Cookies.Append(Cookie.RefreshToken, refreshToken, GetRefreshTokenCookieOptions());
             return Ok(new AuthResponse { AccessToken = accessToken });
         }
@@ -78,7 +88,10 @@ namespace Fiesta.WebApi.Controllers
         [HttpPost("verify-email")]
         public async Task<ActionResult> VerifyEmail(EmailVerificationRequest request, CancellationToken cancellationToken)
         {
-            await _authService.CheckEmailVerificationCode(request.Email, request.Code, cancellationToken);
+            var result = await _authService.CheckEmailVerificationCode(request.Email, request.Code, cancellationToken);
+            if (result.Failed)
+                throw new BadRequestException(result.Errors);
+
             return NoContent();
         }
 
