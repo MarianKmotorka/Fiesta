@@ -24,7 +24,7 @@ namespace Fiesta.IntegrationTests.Features.Auth
         public async Task GivenValidCode_WhenUserDoesNotExist_UserIsCreated()
         {
             // Note: GoogleService mock is configured to return success when code == "validCode"
-            var response = await NotAuthedClient.GetAsync("/api/auth/google-code-callback?code=validCode");
+            var response = await NotAuthedClient.PostAsJsonAsync("/api/auth/google-login", new { code = "validCode" });
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsAsync<AuthResponse>();
@@ -40,7 +40,7 @@ namespace Fiesta.IntegrationTests.Features.Auth
         [Fact]
         public async Task GivenInValidCode_WhenLoggingIn_BadRequestIsReturned()
         {
-            var response = await NotAuthedClient.GetAsync("/api/auth/google-code-callback?code=INVALID");
+            var response = await NotAuthedClient.PostAsJsonAsync("/api/auth/google-login", new { code = "invalidCode" });
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
             var content = await response.Content.ReadAsAsync<ErrorResponse>();
@@ -59,7 +59,7 @@ namespace Fiesta.IntegrationTests.Features.Auth
             await ArrangeDb.SaveChangesAsync();
 
             using var client = CreateClientForUser(emailAndPasswordUser);
-            var response = await client.GetAsync("/api/auth/google-code-callback?code=validCode");
+            var response = await client.PostAsJsonAsync("/api/auth/google-login", new { code = "validCode" });
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
             var content = await response.Content.ReadAsAsync<ErrorResponse>();
@@ -79,7 +79,7 @@ namespace Fiesta.IntegrationTests.Features.Auth
             await ArrangeDb.SaveChangesAsync();
 
             using var client = CreateClientForUser(user);
-            var response = await client.GetAsync("/api/auth/google-code-callback?code=validCode");
+            var response = await client.PostAsJsonAsync("/api/auth/google-login", new { code = "validCode" });
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
             var content = await response.Content.ReadAsAsync<ErrorResponse>();

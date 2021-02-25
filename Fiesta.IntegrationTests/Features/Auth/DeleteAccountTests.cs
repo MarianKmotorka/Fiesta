@@ -81,12 +81,12 @@ namespace Fiesta.IntegrationTests.Features.Auth
         [Fact]
         public async Task GivenValidCode_WhenDeleteAccountWithGoogle_AccountIsDeleted()
         {
-            var response = await NotAuthedClient.GetAsync("/api/auth/google-code-callback?code=validCode");
+            var response = await NotAuthedClient.PostAsJsonAsync("/api/auth/google-login", new { code = "validCode" });
             var user = await ArrangeDb.Users.SingleAsync(x => x.Email == GoogleAssets.JohnyUserInfoModel.Email);
 
             using var client = CreateClientForUser(user);
 
-            var deleteResponse = await client.DeleteAsync($"/api/auth/delete-account-with-code?code=validCode");
+            var deleteResponse = await client.DeleteAsync($"/api/auth/delete-account-with-google?code=validCode");
 
             deleteResponse.EnsureSuccessStatusCode();
 
@@ -100,12 +100,12 @@ namespace Fiesta.IntegrationTests.Features.Auth
         [Fact]
         public async Task GivenInvalidCode_WhenDeleteAccountWithGoogle_BadRequestIsReturned()
         {
-            var response = await NotAuthedClient.GetAsync("/api/auth/google-code-callback?code=validCode");
+            var response = await NotAuthedClient.PostAsJsonAsync("/api/auth/google-login", new { code = "validCode" });
             var user = await ArrangeDb.Users.SingleAsync(x => x.Email == GoogleAssets.JohnyUserInfoModel.Email);
 
             using var client = CreateClientForUser(user);
 
-            var deleteResponse = await client.DeleteAsync($"/api/auth/delete-account-with-code?code=invalidCode");
+            var deleteResponse = await client.DeleteAsync($"/api/auth/delete-account-with-google?code=invalidCode");
 
             var errorResposne = await deleteResponse.Content.ReadAsAsync<ErrorResponse>();
             errorResposne.Should().BeEquivalentTo(new
@@ -135,7 +135,7 @@ namespace Fiesta.IntegrationTests.Features.Auth
 
             using var client = CreateClientForUser(authUser);
 
-            var deleteResponse = await client.DeleteAsync($"/api/auth/delete-account-with-code?code=validCode");
+            var deleteResponse = await client.DeleteAsync($"/api/auth/delete-account-with-google?code=validCode");
 
             var errorResposne = await deleteResponse.Content.ReadAsAsync<ErrorResponse>();
             errorResposne.Should().BeEquivalentTo(new

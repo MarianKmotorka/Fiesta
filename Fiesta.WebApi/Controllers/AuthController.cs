@@ -24,10 +24,10 @@ namespace Fiesta.WebApi.Controllers
             _authService = authService;
         }
 
-        [HttpGet("google-code-callback")]
-        public async Task<ActionResult<AuthResponse>> GoogleCodeCallback(string code, CancellationToken cancellationToken)
+        [HttpPost("google-login")]
+        public async Task<ActionResult<AuthResponse>> LoginWithCode(GoogleLogin.Command request, CancellationToken cancellationToken)
         {
-            var response = await Mediator.Send(new GoogleLogin.Command { Code = code }, cancellationToken);
+            var response = await Mediator.Send(request, cancellationToken);
             Response.Cookies.Append(Cookie.RefreshToken, response.RefreshToken, GetRefreshTokenCookieOptions());
             return Ok(response);
         }
@@ -137,8 +137,8 @@ namespace Fiesta.WebApi.Controllers
         }
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
-        [HttpDelete("delete-account-with-code")]
-        public async Task<ActionResult> DeleteAccountWithCode(string code, CancellationToken cancellationToken)
+        [HttpDelete("delete-account-with-google")]
+        public async Task<ActionResult> DeleteAccountWithGoogle(string code, CancellationToken cancellationToken)
         {
             await Mediator.Send(new DeleteAccountWithGoogle.Command { UserId = CurrentUserService.UserId, Code = code }, cancellationToken);
             return NoContent();
