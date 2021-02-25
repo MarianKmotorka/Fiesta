@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
+using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Models.Emails;
 using Fiesta.Domain.Entities.Users;
@@ -40,17 +41,21 @@ namespace Fiesta.Application.Features.Auth
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var userId = await _authService.Register(request, cancellationToken);
+                var userIdResult = await _authService.Register(request, cancellationToken);
+                if (userIdResult.Failed)
+                    throw new BadRequestException(userIdResult.Errors);
 
-                await _mediator.Publish(new AuthUserCreatedEvent(userId, request.Email)
+                await _mediator.Publish(new AuthUserCreatedEvent(userIdResult.Data, request.Email)
                 {
                     FirstName = request.FirstName,
                     LastName = request.LastName,
                 }, cancellationToken);
 
-                var emailCode = await _authService.GetEmailVerificationCode(request.Email, cancellationToken);
-                var sendResult = await _emailService.SendVerificationEmail(request.Email, new VerificationEmailTemplateModel(request.FirstName, emailCode), cancellationToken);
+                var emailCodeResult = await _authService.GetEmailVerificationCode(request.Email, cancellationToken);
+                if (emailCodeResult.Failed)
+                    throw new BadRequestException(emailCodeResult.Errors);
 
+                var sendResult = await _emailService.SendVerificationEmail(request.Email, new VerificationEmailTemplateModel(request.FirstName, emailCodeResult.Data), cancellationToken);
                 if (!sendResult.Successful)
                     _logger.LogError($"Verification email to {request.Email} was not sent. Reason: {string.Join('\n', sendResult.ErrorMessages)}");
 

@@ -1,9 +1,10 @@
-﻿using Fiesta.Application.Common.Constants;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Fiesta.Application.Common.Constants;
+using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
 using FluentValidation;
 using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Fiesta.Application.Features.Auth
 {
@@ -29,7 +30,10 @@ namespace Fiesta.Application.Features.Auth
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                await _authService.ChangePassword(request.UserId, request.CurrentPassword, request.NewPassword, cancellationToken);
+                var result = await _authService.ChangePassword(request.UserId, request.CurrentPassword, request.NewPassword, cancellationToken);
+                if (result.Failed)
+                    throw new BadRequestException(result.Errors);
+
                 return Unit.Value;
             }
         }
