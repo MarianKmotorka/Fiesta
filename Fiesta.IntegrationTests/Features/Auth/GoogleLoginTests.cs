@@ -34,7 +34,7 @@ namespace Fiesta.IntegrationTests.Features.Auth
             user.AuthProvider.Should().Be(AuthProviderEnum.Google);
 
             var fiestaUser = await AssertDb.FiestaUsers.SingleAsync(x => x.Email == GoogleAssets.JohnyUserInfoModel.Email);
-            fiestaUser.Created.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(3));
+            fiestaUser.CreatedOnUtc.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(3));
         }
 
         [Fact]

@@ -2,12 +2,12 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Fiesta.Application.Common.Constants;
-using Fiesta.Application.Common.Interfaces;
 using Fiesta.Infrastracture.Auth;
 using Fiesta.Infrastracture.Persistence;
 using Fiesta.IntegrationTests.Helpers;
-using Microsoft.AspNetCore.Http;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
+using NSubstitute;
 using Xunit;
 
 namespace Fiesta.IntegrationTests
@@ -51,7 +51,7 @@ namespace Fiesta.IntegrationTests
         private static FiestaDbContext CreateDb()
         {
             var optionsBuilder = new DbContextOptionsBuilder<FiestaDbContext>().UseInMemoryDatabase(FiestaDbContext.TestDbName);
-            return new FiestaDbContext(optionsBuilder.Options, new FakeCurrentUserServiceOnlyForDbContextCreation());
+            return new FiestaDbContext(optionsBuilder.Options, Substitute.For<IMediator>());
         }
 
         private void Authenticate(HttpClient client)
@@ -79,18 +79,6 @@ namespace Fiesta.IntegrationTests
             Client.Dispose();
             NotAuthedClient.Dispose();
         }
-    }
-
-    /// <summary>
-    /// Do not use. It is only for DbContext creation purposes.
-    /// </summary>
-    public class FakeCurrentUserServiceOnlyForDbContextCreation : ICurrentUserService
-    {
-        public string UserId => Guid.Empty.ToString();
-
-        public FiestaRoleEnum Role => FiestaRoleEnum.None;
-
-        public HttpContext HttpContext => throw new NotImplementedException();
     }
 
     [CollectionDefinition(nameof(FiestaAppFactory))]
