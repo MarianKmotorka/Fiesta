@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fiesta.Domain", "Fiesta.Dom
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fiesta.IntegrationTests", "Fiesta.IntegrationTests\Fiesta.IntegrationTests.csproj", "{76CC1857-B6C7-4A3B-BC45-A04F85D23FEB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fiesta.Application.UnitTests", "Fiesta.Infrastracture.UnitTests\Fiesta.Application.UnitTests.csproj", "{24ACF9C6-F0A4-4901-BAB3-34BADB2898A4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{76CC1857-B6C7-4A3B-BC45-A04F85D23FEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76CC1857-B6C7-4A3B-BC45-A04F85D23FEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76CC1857-B6C7-4A3B-BC45-A04F85D23FEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24ACF9C6-F0A4-4901-BAB3-34BADB2898A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24ACF9C6-F0A4-4901-BAB3-34BADB2898A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24ACF9C6-F0A4-4901-BAB3-34BADB2898A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24ACF9C6-F0A4-4901-BAB3-34BADB2898A4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -53,6 +59,7 @@ Global
 		{714B8DF3-F144-4951-B9FD-976B18EFE597} = {FC2FEEF6-A2DC-4723-B49C-C900CB3CB277}
 		{C5866FEE-2AD4-4BD1-B28E-5E8CD56D7B81} = {FC2FEEF6-A2DC-4723-B49C-C900CB3CB277}
 		{76CC1857-B6C7-4A3B-BC45-A04F85D23FEB} = {C95658A8-DC61-49BD-BD90-B0C54ABB9B41}
+		{24ACF9C6-F0A4-4901-BAB3-34BADB2898A4} = {C95658A8-DC61-49BD-BD90-B0C54ABB9B41}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {509E8E62-A3E2-4EB3-AB7A-255E7E63A7FB}
