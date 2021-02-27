@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,6 +6,7 @@ using Fiesta.Application.Common.Interfaces;
 using Fiesta.Domain.Common;
 using Fiesta.Domain.Entities.Users;
 using Fiesta.Infrastracture.Auth;
+using MediatR;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,31 +15,25 @@ namespace Fiesta.Infrastracture.Persistence
     public class FiestaDbContext : IdentityDbContext<AuthUser, AuthRole, string>, IFiestaDbContext
     {
         public const string TestDbName = "TestDb";
-        private readonly ICurrentUserService _currentUserService;
+        private readonly IMediator _mediator;
 
-        public FiestaDbContext(DbContextOptions<FiestaDbContext> options, ICurrentUserService currentUserService) : base(options)
+        public FiestaDbContext(DbContextOptions<FiestaDbContext> options, IMediator mediator) : base(options)
         {
-            _currentUserService = currentUserService;
+            _mediator = mediator;
         }
 
         public DbSet<FiestaUser> FiestaUsers { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
-            foreach (Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<AuditableEntity> entry in ChangeTracker.Entries<AuditableEntity>())
+            for (var i = 0; i < 3; i++) // To prevent infinite loop, number of iteration is capped to 3.
             {
-                switch (entry.State)
-                {
-                    case EntityState.Added:
-                        entry.Entity.CreatedById = _currentUserService.UserId;
-                        entry.Entity.Created = DateTime.UtcNow;
-                        break;
+                var events = ChangeTracker.Entries<BaseEntity>().SelectMany(po => po.Entity.ConsumeEvents()).ToList();
+                if (events.Count == 0)
+                    break;
 
-                    case EntityState.Modified:
-                        entry.Entity.LastModifiedById = _currentUserService.UserId;
-                        entry.Entity.LastModified = DateTime.UtcNow;
-                        break;
-                }
+                foreach (var @event in events)
+                    await _mediator.Publish(@event, cancellationToken);
             }
 
             return await base.SaveChangesAsync(cancellationToken);

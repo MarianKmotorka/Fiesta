@@ -41,8 +41,7 @@ namespace Fiesta.IntegrationTests.Features.Auth
             var fiestaUser = await AssertDb.FiestaUsers.SingleAsync(x => x.Email == request.Email);
             fiestaUser.FirstName.Should().Be(request.FirstName);
             fiestaUser.LastName.Should().Be(request.LastName);
-            fiestaUser.Created.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(3));
-            fiestaUser.CreatedById.Should().BeNull();
+            fiestaUser.CreatedOnUtc.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(3));
         }
 
         [Fact]

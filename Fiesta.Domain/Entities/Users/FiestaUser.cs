@@ -1,12 +1,14 @@
-﻿using Fiesta.Domain.Common;
+﻿using System;
+using Fiesta.Domain.Common;
 
 namespace Fiesta.Domain.Entities.Users
 {
-    public class FiestaUser : AuditableEntity
+    public class FiestaUser : Entity<string>
     {
         public FiestaUser(string email)
         {
             Email = email;
+            CreatedOnUtc = DateTime.UtcNow;
         }
 
         public static FiestaUser CreateWithId(string id, string email)
@@ -21,5 +23,7 @@ namespace Fiesta.Domain.Entities.Users
         public string PictureUrl { get; set; }
 
         public bool IsDeleted { get; set; }
+
+        public DateTime CreatedOnUtc { get; init; }
     }
 }

@@ -1,76 +1,49 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using MediatR;
 
 namespace Fiesta.Domain.Common
 {
-    public abstract class Entity
+    public abstract class Entity<TId> : BaseEntity, IEquatable<Entity<TId>>
+        where TId : IEquatable<TId>
     {
-        private int? _requestedHashCode;
-        private string _id;
-        private List<INotification> _domainEvents;
 
-        public virtual string Id
+        protected Entity()
         {
-            get
-            {
-                return _id;
-            }
-            protected set
-            {
-                _id = value;
-            }
         }
 
-        public IEnumerable<INotification> DomainEvents => _domainEvents;
-
-        public void AddDomainEvent(INotification eventItem)
+        protected Entity(TId id)
         {
-            _domainEvents = _domainEvents ?? new List<INotification>();
-            _domainEvents.Add(eventItem);
-        }
-        public void RemoveDomainEvent(INotification eventItem)
-        {
-            if (_domainEvents is not null)
-                _domainEvents.Remove(eventItem);
+            Id = id;
         }
 
-        public bool IsTransient()
-        {
-            return Id == default(string);
-        }
+        public virtual TId Id { get; protected set; }
 
         public override bool Equals(object obj)
         {
-            if (obj == null || !(obj is Entity))
-                return false;
-
-            if (ReferenceEquals(this, obj))
-                return true;
-
-            if (GetType() != obj.GetType())
-                return false;
-
-            Entity item = (Entity)obj;
-            if (item.IsTransient() || IsTransient())
-                return false;
-            else
-                return item.Id == Id;
+            return obj is Entity<TId> other && Equals(other);
         }
 
         public override int GetHashCode()
         {
-            if (!IsTransient())
-            {
-                if (!_requestedHashCode.HasValue)
-                    _requestedHashCode = Id.GetHashCode() ^ 31;
-
-                return _requestedHashCode.Value;
-            }
-            else
+            if (Id is null || EqualityComparer<TId>.Default.Equals(Id, default))
                 return base.GetHashCode();
+            else
+                return Id.GetHashCode();
         }
 
-        public static bool operator ==(Entity left, Entity right)
+        public bool Equals(Entity<TId> other)
+        {
+            if (other is null)
+                return false;
+
+            if (ReferenceEquals(this, other))
+                return true;
+
+            return Id != null && !EqualityComparer<TId>.Default.Equals(Id, default) && EqualityComparer<TId>.Default.Equals(Id, other.Id);
+        }
+
+        public static bool operator ==(Entity<TId> left, Entity<TId> right)
         {
             if (Equals(left, null))
                 return (Equals(right, null));
@@ -78,9 +51,29 @@ namespace Fiesta.Domain.Common
                 return left.Equals(right);
         }
 
-        public static bool operator !=(Entity left, Entity right)
+        public static bool operator !=(Entity<TId> left, Entity<TId> right)
         {
             return !(left == right);
+        }
+    }
+
+    public abstract class BaseEntity
+    {
+        private List<INotification> _notifications;
+
+        protected void AddEvent(INotification notification)
+        {
+            if (_notifications == null)
+                _notifications = new List<INotification>();
+
+            _notifications.Add(notification);
+        }
+
+        public IReadOnlyList<INotification> ConsumeEvents()
+        {
+            var result = (IReadOnlyList<INotification>)_notifications ?? Array.Empty<INotification>();
+            _notifications = null;
+            return result;
         }
     }
 }
