@@ -35,7 +35,7 @@ namespace Fiesta.Application.Common.Queries
 
         public static IQueryable<T> ApplyFilters<T>(this IQueryable<T> dbQuery, QueryDocument document)
         {
-            if (document.Filters != null)
+            if (document?.Filters != null)
             {
                 foreach (var filter in document.Filters)
                     dbQuery = dbQuery.ApplyFilter(filter.FieldName, filter.Operation, filter.FieldValue);
@@ -46,29 +46,32 @@ namespace Fiesta.Application.Common.Queries
 
         public static IQueryable<T> ApplyPagination<T>(this IQueryable<T> dbQuery, QueryDocument document)
         {
+            if (document is null)
+                return dbQuery;
+
             return dbQuery.Skip(document.Page * document.PageSize).Take(document.PageSize);
         }
 
         public static IQueryable<T> ApplySorts<T>(this IQueryable<T> dbQuery, QueryDocument document)
         {
-            if (document.Sorts != null)
+            if (document?.Sorts != null)
             {
                 for (int i = 0; i < document.Sorts.Count; i++)
-                    dbQuery = dbQuery.ApplySort(document.Sorts[i].FieldName, document.Sorts[i].Order, isFirstSort: i == 0);
+                    dbQuery = dbQuery.ApplySort(document.Sorts[i].FieldName, document.Sorts[i].SortType, isFirstSort: i == 0);
             }
 
             return dbQuery;
         }
 
-        private static IQueryable<T> ApplySort<T>(this IQueryable<T> source, string propertyName, SortType order, bool isFirstSort)
+        private static IQueryable<T> ApplySort<T>(this IQueryable<T> source, string propertyName, SortType sortType, bool isFirstSort)
         {
             var expression = source.Expression;
             var parameter = Expression.Parameter(typeof(T), "x");
             var selector = Expression.PropertyOrField(parameter, propertyName);
-            var method = order == SortType.Asc ? "OrderBy" : "OrderByDescending";
+            var method = sortType == SortType.Asc ? "OrderBy" : "OrderByDescending";
 
             if (!isFirstSort)
-                method = order == SortType.Asc ? "ThenBy" : "ThenByDescending";
+                method = sortType == SortType.Asc ? "ThenBy" : "ThenByDescending";
 
             expression = Expression.Call(typeof(Queryable), method,
                 new Type[] { source.ElementType, selector.Type },
