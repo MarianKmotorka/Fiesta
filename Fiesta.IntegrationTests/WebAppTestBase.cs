@@ -3,28 +3,19 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Infrastracture.Auth;
-using Fiesta.Infrastracture.Persistence;
 using Fiesta.IntegrationTests.Helpers;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using NSubstitute;
+using TestBase;
 using Xunit;
 
 namespace Fiesta.IntegrationTests
 {
-    public abstract class WebAppTestBase : IDisposable
+    public abstract class WebAppTestBase : DbTestBase, IDisposable
     {
         public HttpClient Client { get; }
 
         public HttpClient NotAuthedClient { get; }
 
         public FiestaAppFactory Factory { get; }
-
-        public FiestaDbContext ArrangeDb { get; }
-
-        public FiestaDbContext ActDb { get; }
-
-        public FiestaDbContext AssertDb { get; }
 
         public string LoggedInUserId => "9d86035e-3e83-42f4-a319-0a7235212e6a";
 
@@ -34,10 +25,6 @@ namespace Fiesta.IntegrationTests
             Client = factory.CreateClient();
             NotAuthedClient = factory.CreateClient();
 
-            ActDb = CreateDb();
-            ArrangeDb = CreateDb();
-            AssertDb = CreateDb();
-
             Authenticate(Client);
         }
 
@@ -46,12 +33,6 @@ namespace Fiesta.IntegrationTests
             var client = Factory.CreateClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user.GetAccessToken(Factory));
             return client;
-        }
-
-        private static FiestaDbContext CreateDb()
-        {
-            var optionsBuilder = new DbContextOptionsBuilder<FiestaDbContext>().UseInMemoryDatabase(FiestaDbContext.TestDbName);
-            return new FiestaDbContext(optionsBuilder.Options, Substitute.For<IMediator>());
         }
 
         private void Authenticate(HttpClient client)
@@ -69,13 +50,9 @@ namespace Fiesta.IntegrationTests
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         }
 
-        public void Dispose()
+        public new void Dispose()
         {
-            ArrangeDb.Database.EnsureDeleted();
-            ArrangeDb.Dispose();
-            ActDb.Dispose();
-            AssertDb.Dispose();
-
+            base.Dispose();
             Client.Dispose();
             NotAuthedClient.Dispose();
         }

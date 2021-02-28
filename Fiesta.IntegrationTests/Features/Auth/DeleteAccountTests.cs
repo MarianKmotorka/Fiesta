@@ -2,10 +2,10 @@
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Features.Auth;
-using Fiesta.IntegrationTests.Assets;
 using Fiesta.WebApi.Middleware.ExceptionHanlding;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using TestBase.Assets;
 using Xunit;
 
 namespace Fiesta.IntegrationTests.Features.Auth
