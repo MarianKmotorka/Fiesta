@@ -26,16 +26,5 @@ namespace Fiesta.WebApi.Controllers
             var response = await Mediator.Send(new GetUserDetail.Query { Id = id }, cancellationToken);
             return Ok(response);
         }
-
-        [HttpPost("/get")]
-        public ActionResult Fene(Req request)
-        {
-            return Ok();
-        }
-
-        public class Req
-        {
-            public QueryDocument Document { get; set; }
-        }
     }
 }
