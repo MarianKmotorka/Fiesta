@@ -12,5 +12,5 @@ namespace Fiesta.Application.Common.Queries
 
     public record Filter(string FieldName, Operation Operation, object FieldValue);
 
-    public record Sort(string FieldName, OrderType Order);
+    public record Sort(string FieldName, SortType Order);
 }

@@ -3,9 +3,9 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Infrastracture.Auth;
-using Fiesta.IntegrationTests.Assets;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using TestBase.Assets;
 using Xunit;
 
 namespace Fiesta.IntegrationTests.Features.Auth

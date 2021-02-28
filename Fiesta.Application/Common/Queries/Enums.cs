@@ -13,7 +13,7 @@
         EndsWith = 8
     }
 
-    public enum OrderType
+    public enum SortType
     {
         Asc = 0,
         Desc = 1

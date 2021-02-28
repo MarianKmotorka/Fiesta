@@ -1,13 +1,39 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 
 namespace Fiesta.Application.Common.Queries
 {
     public static class QueryBuilder
     {
+        public static async Task<QueryResponse<T>> BuildResponse<T>(this IQueryable<T> dbQuery, QueryDocument document, CancellationToken cancellationToken)
+        {
+            var filtered = dbQuery.ApplyFilters(document);
+
+            var totalEntries = await filtered.CountAsync(cancellationToken);
+            var totalPages = (int)Math.Ceiling((double)totalEntries / document.PageSize);
+
+            var entries = await filtered.ApplySorts(document).ApplyPagination(document).ToListAsync(cancellationToken);
+
+            return new QueryResponse<T>(entries)
+            {
+                Page = document.Page,
+                PageSize = document.PageSize,
+                TotalEntries = totalEntries,
+                TotalPages = totalPages
+            };
+        }
+
         public static IQueryable<T> BuildQuery<T>(this IQueryable<T> dbQuery, QueryDocument document)
+        {
+            return dbQuery.ApplyFilters(document).ApplySorts(document).ApplyPagination(document);
+        }
+
+        public static IQueryable<T> ApplyFilters<T>(this IQueryable<T> dbQuery, QueryDocument document)
         {
             if (document.Filters != null)
             {
@@ -15,24 +41,34 @@ namespace Fiesta.Application.Common.Queries
                     dbQuery = dbQuery.ApplyFilter(filter.FieldName, filter.Operation, filter.FieldValue);
             }
 
-            if (document.Sorts != null)
-            {
-                for (int i = 0; i < document.Sorts.Count; i++)
-                    dbQuery = dbQuery.OrderBy(document.Sorts[i].FieldName, document.Sorts[i].Order, isFirstSort: i == 0);
-            }
+            return dbQuery;
+        }
 
+        public static IQueryable<T> ApplyPagination<T>(this IQueryable<T> dbQuery, QueryDocument document)
+        {
             return dbQuery.Skip(document.Page * document.PageSize).Take(document.PageSize);
         }
 
-        private static IQueryable<T> OrderBy<T>(this IQueryable<T> source, string propertyName, OrderType order, bool isFirstSort)
+        public static IQueryable<T> ApplySorts<T>(this IQueryable<T> dbQuery, QueryDocument document)
+        {
+            if (document.Sorts != null)
+            {
+                for (int i = 0; i < document.Sorts.Count; i++)
+                    dbQuery = dbQuery.ApplySort(document.Sorts[i].FieldName, document.Sorts[i].Order, isFirstSort: i == 0);
+            }
+
+            return dbQuery;
+        }
+
+        private static IQueryable<T> ApplySort<T>(this IQueryable<T> source, string propertyName, SortType order, bool isFirstSort)
         {
             var expression = source.Expression;
             var parameter = Expression.Parameter(typeof(T), "x");
             var selector = Expression.PropertyOrField(parameter, propertyName);
-            var method = order == OrderType.Asc ? "OrderBy" : "OrderByDescending";
+            var method = order == SortType.Asc ? "OrderBy" : "OrderByDescending";
 
             if (!isFirstSort)
-                method = order == OrderType.Asc ? "ThenBy" : "ThenByDescending";
+                method = order == SortType.Asc ? "ThenBy" : "ThenByDescending";
 
             expression = Expression.Call(typeof(Queryable), method,
                 new Type[] { source.ElementType, selector.Type },
@@ -89,14 +125,15 @@ namespace Fiesta.Application.Common.Queries
             }
 
             var someValue = Expression.Constant(Convert.ChangeType(propertyValue, propertyExp.Type), propertyExp.Type);
+            var ignoreCaseExp = Expression.Constant(StringComparison.OrdinalIgnoreCase);
 
             if (propertyExp.Type == typeof(string))
                 containsMethodExp = operation switch
                 {
-                    Operation.Equals => Expression.Equal(propertyExp, someValue),
-                    Operation.Contains => Expression.Call(propertyExp, StringMethods.Contains, someValue),
-                    Operation.StartsWith => Expression.Call(propertyExp, StringMethods.StartsWith, someValue),
-                    Operation.EndsWith => Expression.Call(propertyExp, StringMethods.EndsWith, someValue),
+                    Operation.Equals => Expression.Call(propertyExp, StringMethods.Equals, someValue, ignoreCaseExp),
+                    Operation.Contains => Expression.Call(propertyExp, StringMethods.Contains, someValue, ignoreCaseExp),
+                    Operation.StartsWith => Expression.Call(propertyExp, StringMethods.StartsWith, someValue, ignoreCaseExp),
+                    Operation.EndsWith => Expression.Call(propertyExp, StringMethods.EndsWith, someValue, ignoreCaseExp),
                     _ => throw new NotSupportedException("Not allowed OperationEnum for string type"),
                 };
 
@@ -122,8 +159,14 @@ namespace Fiesta.Application.Common.Queries
                     _ => throw new NotSupportedException("Not allowed OperationEnum for datetime type"),
                 };
 
-            var predicate = Expression.Lambda<Func<T, bool>>(containsMethodExp, parameterExp);
+            if (propertyExp.Type == typeof(bool))
+                containsMethodExp = operation switch
+                {
+                    Operation.Equals => Expression.Equal(propertyExp, someValue),
+                    _ => throw new NotSupportedException("Not allowed OperationEnum for bool type"),
+                };
 
+            var predicate = Expression.Lambda<Func<T, bool>>(containsMethodExp, parameterExp);
             return query.Where(predicate);
         }
     }

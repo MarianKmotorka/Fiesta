@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Fiesta.Application\Fiesta.Application.csproj" />
     <ProjectReference Include="..\Fiesta.Infrastracture\Fiesta.Infrastracture.csproj" />
+    <ProjectReference Include="..\TestBase\TestBase.csproj" />
   </ItemGroup>
 
 </Project>
