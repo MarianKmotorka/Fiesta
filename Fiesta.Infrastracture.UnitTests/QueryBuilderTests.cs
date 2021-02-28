@@ -58,7 +58,6 @@ namespace Fiesta.Infrastracture.UnitTests
         [Fact]
         public async Task WhenFiltersAreSpecified_CorrectQueryResponseIsReturned()
         {
-
             var document = new QueryDocument
             {
                 Filters = new List<Filter> { new Filter("email", Operation.Contains, "gmail") }
@@ -91,7 +90,6 @@ namespace Fiesta.Infrastracture.UnitTests
         [Fact]
         public async Task WhenPageAndPageSizeAreSpecified_CorrectQueryResponseIsReturned()
         {
-
             var document = new QueryDocument
             {
                 Page = 1,
@@ -112,7 +110,6 @@ namespace Fiesta.Infrastracture.UnitTests
         [Fact]
         public async Task WhenPageSizeAndFilterAreSpecified_CorrectQueryResponseIsReturned()
         {
-
             var document = new QueryDocument
             {
                 Page = 0,
