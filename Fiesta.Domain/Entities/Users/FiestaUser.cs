@@ -1,5 +1,7 @@
-﻿using System;
-using Fiesta.Domain.Common;
+﻿using Fiesta.Domain.Common;
+using Fiesta.Domain.Entities.Events;
+using System;
+using System.Collections.Generic;
 
 namespace Fiesta.Domain.Entities.Users
 {
@@ -25,5 +27,7 @@ namespace Fiesta.Domain.Entities.Users
         public bool IsDeleted { get; set; }
 
         public DateTime CreatedOnUtc { get; init; }
+
+        public List<Event> CreatedEvents { get; set; }
     }
 }
