@@ -24,6 +24,9 @@ namespace Fiesta.Domain.Entities.Events
             Organizer = organizer;
         }
 
+        private Event()
+        {
+        }
     }
 
     public enum AccessibilityType
