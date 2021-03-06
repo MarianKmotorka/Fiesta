@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Fiesta.WebApi\Fiesta.WebApi.csproj" />
+    <ProjectReference Include="..\TestBase\TestBase.csproj" />
   </ItemGroup>
 
 </Project>

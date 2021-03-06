@@ -1,6 +1,6 @@
 ﻿using Fiesta.Application.Features.Auth.CommonDtos;
 
-namespace Fiesta.IntegrationTests.Assets
+namespace TestBase.Assets
 {
     public static class GoogleAssets
     {

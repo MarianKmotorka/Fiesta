@@ -6,7 +6,6 @@ using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Models;
 using Fiesta.Application.Features.Auth.CommonDtos;
 using Fiesta.Infrastracture.Persistence;
-using Fiesta.IntegrationTests.Assets;
 using Fiesta.WebApi;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -14,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
+using TestBase.Assets;
 
 namespace Fiesta.IntegrationTests
 {
