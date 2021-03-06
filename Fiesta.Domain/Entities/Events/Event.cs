@@ -14,13 +14,14 @@ namespace Fiesta.Domain.Entities.Events
         public LocationObject Location { get; private set; }
         public FiestaUser Organizer { get; private set; }
 
-        public Event(string name, DateTime startDate, DateTime endDate, AccessibilityType accessibilityType, int capacity)
+        public Event(string name, DateTime startDate, DateTime endDate, AccessibilityType accessibilityType, int capacity, FiestaUser organizer)
         {
             Name = name;
             StartDate = startDate;
             EndDate = endDate;
             AccessibilityType = accessibilityType;
             Capacity = capacity;
+            Organizer = organizer;
         }
 
     }

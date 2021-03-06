@@ -28,6 +28,12 @@ namespace Fiesta.Domain.Entities.Users
 
         public DateTime CreatedOnUtc { get; init; }
 
-        public List<Event> CreatedEvents { get; set; }
+        private readonly List<Event> _organizedEvents = new List<Event>();
+        public IReadOnlyCollection<Event> OrganizedEvents => _organizedEvents;
+
+        public void AddOrganizedEvent(Event organizedEvent)
+        {
+            _organizedEvents.Add(organizedEvent);
+        }
     }
 }

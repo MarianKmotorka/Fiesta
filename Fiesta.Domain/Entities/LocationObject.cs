@@ -6,18 +6,18 @@ namespace Fiesta.Domain.Entities
 {
     public class LocationObject : ValueObject
     {
-        public double Latitude { get; private set; }
-        public double Longitude { get; private set; }
-        public string Street { get; private set; }
-        public string StreetNumber { get; private set; }
-        public string Premise { get; private set; }
-        public string City { get; private set; }
-        public string State { get; private set; }
-        public string AdministrativeAreaLevel1 { get; private set; }
-        public string AdministrativeAreaLevel2 { get; private set; }
-        public string PostalCode { get; private set; }
-        public string PostalCodeNormalized { get; private set; }
-        public string GoogleMapsUrl { get; private set; }
+        public double Latitude { get; init; }
+        public double Longitude { get; init; }
+        public string Street { get; init; }
+        public string StreetNumber { get; init; }
+        public string Premise { get; init; }
+        public string City { get; init; }
+        public string State { get; init; }
+        public string AdministrativeAreaLevel1 { get; init; }
+        public string AdministrativeAreaLevel2 { get; init; }
+        public string PostalCode { get; init; }
+        public string PostalCodeNormalized { get; init; }
+        public string GoogleMapsUrl { get; init; }
 
         public LocationObject(double latitude, double longitude, string street = "", string streetNumber = "",
             string premise = "", string city = "", string state = "", string administrativeAreaLevel1 = "", string administrativeAreaLevel2 = "",
