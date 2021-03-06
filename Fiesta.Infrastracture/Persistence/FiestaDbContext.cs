@@ -1,14 +1,15 @@
-﻿using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using Fiesta.Application.Common.Interfaces;
+﻿using Fiesta.Application.Common.Interfaces;
 using Fiesta.Domain.Common;
+using Fiesta.Domain.Entities.Events;
 using Fiesta.Domain.Entities.Users;
 using Fiesta.Infrastracture.Auth;
 using MediatR;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Fiesta.Infrastracture.Persistence
 {
@@ -23,6 +24,7 @@ namespace Fiesta.Infrastracture.Persistence
         }
 
         public DbSet<FiestaUser> FiestaUsers { get; set; }
+        public DbSet<Event> Events { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
