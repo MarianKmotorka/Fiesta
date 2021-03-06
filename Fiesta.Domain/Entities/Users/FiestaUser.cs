@@ -31,9 +31,8 @@ namespace Fiesta.Domain.Entities.Users
         private readonly List<Event> _organizedEvents = new List<Event>();
         public IReadOnlyCollection<Event> OrganizedEvents => _organizedEvents;
 
-        public void AddOrganizedEvent(Event organizedEvent)
-        {
-            _organizedEvents.Add(organizedEvent);
-        }
+        public void AddOrganizedEvent(Event organizedEvent) => _organizedEvents.Add(organizedEvent);
+
+        public void RemoveOrganizedEvent(Event organizedEvent) => _organizedEvents.Remove(organizedEvent);
     }
 }
