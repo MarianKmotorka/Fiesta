@@ -91,7 +91,7 @@ namespace Fiesta.Application.Features.Events
 
                 RuleFor(x => x.AccessibilityType)
                   .NotEmpty().WithErrorCode(ErrorCodes.Required)
-                  .Must(Helpers.HasEnumValidValue).WithErrorCode(ErrorCodes.InvalidEnumValue);
+                  .HasEnumValidValue().WithErrorCode(ErrorCodes.InvalidEnumValue);
 
                 RuleFor(x => x.Capacity)
                   .NotEmpty().WithErrorCode(ErrorCodes.Required)
