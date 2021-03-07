@@ -18,5 +18,8 @@
         public const string RefreshTokenExpired = "refreshTokenExpired";
         public const string AccountAlreadyConnectedToGoogleWithDifferentEmail = "accounutAlreadyConnectedToGoogleWithDifferentEmail";
         public const string GoogleAccountNotConnected = "thisGoogleAccountIsNotConnected";
+        public const string InvalidDateTime = "invalidDateTime";
+        public const string NegativeNumber = "negativeNumber";
+        public const string InvalidEnumValue = "invalidEnumValue";
     }
 }
