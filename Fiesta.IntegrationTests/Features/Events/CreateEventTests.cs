@@ -1,33 +1,27 @@
-﻿using Fiesta.Application.Common.Constants;
+﻿using System;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Features.Events.CommonDtos;
 using Fiesta.Domain.Entities.Events;
 using Fiesta.IntegrationTests;
 using Fiesta.WebApi.Middleware.ExceptionHanlding;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
-using TestBase.Assets;
 using Xunit;
 
 namespace Fiesta.WebApi.Tests.Features.Events
 {
     [Collection(nameof(FiestaAppFactory))]
-    public class CreateEvent : WebAppTestBase
+    public class CreateEventTests : WebAppTestBase
     {
-        public CreateEvent(FiestaAppFactory factory) : base(factory)
+        public CreateEventTests(FiestaAppFactory factory) : base(factory)
         {
         }
 
         [Fact]
         public async Task GivenValidRequest_WhenCreateEvent_EventIsCreated()
         {
-            await NotAuthedClient.PostAsJsonAsync("/api/auth/google-login", new { code = "validCode" });
-            var user = await ArrangeDb.Users.SingleAsync(x => x.Email == GoogleAssets.JohnyUserInfoModel.Email);
-
-            using var client = CreateClientForUser(user);
-
             var location = new LocationDto()
             {
                 Latitude = 0,
@@ -53,19 +47,13 @@ namespace Fiesta.WebApi.Tests.Features.Events
                 location
             };
 
-            var createResponse = await client.PostAsJsonAsync("/api/events/create", organizedEvent);
-
+            var createResponse = await Client.PostAsJsonAsync("/api/events/create", organizedEvent);
             createResponse.EnsureSuccessStatusCode();
         }
 
         [Fact]
         public async Task GivenInvalidRequest_WhenCreateEvent_BadRequestIsReturned()
         {
-            await NotAuthedClient.PostAsJsonAsync("/api/auth/google-login", new { code = "validCode" });
-            var user = await ArrangeDb.Users.SingleAsync(x => x.Email == GoogleAssets.JohnyUserInfoModel.Email);
-
-            using var client = CreateClientForUser(user);
-
             var location = new LocationDto()
             {
                 Latitude = 0,
@@ -91,30 +79,27 @@ namespace Fiesta.WebApi.Tests.Features.Events
                 location
             };
 
-            var createResponse = await client.PostAsJsonAsync("/api/events/create", organizedEvent);
+            var createResponse = await Client.PostAsJsonAsync("/api/events/create", organizedEvent);
+            createResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
             var errorResposne = await createResponse.Content.ReadAsAsync<ErrorResponse>();
-
             errorResposne.Should().BeEquivalentTo(new
             {
                 ErrorCode = "ValidationError",
-            });
-
-            errorResposne.ErrorDetails[0].Should().BeEquivalentTo(new
-            {
-                Code = ErrorCodes.InvalidEnumValue,
-                PropertyName = "accessibilityType"
+                ErrorDetails = new object[]
+                {
+                    new
+                    {
+                        Code = ErrorCodes.InvalidEnumValue,
+                        PropertyName="accessibilityType"
+                    }
+                }
             });
         }
 
         [Fact]
         public async Task GivenInvalidLocation_WhenCreateEvent_BadRequestIsReturned()
         {
-            await NotAuthedClient.PostAsJsonAsync("/api/auth/google-login", new { code = "validCode" });
-            var user = await ArrangeDb.Users.SingleAsync(x => x.Email == GoogleAssets.JohnyUserInfoModel.Email);
-
-            using var client = CreateClientForUser(user);
-
             var location = new LocationDto()
             {
                 Latitude = 1000,
@@ -140,19 +125,21 @@ namespace Fiesta.WebApi.Tests.Features.Events
                 location
             };
 
-            var createResponse = await client.PostAsJsonAsync("/api/events/create", organizedEvent);
+            var createResponse = await Client.PostAsJsonAsync("/api/events/create", organizedEvent);
+            createResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
             var errorResposne = await createResponse.Content.ReadAsAsync<ErrorResponse>();
-
             errorResposne.Should().BeEquivalentTo(new
             {
                 ErrorCode = "ValidationError",
-            });
-
-            errorResposne.ErrorDetails[0].Should().BeEquivalentTo(new
-            {
-                Code = ErrorCodes.InvalidLatitudeOrLongitude,
-                PropertyName = "location"
+                ErrorDetails = new object[]
+                {
+                    new
+                    {
+                        Code = ErrorCodes.InvalidLatitudeOrLongitude,
+                        PropertyName="location"
+                    }
+                }
             });
         }
     }

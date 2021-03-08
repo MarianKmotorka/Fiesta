@@ -2,7 +2,6 @@
 using Fiesta.Application.Features.Users;
 using Fiesta.Domain.Entities.Users;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace Fiesta.IntegrationTests.Features.Users
@@ -26,8 +25,8 @@ namespace Fiesta.IntegrationTests.Features.Users
 
             await _sut.Handle(new HardDeleteUsers.Command(), default);
 
-            var userDb = await AssertDb.FiestaUsers.SingleAsync();
-            userDb.Id.Should().Be(notDeletedUser.Id);
+            var userDb = await AssertDb.FiestaUsers.FindAsync(notDeletedUser.Id);
+            userDb.IsDeleted.Should().BeFalse();
         }
     }
 }
