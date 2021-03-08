@@ -90,12 +90,15 @@ namespace Fiesta.Application.Features.Events
                     .GreaterThanOrEqualTo(x => x.StartDate).WithErrorCode(ErrorCodes.InvalidDateTime);
 
                 RuleFor(x => x.AccessibilityType)
-                  .NotEmpty().WithErrorCode(ErrorCodes.Required)
+                  .NotNull().WithErrorCode(ErrorCodes.Required)
                   .HasEnumValidValue();
 
                 RuleFor(x => x.Capacity)
                   .NotEmpty().WithErrorCode(ErrorCodes.Required)
-                  .GreaterThanOrEqualTo(0).WithErrorCode(ErrorCodes.NegativeNumber);
+                  .GreaterThanOrEqualTo(2).WithErrorCode(ErrorCodes.Min).WithState(_ => new { Min = 2 });
+
+                RuleFor(x => x.Location)
+                    .Must(x => LocationObject.ValidateLatitudeAndLongitude(x.Latitude, x.Longitude)).WithErrorCode(ErrorCodes.InvalidLatitudeOrLongitude);
             }
         }
     }

@@ -23,7 +23,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
         [Fact]
         public async Task GivenValidRequest_WhenCreateEvent_EventIsCreated()
         {
-            var response = await NotAuthedClient.PostAsJsonAsync("/api/auth/google-login", new { code = "validCode" });
+            await NotAuthedClient.PostAsJsonAsync("/api/auth/google-login", new { code = "validCode" });
             var user = await ArrangeDb.Users.SingleAsync(x => x.Email == GoogleAssets.JohnyUserInfoModel.Email);
 
             using var client = CreateClientForUser(user);
@@ -48,7 +48,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
                 name = "Welding competition",
                 startDate = DateTime.Now,
                 endDate = DateTime.Now.AddDays(1),
-                accessibilityType = AccessibilityType.FriendsOnly,
+                accessibilityType = AccessibilityType.Public,
                 capacity = 10,
                 location
             };
@@ -61,7 +61,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
         [Fact]
         public async Task GivenInvalidRequest_WhenCreateEvent_BadRequestIsReturned()
         {
-            var response = await NotAuthedClient.PostAsJsonAsync("/api/auth/google-login", new { code = "validCode" });
+            await NotAuthedClient.PostAsJsonAsync("/api/auth/google-login", new { code = "validCode" });
             var user = await ArrangeDb.Users.SingleAsync(x => x.Email == GoogleAssets.JohnyUserInfoModel.Email);
 
             using var client = CreateClientForUser(user);
@@ -110,7 +110,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
         [Fact]
         public async Task GivenInvalidLocation_WhenCreateEvent_BadRequestIsReturned()
         {
-            var response = await NotAuthedClient.PostAsJsonAsync("/api/auth/google-login", new { code = "validCode" });
+            await NotAuthedClient.PostAsJsonAsync("/api/auth/google-login", new { code = "validCode" });
             var user = await ArrangeDb.Users.SingleAsync(x => x.Email == GoogleAssets.JohnyUserInfoModel.Email);
 
             using var client = CreateClientForUser(user);
@@ -143,9 +143,16 @@ namespace Fiesta.WebApi.Tests.Features.Events
             var createResponse = await client.PostAsJsonAsync("/api/events/create", organizedEvent);
 
             var errorResposne = await createResponse.Content.ReadAsAsync<ErrorResponse>();
+
             errorResposne.Should().BeEquivalentTo(new
             {
-                ErrorCode = "BadRequest"
+                ErrorCode = "ValidationError",
+            });
+
+            errorResposne.ErrorDetails[0].Should().BeEquivalentTo(new
+            {
+                Code = ErrorCodes.InvalidLatitudeOrLongitude,
+                PropertyName = "location"
             });
         }
     }
