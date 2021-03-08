@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Fiesta.Application.Common.Constants;
+using Fiesta.Domain.Entities.Users;
 using Fiesta.Infrastracture.Auth;
 using Fiesta.IntegrationTests.Helpers;
 using TestBase;
@@ -43,7 +44,9 @@ namespace Fiesta.IntegrationTests
                 PasswordHash = "some_fake_passsword_hash",
             };
 
-            ArrangeDb.Users.Add(user);
+            var fiestaUser = FiestaUser.CreateWithId(user.Id, user.Email);
+
+            ArrangeDb.AddRangeAsync(user, fiestaUser);
             ArrangeDb.SaveChanges();
 
             var accessToken = user.GetAccessToken(Factory);
