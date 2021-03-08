@@ -77,7 +77,6 @@ namespace Fiesta.Application.Features.Events
             {
                 RuleFor(x => x.Name)
                     .NotEmpty().WithErrorCode(ErrorCodes.Required)
-                    .MinimumLength(6).WithErrorCode(ErrorCodes.MinLength).WithState(_ => new { MinLength = 6 })
                     .MaximumLength(30).WithErrorCode(ErrorCodes.MaxLength).WithState(_ => new { MaxLength = 30 });
 
                 RuleFor(x => x.StartDate)
