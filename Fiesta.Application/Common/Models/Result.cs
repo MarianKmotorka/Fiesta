@@ -31,7 +31,9 @@ namespace Fiesta.Application.Common.Models
 
         public IEnumerable<string> Errors { get; }
 
+#pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
         public static Result<T> Success<T>(T data = default)
+#pragma warning restore CS0693 
         {
             return new Result<T>(data);
         }
