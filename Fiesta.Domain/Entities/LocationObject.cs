@@ -56,7 +56,7 @@ namespace Fiesta.Domain.Entities
             yield return GoogleMapsUrl;
         }
 
-        private bool ValidateLatitudeAndLongitude(double latitude, double longitude)
+        public static bool ValidateLatitudeAndLongitude(double latitude, double longitude)
         {
             return (-90 <= latitude && latitude <= 90) && (-180 <= longitude && longitude <= 180);
         }

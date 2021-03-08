@@ -14,7 +14,7 @@ namespace Fiesta.Domain.Entities.Events
         public LocationObject Location { get; private set; }
         public FiestaUser Organizer { get; private set; }
 
-        public Event(string name, DateTime startDate, DateTime endDate, AccessibilityType accessibilityType, int capacity, FiestaUser organizer)
+        public Event(string name, DateTime startDate, DateTime endDate, AccessibilityType accessibilityType, int capacity, FiestaUser organizer, LocationObject location)
         {
             Name = name;
             StartDate = startDate;
@@ -22,6 +22,7 @@ namespace Fiesta.Domain.Entities.Events
             AccessibilityType = accessibilityType;
             Capacity = capacity;
             Organizer = organizer;
+            Location = location;
         }
 
         private Event()
