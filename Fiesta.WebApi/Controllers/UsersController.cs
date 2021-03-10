@@ -1,10 +1,9 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Fiesta.Application.Common.Constants;
-using Fiesta.Application.Common.Queries;
+﻿using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Features.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Fiesta.WebApi.Controllers
 {
@@ -24,6 +23,15 @@ namespace Fiesta.WebApi.Controllers
         public async Task<ActionResult<GetUserDetail.Query>> GetUserDetail(string id, CancellationToken cancellationToken)
         {
             var response = await Mediator.Send(new GetUserDetail.Query { Id = id }, cancellationToken);
+            return Ok(response);
+        }
+
+        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
+        [HttpPut("{id}")]
+        public async Task<ActionResult<UpdateUser.Query>> UpdateUser(UpdateUser.Query query, CancellationToken cancellationToken)
+        {
+            query.UserId = CurrentUserService.UserId;
+            var response = await Mediator.Send(query);
             return Ok(response);
         }
     }
