@@ -1,14 +1,15 @@
-﻿using System.Net;
-using System.Net.Mail;
-using Fiesta.Application.Common.Interfaces;
+﻿using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Options;
 using Fiesta.Infrastracture.Auth;
 using Fiesta.Infrastracture.Messaging.Email;
 using Fiesta.Infrastracture.Persistence;
+using Fiesta.Infrastracture.Resources.Images;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net;
+using System.Net.Mail;
 
 namespace Fiesta.Infrastracture.DependencyInjection
 {
@@ -59,6 +60,8 @@ namespace Fiesta.Infrastracture.DependencyInjection
             var cloudinaryOptions = new CloudinaryOptions();
             configuration.GetSection(nameof(CloudinaryOptions)).Bind(cloudinaryOptions);
             services.AddSingleton(cloudinaryOptions);
+
+            services.AddScoped<IImageService, ImageService>();
 
             return services;
         }
