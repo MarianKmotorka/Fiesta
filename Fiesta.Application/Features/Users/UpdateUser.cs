@@ -1,4 +1,4 @@
-﻿using CloudinaryDotNet.Actions;
+﻿using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
 using MediatR;
@@ -11,14 +11,14 @@ namespace Fiesta.Application.Features.Users
 {
     public class UpdateUser
     {
-        public class Query : IRequest<Response>
+        public class Command : IRequest<Unit>
         {
             [JsonIgnore]
             public string UserId { get; set; }
-            public IFormFile FormFile { get; set; }
+            public IFormFile ProfilePicture { get; set; }
         }
 
-        public class Handler : IRequestHandler<Query, Response>
+        public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IFiestaDbContext _db;
             private readonly IAuthService _authService;
@@ -31,21 +31,16 @@ namespace Fiesta.Application.Features.Users
                 _imageService = imageService;
             }
 
-            public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var uploadResult = await _imageService.UploadProfilePictureToCloudinary(request.UserId, request.FormFile, cancellationToken);
+                var uploadResult = await _imageService.UploadFileToCloudinary(CloudinaryFolders.ProfilePictures, request.ProfilePicture, cancellationToken, request.UserId);
 
-                if (!uploadResult.Failed)
+                if (uploadResult.Failed)
                     throw new BadRequestException(uploadResult.Errors);
 
-                return new Response() { ProfilePictureResponse = uploadResult.Data };
+                return Unit.Value;
             }
 
-        }
-
-        public class Response
-        {
-            public RawUploadResult ProfilePictureResponse { get; set; }
         }
     }
 }

@@ -44,22 +44,30 @@ namespace Fiesta.Infrastracture.Resources.Images
 
         }
 
-        public async Task<Result<RawUploadResult>> UploadProfilePictureToCloudinary(string userId, IFormFile formFile, CancellationToken cancellationToken)
+        public async Task<Result<RawUploadResult>> UploadFileToCloudinary(string folder, IFormFile formFile, CancellationToken cancellationToken, string publicId = "", string fileType = "image", bool overwrite = true)
         {
-            var signatureResponse = GenerateCloudinarySignature();
-            var file = new FileDescription(formFile.Name, formFile.OpenReadStream());
+            GenerateCloudinarySignature();
+            var file = new FileDescription(formFile.FileName, formFile.OpenReadStream());
 
             var parameters = new Dictionary<string, object>()
             {
-                ["timestamp"] = signatureResponse.TimeStamp,
-                ["signature"] = signatureResponse.Signature,
-                ["overwrite"] = true,
                 ["async"] = true,
-                ["public_id"] = userId,
-                ["folder"] = "ProfilePictures"
+                ["folder"] = folder,
             };
 
-            var result = await _cloudinary.UploadAsync("image", parameters, file, cancellationToken);
+            if (string.IsNullOrEmpty(publicId))
+            {
+                parameters.Add("use_filename", true);
+                parameters.Add("overwrite", true);
+                parameters.Add("unique_filename", false);
+            }
+            else
+            {
+                parameters.Add("public_id", publicId);
+                parameters.Add("overwrite", overwrite);
+            }
+
+            var result = await _cloudinary.UploadAsync(fileType, parameters, file, cancellationToken);
 
             if (result.StatusCode != HttpStatusCode.OK)
                 return Result<RawUploadResult>.Failure(result.Error.Message);

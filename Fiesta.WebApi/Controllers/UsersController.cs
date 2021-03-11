@@ -27,11 +27,11 @@ namespace Fiesta.WebApi.Controllers
         }
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
-        [HttpPut("{id}")]
-        public async Task<ActionResult<UpdateUser.Query>> UpdateUser(UpdateUser.Query query, CancellationToken cancellationToken)
+        [HttpPut("")]
+        public async Task<ActionResult<UpdateUser.Command>> UpdateUser([FromForm] UpdateUser.Command query, CancellationToken cancellationToken)
         {
             query.UserId = CurrentUserService.UserId;
-            var response = await Mediator.Send(query);
+            var response = await Mediator.Send(query, cancellationToken);
             return Ok(response);
         }
     }
