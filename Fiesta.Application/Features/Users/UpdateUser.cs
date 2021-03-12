@@ -49,11 +49,11 @@ namespace Fiesta.Application.Features.Users
         {
             public Validator()
             {
-                RuleFor(x => x.ProfilePicture.Length)
-                    .Must(x => x < 5000000).WithErrorCode(ErrorCodes.MaxSize).WithState(_ => new { MaxSize = 5000000 });
+                RuleFor(x => x.ProfilePicture)
+                    .Must(x => x.Length < 5000000).WithErrorCode(ErrorCodes.MaxSize).WithState(_ => new { MaxSize = 5000000 });
 
-                RuleFor(x => x.ProfilePicture.FileName)
-                    .Must(x => Path.GetExtension(x).ToLower() == ".jpg" || Path.GetExtension(x).ToLower() == ".png").WithErrorCode(ErrorCodes.UnsupportedMediaType);
+                RuleFor(x => x.ProfilePicture)
+                    .Must(x => Path.GetExtension(x.FileName).ToLower() == ".jpg" || Path.GetExtension(x.FileName).ToLower() == ".png").WithErrorCode(ErrorCodes.UnsupportedMediaType);
             }
         }
     }
