@@ -36,7 +36,7 @@ namespace Fiesta.WebApi.Controllers
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
         [HttpPut("me/profile-picture")]
-        public async Task<ActionResult<UploadProfilePicture.Query>> UploadProfilePicture([FromForm] UploadProfilePicture.Query query, CancellationToken cancellationToken)
+        public async Task<ActionResult<UploadProfilePicture.Response>> UploadProfilePicture([FromForm] UploadProfilePicture.Query query, CancellationToken cancellationToken)
         {
             query.UserId = CurrentUserService.UserId;
             var response = await Mediator.Send(query, cancellationToken);
@@ -45,7 +45,7 @@ namespace Fiesta.WebApi.Controllers
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
         [HttpDelete("me/profile-picture")]
-        public async Task<ActionResult<DeleteProfilePicture.Command>> DeleteProfilePicture(CancellationToken cancellationToken)
+        public async Task<ActionResult> DeleteProfilePicture(CancellationToken cancellationToken)
         {
             var response = await Mediator.Send(new DeleteProfilePicture.Command() { UserId = CurrentUserService.UserId }, cancellationToken);
             return Ok(response);

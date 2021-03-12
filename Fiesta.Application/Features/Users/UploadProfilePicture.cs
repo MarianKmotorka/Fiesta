@@ -13,14 +13,14 @@ namespace Fiesta.Application.Features.Users
 {
     public class UploadProfilePicture
     {
-        public class Query : IRequest<string>
+        public class Query : IRequest<Response>
         {
             [JsonIgnore]
             public string UserId { get; set; }
             public IFormFile ProfilePicture { get; set; }
         }
 
-        public class Handler : IRequestHandler<Query, string>
+        public class Handler : IRequestHandler<Query, Response>
         {
             private readonly IFiestaDbContext _db;
             private readonly IImageService _imageService;
@@ -31,7 +31,7 @@ namespace Fiesta.Application.Features.Users
                 _imageService = imageService;
             }
 
-            public async Task<string> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
             {
                 var uploadResult = await _imageService.UploadImageToCloud(request.ProfilePicture, $"{CloudinaryFolders.ProfilePictures}/{request.UserId}", cancellationToken);
 
@@ -43,7 +43,7 @@ namespace Fiesta.Application.Features.Users
                 fiestaUser.PictureUrl = uploadResult.Data;
                 await _db.SaveChangesAsync(cancellationToken);
 
-                return uploadResult.Data;
+                return new Response() { Uri = uploadResult.Data };
             }
         }
 
@@ -57,6 +57,11 @@ namespace Fiesta.Application.Features.Users
                 RuleFor(x => x.ProfilePicture)
                     .Must(x => Path.GetExtension(x.FileName).ToLower() == ".jpg" || Path.GetExtension(x.FileName).ToLower() == ".png").WithErrorCode(ErrorCodes.UnsupportedMediaType);
             }
+        }
+
+        public class Response
+        {
+            public string Uri { get; set; }
         }
     }
 }
