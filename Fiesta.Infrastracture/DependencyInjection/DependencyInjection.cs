@@ -61,7 +61,7 @@ namespace Fiesta.Infrastracture.DependencyInjection
             configuration.GetSection(nameof(CloudinaryOptions)).Bind(cloudinaryOptions);
             services.AddSingleton(cloudinaryOptions);
 
-            services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<IImageService, CloudinaryService>();
 
             return services;
         }

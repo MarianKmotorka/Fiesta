@@ -1,8 +1,10 @@
 ﻿using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using System.IO;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,7 +35,7 @@ namespace Fiesta.Application.Features.Users
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var uploadResult = await _imageService.UploadFileToCloudinary(CloudinaryFolders.ProfilePictures, request.ProfilePicture, cancellationToken, request.UserId);
+                var uploadResult = await _imageService.UploadImageToCloud(request.ProfilePicture, $"{CloudinaryFolders.ProfilePictures}/{request.UserId}", cancellationToken);
 
                 if (uploadResult.Failed)
                     throw new BadRequestException(uploadResult.Errors);
@@ -41,6 +43,18 @@ namespace Fiesta.Application.Features.Users
                 return Unit.Value;
             }
 
+        }
+
+        public class Validator : AbstractValidator<Command>
+        {
+            public Validator()
+            {
+                RuleFor(x => x.ProfilePicture.Length)
+                    .Must(x => x < 5000000).WithErrorCode(ErrorCodes.MaxSize).WithState(_ => new { MaxSize = 5000000 });
+
+                RuleFor(x => x.ProfilePicture.FileName)
+                    .Must(x => Path.GetExtension(x).ToLower() == ".jpg" || Path.GetExtension(x).ToLower() == ".png").WithErrorCode(ErrorCodes.UnsupportedMediaType);
+            }
         }
     }
 }

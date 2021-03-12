@@ -27,7 +27,7 @@ namespace Fiesta.WebApi.Controllers
         }
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
-        [HttpPut("")]
+        [HttpPut("me")]
         public async Task<ActionResult<UpdateUser.Command>> UpdateUser([FromForm] UpdateUser.Command query, CancellationToken cancellationToken)
         {
             query.UserId = CurrentUserService.UserId;

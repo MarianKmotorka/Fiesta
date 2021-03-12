@@ -23,5 +23,8 @@
         public const string Min = "min";
         public const string InvalidEnumValue = "invalidEnumValue";
         public const string InvalidLatitudeOrLongitude = "invalidLatitudeOrLongitude";
+        public const string UnsupportedMediaType = "unsupportedMediaType";
+        public const string MaxSize = "maxSize";
+        public const string MinSize = "minSize";
     }
 }
