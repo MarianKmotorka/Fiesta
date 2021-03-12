@@ -37,6 +37,24 @@ namespace Fiesta.Infrastracture.Resources.Images
                 return Result.Failure(result.Error.Message);
         }
 
+        public async Task<Result> DeleteImageFromCloud(string filePath, CancellationToken cancellationToken)
+        {
+            var result = await _cloudinary.DeleteResourcesAsync
+                (
+                new DelResParams()
+                {
+                    ResourceType = ResourceType.Image,
+                    PublicIds = new List<string>() { filePath }
+                },
+                cancellationToken
+                );
+
+            if (result.StatusCode == HttpStatusCode.OK)
+                return Result.Success();
+            else
+                return Result.Failure(result.Error.Message);
+        }
+
         private async Task<RawUploadResult> UploadFileToCloudinary(IFormFile formFile, string filePath, string fileType, CancellationToken cancellationToken, bool overwrite = true)
         {
             var file = new FileDescription(formFile.FileName, formFile.OpenReadStream());

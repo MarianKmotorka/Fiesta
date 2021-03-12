@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Fiesta.Application.Features.Users
 {
-    public class UpdateUser
+    public class UploadProfilePicture
     {
         public class Command : IRequest<Unit>
         {
