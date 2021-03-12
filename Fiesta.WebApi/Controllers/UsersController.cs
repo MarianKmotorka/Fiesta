@@ -1,5 +1,4 @@
 ﻿using Fiesta.Application.Common.Constants;
-using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Features.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,13 +10,6 @@ namespace Fiesta.WebApi.Controllers
     [Route("api/users")]
     public class UsersController : BaseController
     {
-        private readonly IImageService _imageService;
-
-        public UsersController(IImageService imageService)
-        {
-            _imageService = imageService;
-        }
-
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
         [HttpGet("me")]
         public async Task<ActionResult<GetUserDetail.Query>> GetMyDetail(CancellationToken cancellationToken)
