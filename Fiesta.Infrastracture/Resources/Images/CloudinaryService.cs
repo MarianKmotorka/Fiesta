@@ -6,7 +6,6 @@ using Fiesta.Application.Common.Models;
 using Fiesta.Application.Common.Options;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,7 +39,6 @@ namespace Fiesta.Infrastracture.Resources.Images
 
         private async Task<RawUploadResult> UploadFileToCloudinary(IFormFile formFile, string filePath, string fileType, CancellationToken cancellationToken, bool overwrite = true)
         {
-            GenerateCloudinarySignature();
             var file = new FileDescription(formFile.FileName, formFile.OpenReadStream());
 
             var parameters = new Dictionary<string, object>()
@@ -51,13 +49,6 @@ namespace Fiesta.Infrastracture.Resources.Images
             };
 
             return await _cloudinary.UploadAsync(fileType, parameters, file, cancellationToken);
-        }
-
-        private void GenerateCloudinarySignature()
-        {
-            var timestamp = Stopwatch.GetTimestamp().ToString();
-            var parameters = new Dictionary<string, object>() { ["timestamp"] = timestamp };
-            _cloudinary.Api.SignParameters(parameters);
         }
     }
 }
