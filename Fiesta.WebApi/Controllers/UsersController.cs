@@ -28,7 +28,7 @@ namespace Fiesta.WebApi.Controllers
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
         [HttpPut("me/profile-picture")]
-        public async Task<ActionResult<UploadProfilePicture.Response>> UploadProfilePicture([FromForm] UploadProfilePicture.Query query, CancellationToken cancellationToken)
+        public async Task<ActionResult<UploadProfilePicture.Response>> UploadProfilePicture([FromForm] UploadProfilePicture.Command query, CancellationToken cancellationToken)
         {
             query.UserId = CurrentUserService.UserId;
             var response = await Mediator.Send(query, cancellationToken);
