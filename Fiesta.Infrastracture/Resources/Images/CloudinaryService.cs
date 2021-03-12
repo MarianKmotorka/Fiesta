@@ -27,14 +27,14 @@ namespace Fiesta.Infrastracture.Resources.Images
                 );
         }
 
-        public async Task<Result> UploadImageToCloud(IFormFile picture, string filePath, CancellationToken cancellationToken)
+        public async Task<Result<string>> UploadImageToCloud(IFormFile picture, string filePath, CancellationToken cancellationToken)
         {
             var result = await UploadFileToCloudinary(picture, filePath, CloudinaryFileTypes.Image, cancellationToken);
 
             if (result.StatusCode == HttpStatusCode.OK)
-                return Result.Success();
+                return Result<string>.Success(result.Url.OriginalString);
             else
-                return Result.Failure(result.Error.Message);
+                return Result<string>.Failure(result.Error.Message);
         }
 
         public async Task<Result> DeleteImageFromCloud(string filePath, CancellationToken cancellationToken)
@@ -61,7 +61,6 @@ namespace Fiesta.Infrastracture.Resources.Images
 
             var parameters = new Dictionary<string, object>()
             {
-                ["async"] = true,
                 ["public_id"] = filePath,
                 ["overwrite"] = overwrite,
             };

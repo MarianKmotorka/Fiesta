@@ -1,5 +1,4 @@
 ﻿using Fiesta.Application.Common.Constants;
-using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Features.Users;
 using Microsoft.AspNetCore.Authorization;
@@ -37,7 +36,7 @@ namespace Fiesta.WebApi.Controllers
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
         [HttpPut("me/profile-picture")]
-        public async Task<ActionResult<UploadProfilePicture.Command>> UploadProfilePicture([FromForm] UploadProfilePicture.Command query, CancellationToken cancellationToken)
+        public async Task<ActionResult<UploadProfilePicture.Query>> UploadProfilePicture([FromForm] UploadProfilePicture.Query query, CancellationToken cancellationToken)
         {
             query.UserId = CurrentUserService.UserId;
             var response = await Mediator.Send(query, cancellationToken);
@@ -46,14 +45,10 @@ namespace Fiesta.WebApi.Controllers
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
         [HttpDelete("me/profile-picture")]
-        public async Task<ActionResult> DeleteProfilePicture(CancellationToken cancellationToken)
+        public async Task<ActionResult<DeleteProfilePicture.Command>> DeleteProfilePicture(CancellationToken cancellationToken)
         {
-            var result = await _imageService.DeleteImageFromCloud($"{CloudinaryFolders.ProfilePictures}/{CurrentUserService.UserId}", cancellationToken);
-
-            if (result.Failed)
-                throw new BadRequestException(result.Errors);
-
-            return NoContent();
+            var response = await Mediator.Send(new DeleteProfilePicture.Command() { UserId = CurrentUserService.UserId }, cancellationToken);
+            return Ok(response);
         }
     }
 }

@@ -13,39 +13,41 @@ namespace Fiesta.Application.Features.Users
 {
     public class UploadProfilePicture
     {
-        public class Command : IRequest<Unit>
+        public class Query : IRequest<string>
         {
             [JsonIgnore]
             public string UserId { get; set; }
             public IFormFile ProfilePicture { get; set; }
         }
 
-        public class Handler : IRequestHandler<Command, Unit>
+        public class Handler : IRequestHandler<Query, string>
         {
             private readonly IFiestaDbContext _db;
-            private readonly IAuthService _authService;
             private readonly IImageService _imageService;
 
-            public Handler(IFiestaDbContext db, IAuthService authService, IImageService imageService)
+            public Handler(IFiestaDbContext db, IImageService imageService)
             {
                 _db = db;
-                _authService = authService;
                 _imageService = imageService;
             }
 
-            public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<string> Handle(Query request, CancellationToken cancellationToken)
             {
                 var uploadResult = await _imageService.UploadImageToCloud(request.ProfilePicture, $"{CloudinaryFolders.ProfilePictures}/{request.UserId}", cancellationToken);
 
                 if (uploadResult.Failed)
                     throw new BadRequestException(uploadResult.Errors);
 
-                return Unit.Value;
-            }
+                var fiestaUser = await _db.FiestaUsers.FindAsync(new[] { request.UserId }, cancellationToken);
 
+                fiestaUser.PictureUrl = uploadResult.Data;
+                await _db.SaveChangesAsync(cancellationToken);
+
+                return uploadResult.Data;
+            }
         }
 
-        public class Validator : AbstractValidator<Command>
+        public class Validator : AbstractValidator<Query>
         {
             public Validator()
             {
