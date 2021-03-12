@@ -1,10 +1,9 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Fiesta.Application.Common.Constants;
-using Fiesta.Application.Common.Queries;
+﻿using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Features.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Fiesta.WebApi.Controllers
 {
@@ -24,6 +23,23 @@ namespace Fiesta.WebApi.Controllers
         public async Task<ActionResult<GetUserDetail.Query>> GetUserDetail(string id, CancellationToken cancellationToken)
         {
             var response = await Mediator.Send(new GetUserDetail.Query { Id = id }, cancellationToken);
+            return Ok(response);
+        }
+
+        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
+        [HttpPut("me/profile-picture")]
+        public async Task<ActionResult<UploadProfilePicture.Response>> UploadProfilePicture([FromForm] UploadProfilePicture.Query query, CancellationToken cancellationToken)
+        {
+            query.UserId = CurrentUserService.UserId;
+            var response = await Mediator.Send(query, cancellationToken);
+            return Ok(response);
+        }
+
+        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
+        [HttpDelete("me/profile-picture")]
+        public async Task<ActionResult> DeleteProfilePicture(CancellationToken cancellationToken)
+        {
+            var response = await Mediator.Send(new DeleteProfilePicture.Command() { UserId = CurrentUserService.UserId }, cancellationToken);
             return Ok(response);
         }
     }
