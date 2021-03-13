@@ -42,7 +42,7 @@ namespace Fiesta.Application.Features.Users
                 fiestaUser.PictureUrl = uploadResult.Data;
                 await _db.SaveChangesAsync(cancellationToken);
 
-                return new Response { Url = uploadResult.Data };
+                return new Response { PictureUrl = uploadResult.Data };
             }
         }
 
@@ -60,7 +60,7 @@ namespace Fiesta.Application.Features.Users
 
         public class Response
         {
-            public string Url { get; set; }
+            public string PictureUrl { get; set; }
         }
     }
 }

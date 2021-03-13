@@ -1,16 +1,16 @@
-﻿using Fiesta.Application.Common.Constants;
+﻿using System.Text.Json.Serialization;
+using System.Threading;
+using System.Threading.Tasks;
+using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
 using FluentValidation;
 using MediatR;
-using System.Text.Json.Serialization;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Fiesta.Application.Features.Users
 {
     public class UpdateUser
     {
-        public class Command : IRequest<Unit>
+        public class Command : IRequest<Response>
         {
             [JsonIgnore]
             public string UserId { get; set; }
@@ -18,7 +18,7 @@ namespace Fiesta.Application.Features.Users
             public string LastName { get; set; }
         }
 
-        public class Handler : IRequestHandler<Command, Unit>
+        public class Handler : IRequestHandler<Command, Response>
         {
             private readonly IFiestaDbContext _db;
 
@@ -27,7 +27,7 @@ namespace Fiesta.Application.Features.Users
                 _db = db;
             }
 
-            public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
             {
                 var fiestaUser = await _db.FiestaUsers.FindAsync(new[] { request.UserId }, cancellationToken);
 
@@ -35,7 +35,13 @@ namespace Fiesta.Application.Features.Users
                 fiestaUser.LastName = request.LastName;
 
                 await _db.SaveChangesAsync(cancellationToken);
-                return Unit.Value;
+                return new Response
+                {
+                    Id = fiestaUser.Id,
+                    FirstName = fiestaUser.FirstName,
+                    LastName = fiestaUser.LastName,
+                    FullName = fiestaUser.FullName
+                };
             }
         }
 
@@ -53,6 +59,17 @@ namespace Fiesta.Application.Features.Users
                     .MinimumLength(2).WithErrorCode(ErrorCodes.MinLength).WithState(_ => new { MinLength = 2 })
                     .MaximumLength(30).WithErrorCode(ErrorCodes.MaxLength).WithState(_ => new { MaxLength = 30 });
             }
+        }
+
+        public class Response
+        {
+            public string Id { get; set; }
+
+            public string FirstName { get; set; }
+
+            public string LastName { get; set; }
+
+            public string FullName { get; set; }
         }
     }
 }

@@ -34,7 +34,7 @@ namespace Fiesta.Application.Features.Users
                     Email = user.Email,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
-                    FullName = $"{user.FirstName} {user.LastName}",
+                    FullName = user.FullName,
                     PictureUrl = user.PictureUrl,
                     Role = await _authService.GetRole(user.Id, cancellationToken),
                     GoogleEmail = await _authService.GetGoogleEmail(user.Id, cancellationToken),
