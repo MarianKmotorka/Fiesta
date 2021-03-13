@@ -42,5 +42,14 @@ namespace Fiesta.WebApi.Controllers
             var response = await Mediator.Send(new DeleteProfilePicture.Command() { UserId = CurrentUserService.UserId }, cancellationToken);
             return Ok(response);
         }
+
+        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
+        [HttpPut("me")]
+        public async Task<ActionResult> UpdateMyProfile(UpdateUser.Command query, CancellationToken cancellationToken)
+        {
+            query.UserId = CurrentUserService.UserId;
+            var response = await Mediator.Send(query, cancellationToken);
+            return Ok(response);
+        }
     }
 }
