@@ -1,4 +1,7 @@
-﻿using Fiesta.Application.Common.Constants;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Options;
@@ -7,9 +10,6 @@ using Fiesta.Application.Features.Auth.CommonDtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Fiesta.WebApi.Controllers
 {
@@ -147,6 +147,14 @@ namespace Fiesta.WebApi.Controllers
         {
             await Mediator.Send(new DeleteAccountWithGoogle.Command { UserId = CurrentUserService.UserId, Code = code }, cancellationToken);
             return NoContent();
+        }
+
+        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
+        [HttpGet("me")]
+        public async Task<ActionResult<GetMe.Response>> GetMe(CancellationToken cancellationToken)
+        {
+            var response = await Mediator.Send(new GetMe.Query { Id = CurrentUserService.UserId }, cancellationToken);
+            return Ok(response);
         }
 
         private CookieOptions GetRefreshTokenCookieOptions(TimeSpan? maxAge = null)
