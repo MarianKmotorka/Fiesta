@@ -36,7 +36,7 @@ namespace Fiesta.WebApi.Controllers
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
         [HttpPatch("{id}")]
-        public async Task<ActionResult> UpdateMyProfile(string id, UpdateUser.Command query, CancellationToken cancellationToken)
+        public async Task<ActionResult> UpdateProfile(string id, UpdateUser.Command query, CancellationToken cancellationToken)
         {
             query.UserId = id;
             var response = await Mediator.Send(query, cancellationToken);
