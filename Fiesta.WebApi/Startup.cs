@@ -1,4 +1,7 @@
+using Autofac;
 using Fiesta.Application;
+using Fiesta.Application.Common.Behaviours.Authorization;
+using Fiesta.Application.Common.Exceptions;
 using Fiesta.Infrastracture.DependencyInjection;
 using Fiesta.WebApi.Extensions;
 using Fiesta.WebApi.Middleware.ExceptionHanlding;
@@ -28,6 +31,14 @@ namespace Fiesta.WebApi
 
             services.AddHttpContextAccessor();
             services.AddControllers();
+        }
+
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            builder.RegisterAssemblyTypes(typeof(BadRequestException).Assembly)
+                .AsClosedTypesOf(typeof(IAuthorizationCheck<>))
+                .AsImplementedInterfaces()
+                .InstancePerLifetimeScope();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

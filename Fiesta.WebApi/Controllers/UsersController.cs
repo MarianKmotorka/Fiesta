@@ -27,27 +27,27 @@ namespace Fiesta.WebApi.Controllers
         }
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
-        [HttpPut("me/profile-picture")]
-        public async Task<ActionResult<UploadProfilePicture.Response>> UploadProfilePicture([FromForm] UploadProfilePicture.Command query, CancellationToken cancellationToken)
+        [HttpPost("{id}/profile-picture")]
+        public async Task<ActionResult<UploadProfilePicture.Response>> UploadProfilePicture(string id, [FromForm] UploadProfilePicture.Command query, CancellationToken cancellationToken)
         {
-            query.UserId = CurrentUserService.UserId;
+            query.UserId = id;
             var response = await Mediator.Send(query, cancellationToken);
             return Ok(response);
         }
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
-        [HttpDelete("me/profile-picture")]
-        public async Task<ActionResult> DeleteProfilePicture(CancellationToken cancellationToken)
+        [HttpDelete("{id}/profile-picture")]
+        public async Task<ActionResult> DeleteProfilePicture(string id, CancellationToken cancellationToken)
         {
-            var response = await Mediator.Send(new DeleteProfilePicture.Command() { UserId = CurrentUserService.UserId }, cancellationToken);
-            return Ok(response);
+            await Mediator.Send(new DeleteProfilePicture.Command() { UserId = id }, cancellationToken);
+            return NoContent();
         }
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
-        [HttpPut("me")]
-        public async Task<ActionResult> UpdateMyProfile(UpdateUser.Command query, CancellationToken cancellationToken)
+        [HttpPatch("{id}")]
+        public async Task<ActionResult> UpdateMyProfile(string id, UpdateUser.Command query, CancellationToken cancellationToken)
         {
-            query.UserId = CurrentUserService.UserId;
+            query.UserId = id;
             var response = await Mediator.Send(query, cancellationToken);
             return Ok(response);
         }
