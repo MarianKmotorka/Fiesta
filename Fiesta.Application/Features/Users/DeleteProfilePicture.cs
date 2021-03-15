@@ -5,6 +5,7 @@ using Fiesta.Application.Common.Behaviours.Authorization;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
+using Fiesta.Application.Utils;
 using MediatR;
 
 namespace Fiesta.Application.Features.Users
@@ -46,7 +47,7 @@ namespace Fiesta.Application.Features.Users
             public class AuthorizationCheck : IAuthorizationCheck<Command>
             {
                 public Task<bool> IsAuthorized(Command request, IFiestaDbContext db, ICurrentUserService currentUserService, CancellationToken cancellationToken)
-                => Task.FromResult(request.UserId == currentUserService.UserId || currentUserService.Role == FiestaRoleEnum.Admin);
+                    => Task.FromResult(currentUserService.IsResourceOwnerOrAdmin(request.UserId));
             }
         }
     }
