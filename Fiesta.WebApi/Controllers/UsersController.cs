@@ -1,33 +1,24 @@
-﻿using Fiesta.Application.Common.Constants;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Features.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Fiesta.WebApi.Controllers
 {
     [Route("api/users")]
     public class UsersController : BaseController
     {
-        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
-        [HttpGet("me")]
-        public async Task<ActionResult<GetUserDetail.Query>> GetMyDetail(CancellationToken cancellationToken)
-        {
-            var response = await Mediator.Send(new GetUserDetail.Query { Id = CurrentUserService.UserId }, cancellationToken);
-            return Ok(response);
-        }
-
-        [Authorize(nameof(FiestaRoleEnum.Admin))]
         [HttpGet("{id}")]
-        public async Task<ActionResult<GetUserDetail.Query>> GetUserDetail(string id, CancellationToken cancellationToken)
+        public async Task<ActionResult<GetUserDetail.Response>> GetUserDetail(string id, CancellationToken cancellationToken)
         {
             var response = await Mediator.Send(new GetUserDetail.Query { Id = id }, cancellationToken);
             return Ok(response);
         }
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
-        [HttpPut("me/profile-picture")]
+        [HttpPost("me/profile-picture")]
         public async Task<ActionResult<UploadProfilePicture.Response>> UploadProfilePicture([FromForm] UploadProfilePicture.Command query, CancellationToken cancellationToken)
         {
             query.UserId = CurrentUserService.UserId;
@@ -39,12 +30,12 @@ namespace Fiesta.WebApi.Controllers
         [HttpDelete("me/profile-picture")]
         public async Task<ActionResult> DeleteProfilePicture(CancellationToken cancellationToken)
         {
-            var response = await Mediator.Send(new DeleteProfilePicture.Command() { UserId = CurrentUserService.UserId }, cancellationToken);
-            return Ok(response);
+            await Mediator.Send(new DeleteProfilePicture.Command() { UserId = CurrentUserService.UserId }, cancellationToken);
+            return NoContent();
         }
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
-        [HttpPut("me")]
+        [HttpPatch("me")]
         public async Task<ActionResult> UpdateMyProfile(UpdateUser.Command query, CancellationToken cancellationToken)
         {
             query.UserId = CurrentUserService.UserId;
