@@ -1,9 +1,10 @@
-﻿using System.Text.Json.Serialization;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using Fiesta.Application.Common.Behaviours.Authorization;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
+using Fiesta.Application.Utils;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -14,7 +15,6 @@ namespace Fiesta.Application.Features.Users
     {
         public class Command : IRequest<Response>
         {
-            [JsonIgnore]
             public string UserId { get; set; }
             public IFormFile ProfilePicture { get; set; }
         }
@@ -56,6 +56,12 @@ namespace Fiesta.Application.Features.Users
                     .Must(x => x.Length < 500_000).WithErrorCode(ErrorCodes.MaxSize).WithState(_ => new { MaxSize = "500KB" })
                     .Must(x => x.ContentType.Split('/')[0] == "image").WithErrorCode(ErrorCodes.UnsupportedMediaType);
             }
+        }
+
+        public class AuthorizationCheck : IAuthorizationCheck<Command>
+        {
+            public Task<bool> IsAuthorized(Command request, IFiestaDbContext db, ICurrentUserService currentUserService, CancellationToken cancellationToken)
+                => Task.FromResult(currentUserService.IsResourceOwnerOrAdmin(request.UserId));
         }
 
         public class Response

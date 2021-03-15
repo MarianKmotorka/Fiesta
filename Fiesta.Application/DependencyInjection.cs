@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Fiesta.Application.BackgroundWorkers;
 using Fiesta.Application.Common.Behaviours;
+using Fiesta.Application.Common.Behaviours.Authorization;
 using Fiesta.Application.Common.Options;
 using Fiesta.Application.Utils;
 using FluentValidation;
@@ -19,6 +20,7 @@ namespace Fiesta.Application
 
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthorizationCheckBehavior<,>));
             services.AddHttpClient();
 
             services.AddHardDeleteUsersWorker(configuration);

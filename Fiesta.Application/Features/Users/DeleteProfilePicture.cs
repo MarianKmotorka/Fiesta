@@ -1,10 +1,12 @@
-﻿using Fiesta.Application.Common.Constants;
-using Fiesta.Application.Common.Exceptions;
-using Fiesta.Application.Common.Interfaces;
-using MediatR;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Fiesta.Application.Common.Behaviours.Authorization;
+using Fiesta.Application.Common.Constants;
+using Fiesta.Application.Common.Exceptions;
+using Fiesta.Application.Common.Interfaces;
+using Fiesta.Application.Utils;
+using MediatR;
 
 namespace Fiesta.Application.Features.Users
 {
@@ -42,6 +44,11 @@ namespace Fiesta.Application.Features.Users
                 return Unit.Value;
             }
 
+            public class AuthorizationCheck : IAuthorizationCheck<Command>
+            {
+                public Task<bool> IsAuthorized(Command request, IFiestaDbContext db, ICurrentUserService currentUserService, CancellationToken cancellationToken)
+                    => Task.FromResult(currentUserService.IsResourceOwnerOrAdmin(request.UserId));
+            }
         }
     }
 }
