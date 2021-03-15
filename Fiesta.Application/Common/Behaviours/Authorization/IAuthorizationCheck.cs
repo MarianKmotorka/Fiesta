@@ -6,6 +6,6 @@ namespace Fiesta.Application.Common.Behaviours.Authorization
 {
     public interface IAuthorizationCheck<TRequest>
     {
-        public abstract Task<bool> IsAuthorized(TRequest request, IFiestaDbContext db, ICurrentUserService currentUserService, CancellationToken cancellationToken);
+        public Task<bool> IsAuthorized(TRequest request, IFiestaDbContext db, ICurrentUserService currentUserService, CancellationToken cancellationToken);
     }
 }
