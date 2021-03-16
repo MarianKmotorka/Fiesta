@@ -12,7 +12,7 @@ namespace Fiesta.WebApi.Controllers
     {
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
         [HttpPost("create")]
-        public async Task<ActionResult<CreateEvent.Command>> CreateEvent(CreateEvent.Command command, CancellationToken cancellationToken)
+        public async Task<ActionResult<CreateEvent.Response>> CreateEvent(CreateEvent.Command command, CancellationToken cancellationToken)
         {
             command.OrganizerId = CurrentUserService.UserId;
             var response = await Mediator.Send(command, cancellationToken);
