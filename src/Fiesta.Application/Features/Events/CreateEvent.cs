@@ -67,7 +67,7 @@ namespace Fiesta.Application.Features.Events
                 fiestaUser.AddOrganizedEvent(organizedEvent);
                 await _fiestaDbContext.SaveChangesAsync(cancellationToken);
 
-                return new Response() { ID = organizedEvent.Id };
+                return new Response { Id = organizedEvent.Id };
             }
         }
 
@@ -103,7 +103,7 @@ namespace Fiesta.Application.Features.Events
 
         public class Response
         {
-            public string ID { get; set; }
+            public string Id { get; set; }
         }
     }
 }
