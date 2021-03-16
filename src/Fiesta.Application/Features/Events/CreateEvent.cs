@@ -15,7 +15,7 @@ namespace Fiesta.Application.Features.Events
 {
     public class CreateEvent
     {
-        public class Command : IRequest
+        public class Command : IRequest<Response>
         {
             [JsonIgnore]
             public string OrganizerId { get; set; }
@@ -27,7 +27,7 @@ namespace Fiesta.Application.Features.Events
             public LocationDto Location { get; set; }
         }
 
-        public class Handler : IRequestHandler<Command>
+        public class Handler : IRequestHandler<Command, Response>
         {
             private readonly IFiestaDbContext _fiestaDbContext;
 
@@ -36,7 +36,7 @@ namespace Fiesta.Application.Features.Events
                 _fiestaDbContext = fiestaDbContext;
             }
 
-            public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
             {
                 var fiestaUser = _fiestaDbContext.FiestaUsers.FindAsync(new[] { request.OrganizerId }, cancellationToken).Result;
 
@@ -67,7 +67,7 @@ namespace Fiesta.Application.Features.Events
                 fiestaUser.AddOrganizedEvent(organizedEvent);
                 await _fiestaDbContext.SaveChangesAsync(cancellationToken);
 
-                return Unit.Value;
+                return new Response { Id = organizedEvent.Id };
             }
         }
 
@@ -99,6 +99,11 @@ namespace Fiesta.Application.Features.Events
                 RuleFor(x => x.Location)
                     .Must(x => LocationObject.ValidateLatitudeAndLongitude(x.Latitude, x.Longitude)).WithErrorCode(ErrorCodes.InvalidLatitudeOrLongitude);
             }
+        }
+
+        public class Response
+        {
+            public string Id { get; set; }
         }
     }
 }
