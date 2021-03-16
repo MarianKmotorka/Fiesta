@@ -9,8 +9,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Fiesta.Application\Fiesta.Application.csproj" />
-    <ProjectReference Include="..\Fiesta.Infrastracture\Fiesta.Infrastracture.csproj" />
+    <ProjectReference Include="..\..\src\Fiesta.Application\Fiesta.Application.csproj" />
+    <ProjectReference Include="..\..\src\Fiesta.Infrastracture\Fiesta.Infrastracture.csproj" />
   </ItemGroup>
 
 </Project>

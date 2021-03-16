@@ -29,7 +29,7 @@ namespace Fiesta.Application.Features.Users
 
             public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
             {
-                var fiestaUser = await _db.FiestaUsers.FindAsync(new[] { request.UserId }, cancellationToken);
+                var fiestaUser = await _db.FiestaUsers.FindOrNotFoundAsync(cancellationToken, request.UserId);
 
                 fiestaUser.FirstName = request.FirstName;
                 fiestaUser.LastName = request.LastName;

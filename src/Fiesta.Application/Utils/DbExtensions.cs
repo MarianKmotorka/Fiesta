@@ -15,5 +15,10 @@ namespace Fiesta.Application.Utils
             var entity = await query.SingleOrDefaultAsync(predicate, cancellationToken);
             return entity ?? throw new NotFoundException($"{typeof(TEntity).Name} not found.");
         }
+
+        public static async ValueTask<TEntity> FindOrNotFoundAsync<TEntity>(this DbSet<TEntity> dbSet, CancellationToken cancellationToken, params object[] keyValues) where TEntity : class
+        {
+            return await dbSet.FindAsync(keyValues, cancellationToken) ?? throw new NotFoundException($"{typeof(TEntity).Name} with keyValues: {{{string.Join(',', keyValues)}}} not found.");
+        }
     }
 }

@@ -37,7 +37,7 @@ namespace Fiesta.Application.Features.Users
                 if (uploadResult.Failed)
                     throw new BadRequestException(uploadResult.Errors);
 
-                var fiestaUser = await _db.FiestaUsers.FindAsync(new[] { request.UserId }, cancellationToken);
+                var fiestaUser = await _db.FiestaUsers.FindOrNotFoundAsync(cancellationToken, request.UserId);
 
                 fiestaUser.PictureUrl = uploadResult.Data;
                 await _db.SaveChangesAsync(cancellationToken);
