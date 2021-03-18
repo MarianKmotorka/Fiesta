@@ -9,14 +9,14 @@ namespace Fiesta.Application.Common.Interfaces
 {
     public interface IAuthService
     {
-        Task<Result<(string accessToken, string refreshToken, bool authUserCreated, string userId, string nickname)>> LoginOrRegister(GoogleUserInfoModel model, CancellationToken cancellationToken);
+        Task<Result<(string accessToken, string refreshToken, bool authUserCreated, string userId, string username)>> LoginOrRegister(GoogleUserInfoModel model, CancellationToken cancellationToken);
 
-        Task<Result<(string accessToken, string refreshToken)>> Login(string emailOrNickname, string password, CancellationToken cancellationToken);
+        Task<Result<(string accessToken, string refreshToken)>> Login(string emailOrUsername, string password, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Registers new user and returns userId and nickname
+        /// Registers new user and returns userId and username
         /// </summary>
-        Task<Result<(string userId, string nickname)>> Register(RegisterWithEmailAndPassword.Command command, CancellationToken cancellationToken);
+        Task<Result<(string userId, string username)>> Register(RegisterWithEmailAndPassword.Command command, CancellationToken cancellationToken);
 
         Task<Result<(string accessToken, string refreshToken)>> RefreshJwt(string refreshToken, CancellationToken cancellationToken);
 

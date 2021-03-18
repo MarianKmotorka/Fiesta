@@ -44,7 +44,7 @@ namespace Fiesta.IntegrationTests
                 PasswordHash = "some_fake_passsword_hash",
             };
 
-            var fiestaUser = FiestaUser.CreateWithId(user.Id, user.Email, user.Nickname);
+            var fiestaUser = FiestaUser.CreateWithId(user.Id, user.Email, user.UserName);
 
             ArrangeDb.AddRangeAsync(user, fiestaUser);
             ArrangeDb.SaveChanges();

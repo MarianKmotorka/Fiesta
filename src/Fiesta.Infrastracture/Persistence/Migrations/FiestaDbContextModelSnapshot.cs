@@ -73,17 +73,13 @@ namespace Fiesta.Infrastracture.Persistence.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Nickname")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("PictureUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.Property<string>("Username")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("Nickname")
-                        .IsUnique()
-                        .HasFilter("[Nickname] IS NOT NULL");
+                    b.HasKey("Id");
 
                     b.ToTable("FiestaUser");
                 });
@@ -147,9 +143,6 @@ namespace Fiesta.Infrastracture.Persistence.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("Nickname")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -185,12 +178,14 @@ namespace Fiesta.Infrastracture.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Nickname")
+                    b.HasIndex("Email")
                         .IsUnique()
-                        .HasFilter("[Nickname] IS NOT NULL");
+                        .HasFilter("[Email] IS NOT NULL");
 
                     b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
+                        .IsUnique()
+                        .HasDatabaseName("EmailIndex")
+                        .HasFilter("[NormalizedEmail] IS NOT NULL");
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()

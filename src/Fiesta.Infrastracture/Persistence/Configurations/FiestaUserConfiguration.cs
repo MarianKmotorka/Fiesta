@@ -10,7 +10,6 @@ namespace Fiesta.Infrastracture.Persistence.Configurations
         {
             builder.Property(x => x.Id).HasMaxLength(36);
             builder.Property(x => x.Id).ValueGeneratedOnAdd();
-            builder.HasIndex(x => x.Nickname).IsUnique();
         }
     }
 }

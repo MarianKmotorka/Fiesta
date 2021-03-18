@@ -7,15 +7,15 @@ namespace Fiesta.Domain.Entities.Users
 {
     public class FiestaUser : Entity<string>
     {
-        public FiestaUser(string email, string nickname)
+        public FiestaUser(string email, string username)
         {
             Email = email;
-            Nickname = nickname;
+            Username = username;
             CreatedOnUtc = DateTime.UtcNow;
         }
 
-        public static FiestaUser CreateWithId(string id, string email, string nickname)
-            => new FiestaUser(email, nickname) { Id = id };
+        public static FiestaUser CreateWithId(string id, string email, string username)
+            => new FiestaUser(email, username) { Id = id };
 
         public string FirstName { get; set; }
 
@@ -23,7 +23,7 @@ namespace Fiesta.Domain.Entities.Users
 
         public string FullName { get => $"{FirstName} {LastName}"; }
 
-        public string Nickname { get; private set; }
+        public string Username { get; private set; }
 
         public string Email { get; private set; }
 

@@ -35,12 +35,12 @@ namespace Fiesta.WebApi.Tests.Features.Auth
             authUser.EmailConfirmed = true;
             await AssertDb.SaveChangesAsync();
 
-            var response = await NotAuthedClient.PostAsJsonAsync("/api/auth/login", new { emailOrNickname = authUser.Email, password = request.Password });
+            var response = await NotAuthedClient.PostAsJsonAsync("/api/auth/login", new { emailOrUsername = authUser.Email, password = request.Password });
             response.EnsureSuccessStatusCode();
         }
 
         [Fact]
-        public async Task GivenValidRequest_WhenLoggingInWithNicknameAndPassword_UserIsLoggedIn()
+        public async Task GivenValidRequest_WhenLoggingInWithUsernameAndPassword_UserIsLoggedIn()
         {
             var request = new RegisterWithEmailAndPassword.Command
             {
@@ -56,12 +56,12 @@ namespace Fiesta.WebApi.Tests.Features.Auth
             authUser.EmailConfirmed = true;
             await AssertDb.SaveChangesAsync();
 
-            var response = await NotAuthedClient.PostAsJsonAsync("/api/auth/login", new { emailOrNickname = authUser.Nickname, password = request.Password });
+            var response = await NotAuthedClient.PostAsJsonAsync("/api/auth/login", new { emailOrUsername = authUser.UserName, password = request.Password });
             response.EnsureSuccessStatusCode();
         }
 
         [Fact]
-        public async Task GivenInvalidPassword_WhenLoggingInWithNicknameAndPassword_BadRequestIsReturned()
+        public async Task GivenInvalidPassword_WhenLoggingInWithUsernameAndPassword_BadRequestIsReturned()
         {
             var request = new RegisterWithEmailAndPassword.Command
             {
@@ -77,7 +77,7 @@ namespace Fiesta.WebApi.Tests.Features.Auth
             authUser.EmailConfirmed = true;
             await AssertDb.SaveChangesAsync();
 
-            var response = await NotAuthedClient.PostAsJsonAsync("/api/auth/login", new { emailOrNickname = authUser.Nickname, password = "InvalidPassword" });
+            var response = await NotAuthedClient.PostAsJsonAsync("/api/auth/login", new { emailOrUsername = authUser.UserName, password = "InvalidPassword" });
 
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 

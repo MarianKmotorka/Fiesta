@@ -6,17 +6,16 @@ namespace Fiesta.Infrastracture.Auth
 {
     public class AuthUser : IdentityUser<string>
     {
-        public AuthUser(string email, AuthProviderEnum authProvider, string nickname) : this(email, FiestaRoleEnum.BasicUser, authProvider, nickname)
+        public AuthUser(string email, AuthProviderEnum authProvider, string userName) : this(email, FiestaRoleEnum.BasicUser, authProvider, userName)
         {
         }
 
-        public AuthUser(string email, FiestaRoleEnum role, AuthProviderEnum authProvider, string nickname)
+        public AuthUser(string email, FiestaRoleEnum role, AuthProviderEnum authProvider, string userName)
         {
             Email = email.Trim().ToLower();
-            UserName = Email;
             Role = role;
             AuthProvider = authProvider;
-            Nickname = nickname;
+            UserName = userName;
             if (authProvider == AuthProviderEnum.Google)
                 GoogleEmail = Email;
         }
@@ -24,8 +23,6 @@ namespace Fiesta.Infrastracture.Auth
         public string GoogleEmail { get; private set; }
 
         public string RefreshToken { get; set; }
-
-        public string Nickname { get; set; }
 
         public AuthProviderEnum AuthProvider { get; private set; }
 

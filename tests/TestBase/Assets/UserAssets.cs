@@ -17,7 +17,7 @@ namespace TestBase.Assets
                 PasswordHash = "some_fake_passsword_hash",
             };
 
-            var fiestaUser = FiestaUser.CreateWithId(user.Id, user.Email, user.Nickname);
+            var fiestaUser = FiestaUser.CreateWithId(user.Id, user.Email, user.UserName);
 
             if (configureFiestaUser is not null)
                 configureFiestaUser(fiestaUser);
@@ -38,7 +38,7 @@ namespace TestBase.Assets
                 PasswordHash = "some_fake_passsword_hash",
             };
 
-            var fiestaUser = FiestaUser.CreateWithId(user.Id, user.Email, user.Nickname);
+            var fiestaUser = FiestaUser.CreateWithId(user.Id, user.Email, user.UserName);
 
             if (configureFiestaUser is not null)
                 configureFiestaUser(fiestaUser);

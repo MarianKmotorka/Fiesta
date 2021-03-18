@@ -215,28 +215,28 @@ namespace Fiesta.Infrastracture.Auth
             return Result.Success();
         }
 
-        public async Task<Result<string>> GenerateNickname(string email, CancellationToken cancellationToken)
+        private async Task<string> GenerateUsernamne(string email, CancellationToken cancellationToken)
         {
-            if (!email.Contains('@'))
-                return Result<string>.Failure(ErrorCodes.InvalidEmailAddress);
-
             var host = email.Split('@')[0];
 
             if (host.Length > 4)
                 host = host.Remove(4);
 
-            var nickname = "";
+            var username = "";
 
             while (true)
             {
                 var ticks = DateTime.Now.Ticks.ToString();
-                nickname = $"{host}#{ticks.Remove(0, 9 + host.Length)}";
 
-                if (!(await _db.FiestaUsers.AnyAsync(x => x.Nickname == nickname, cancellationToken)))
+                //Note: Ticks has length of 18 characters, our normalized username has length of 10 characters (host+#+ticks)
+                //      To ensure standard length of 10 characters we fill empty spaces with ticks (18-(9-host.Length)= 9+host.Length)
+                username = $"{host}#{ticks.Remove(0, 9 + host.Length)}";
+
+                if (!(await _db.FiestaUsers.AnyAsync(x => x.Username == username, cancellationToken)))
                     break;
             }
 
-            return Result.Success(nickname);
+            return username;
         }
     }
 }

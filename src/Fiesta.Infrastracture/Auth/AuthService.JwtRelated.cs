@@ -19,13 +19,13 @@ namespace Fiesta.Infrastracture.Auth
 {
     public partial class AuthService
     {
-        public async Task<Result<(string accessToken, string refreshToken)>> Login(string emailOrNickname, string password, CancellationToken cancellationToken)
+        public async Task<Result<(string accessToken, string refreshToken)>> Login(string emailOrUsername, string password, CancellationToken cancellationToken)
         {
-            var user = await _userManager.FindByEmailAsync(emailOrNickname.Trim());
+            var user = await _userManager.FindByEmailAsync(emailOrUsername.Trim());
 
             if (user is null)
             {
-                user = await _userManager.Users.SingleOrDefaultAsync(x => x.Nickname == emailOrNickname.Trim());
+                user = await _userManager.Users.SingleOrDefaultAsync(x => x.UserName == emailOrUsername.Trim());
 
                 if (user is null)
                     return Result<(string, string)>.Failure(ErrorCodes.InvalidLoginCredentials);
@@ -61,7 +61,7 @@ namespace Fiesta.Infrastracture.Auth
             return Result.Success();
         }
 
-        public async Task<Result<(string accessToken, string refreshToken, bool authUserCreated, string userId, string nickname)>> LoginOrRegister(GoogleUserInfoModel model, CancellationToken cancellationToken)
+        public async Task<Result<(string accessToken, string refreshToken, bool authUserCreated, string userId, string username)>> LoginOrRegister(GoogleUserInfoModel model, CancellationToken cancellationToken)
         {
             var user = await _db.Users.WhereSomeEmailIs(model.Email).SingleOrDefaultAsync(cancellationToken);
 
@@ -73,17 +73,17 @@ namespace Fiesta.Infrastracture.Auth
                     return Result<(string, string, bool, string, string)>.Failure(ErrorCodes.AccountAlreadyConnectedToGoogleWithDifferentEmail);
 
                 var (accessToken, refreshToken) = await Login(user, cancellationToken);
-                return Result.Success((accessToken, refreshToken, false, user.Id, user.Nickname));
+                return Result.Success((accessToken, refreshToken, false, user.Id, user.UserName));
             }
 
-            var newUser = new AuthUser(model.Email, AuthProviderEnum.Google, (await GenerateNickname(model.Email, cancellationToken)).Data) { EmailConfirmed = model.IsEmailVerified };
+            var newUser = new AuthUser(model.Email, AuthProviderEnum.Google, await GenerateUsernamne(model.Email, cancellationToken)) { EmailConfirmed = model.IsEmailVerified };
             var result = await _userManager.CreateAsync(newUser);
 
             if (!result.Succeeded)
                 return Result<(string, string, bool, string, string)>.Failure(result.Errors.Select(x => x.Code));
 
             var loginResult = await Login(newUser, cancellationToken);
-            return Result.Success((loginResult.accessToken, loginResult.refreshToken, true, newUser.Id, newUser.Nickname));
+            return Result.Success((loginResult.accessToken, loginResult.refreshToken, true, newUser.Id, newUser.UserName));
         }
 
         public async Task<Result<(string accessToken, string refreshToken)>> RefreshJwt(string refreshToken, CancellationToken cancellationToken)
@@ -112,16 +112,16 @@ namespace Fiesta.Infrastracture.Auth
             return Result.Success(await Login(appUser, cancellationToken));
         }
 
-        public async Task<Result<(string userId, string nickname)>> Register(RegisterWithEmailAndPassword.Command command, CancellationToken cancellationToken)
+        public async Task<Result<(string userId, string username)>> Register(RegisterWithEmailAndPassword.Command command, CancellationToken cancellationToken)
         {
-            var newUser = new AuthUser(command.Email, AuthProviderEnum.EmailAndPassword, (await GenerateNickname(command.Email, cancellationToken)).Data);
+            var newUser = new AuthUser(command.Email, AuthProviderEnum.EmailAndPassword, await GenerateUsernamne(command.Email, cancellationToken));
 
             var result = await _userManager.CreateAsync(newUser, command.Password);
             if (!result.Succeeded)
                 return Result<(string, string)>.Failure(result.Errors.Select(x => x.Description));
 
             await _db.SaveChangesAsync(cancellationToken);
-            return Result.Success((newUser.Id, newUser.Nickname));
+            return Result.Success((newUser.Id, newUser.UserName));
         }
 
         private async Task<(string accessToken, string refreshToken)> Login(AuthUser user, CancellationToken cancellationToken)

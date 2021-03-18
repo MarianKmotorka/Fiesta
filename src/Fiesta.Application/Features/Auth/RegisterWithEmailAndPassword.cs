@@ -45,9 +45,9 @@ namespace Fiesta.Application.Features.Auth
                 if (userIdResult.Failed)
                     throw new BadRequestException(userIdResult.Errors);
 
-                var (userId, nickname) = userIdResult.Data;
+                var (userId, username) = userIdResult.Data;
 
-                await _mediator.Publish(new AuthUserCreatedEvent(userId, request.Email, nickname)
+                await _mediator.Publish(new AuthUserCreatedEvent(userId, request.Email, username)
                 {
                     FirstName = request.FirstName,
                     LastName = request.LastName,

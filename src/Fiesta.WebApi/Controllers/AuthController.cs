@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Fiesta.Application.Common.Constants;
+﻿using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Options;
@@ -10,6 +7,9 @@ using Fiesta.Application.Features.Auth.CommonDtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Fiesta.WebApi.Controllers
 {
@@ -61,7 +61,7 @@ namespace Fiesta.WebApi.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<AuthResponse>> Login(EmailPasswordRequest request, CancellationToken cancellationToken)
         {
-            var result = await _authService.Login(request.EmailOrNickname, request.Password, cancellationToken);
+            var result = await _authService.Login(request.EmailOrUsername, request.Password, cancellationToken);
             if (result.Failed)
                 throw new BadRequestException(result.Errors);
 
@@ -169,7 +169,7 @@ namespace Fiesta.WebApi.Controllers
 
     public class EmailPasswordRequest
     {
-        public string EmailOrNickname { get; set; }
+        public string EmailOrUsername { get; set; }
         public string Password { get; set; }
     }
 

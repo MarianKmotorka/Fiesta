@@ -4,18 +4,18 @@ namespace Fiesta.Domain.Entities.Users
 {
     public class AuthUserCreatedEvent : INotification
     {
-        public AuthUserCreatedEvent(string userId, string email, string nickname)
+        public AuthUserCreatedEvent(string userId, string email, string username)
         {
             UserId = userId;
             Email = email;
-            Nickname = nickname;
+            Username = username;
         }
 
         public string UserId { get; }
 
         public string Email { get; }
 
-        public string Nickname { get; }
+        public string Username { get; }
 
         public string FirstName { get; set; }
 
