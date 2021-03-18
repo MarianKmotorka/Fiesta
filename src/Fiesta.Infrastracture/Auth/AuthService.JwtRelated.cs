@@ -1,12 +1,4 @@
-﻿using Fiesta.Application.Common.Constants;
-using Fiesta.Application.Common.Exceptions;
-using Fiesta.Application.Common.Models;
-using Fiesta.Application.Features.Auth;
-using Fiesta.Application.Features.Auth.CommonDtos;
-using Fiesta.Infrastracture.Helpers;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -14,6 +6,14 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Fiesta.Application.Common.Constants;
+using Fiesta.Application.Common.Exceptions;
+using Fiesta.Application.Common.Models;
+using Fiesta.Application.Features.Auth;
+using Fiesta.Application.Features.Auth.CommonDtos;
+using Fiesta.Infrastracture.Helpers;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Fiesta.Infrastracture.Auth
 {
@@ -25,7 +25,7 @@ namespace Fiesta.Infrastracture.Auth
 
             if (user is null)
             {
-                user = await _userManager.Users.SingleOrDefaultAsync(x => x.UserName == emailOrUsername.Trim());
+                user = await _userManager.FindByNameAsync(emailOrUsername);
 
                 if (user is null)
                     return Result<(string, string)>.Failure(ErrorCodes.InvalidLoginCredentials);
