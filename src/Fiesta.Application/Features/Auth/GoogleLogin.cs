@@ -1,10 +1,10 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Fiesta.Application.Common.Exceptions;
+﻿using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Features.Auth.CommonDtos;
 using Fiesta.Domain.Entities.Users;
 using MediatR;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Fiesta.Application.Features.Auth
 {
@@ -40,10 +40,10 @@ namespace Fiesta.Application.Features.Auth
                 if (loginResult.Failed)
                     throw new BadRequestException(loginResult.Errors);
 
-                var (accessToken, refreshToken, authUserCreated, userId) = loginResult.Data;
+                var (accessToken, refreshToken, authUserCreated, userId, nickname) = loginResult.Data;
 
                 if (authUserCreated)
-                    await _mediator.Publish(new AuthUserCreatedEvent(userId, googleUser.Email)
+                    await _mediator.Publish(new AuthUserCreatedEvent(userId, googleUser.Email, nickname)
                     {
                         FirstName = googleUser.GivenName,
                         LastName = googleUser.FamilyName,

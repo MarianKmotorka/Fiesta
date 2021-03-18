@@ -1,12 +1,12 @@
-﻿using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Fiesta.Application.Common.Constants;
+﻿using Fiesta.Application.Common.Constants;
 using Fiesta.Infrastracture.Auth;
 using Fiesta.WebApi.Middleware.ExceptionHanlding;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Fiesta.IntegrationTests.Features.Auth
@@ -21,7 +21,7 @@ namespace Fiesta.IntegrationTests.Features.Auth
         [Fact]
         public async Task GivenUserRegisteredWithGoogle_WhenAddingPassword_PasswordIsAdded()
         {
-            var user = new AuthUser("google@user.com", AuthProviderEnum.Google) { EmailConfirmed = true };
+            var user = new AuthUser("google@user.com", AuthProviderEnum.Google, "Gogel") { EmailConfirmed = true };
             ArrangeDb.Users.Add(user);
             await ArrangeDb.SaveChangesAsync();
 
@@ -39,7 +39,7 @@ namespace Fiesta.IntegrationTests.Features.Auth
         [Fact]
         public async Task GivenUserRegisteredWithGoogle_WhenAddingInvalidPassword_BadRequestIsReturned()
         {
-            var user = new AuthUser("google@user.com", AuthProviderEnum.Google) { EmailConfirmed = true };
+            var user = new AuthUser("google@user.com", AuthProviderEnum.Google, "Gogel") { EmailConfirmed = true };
             ArrangeDb.Users.Add(user);
             await ArrangeDb.SaveChangesAsync();
 

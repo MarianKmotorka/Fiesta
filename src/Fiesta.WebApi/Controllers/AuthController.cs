@@ -61,7 +61,7 @@ namespace Fiesta.WebApi.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<AuthResponse>> Login(EmailPasswordRequest request, CancellationToken cancellationToken)
         {
-            var result = await _authService.Login(request.Email, request.Password, cancellationToken);
+            var result = await _authService.Login(request.EmailOrNickname, request.Password, cancellationToken);
             if (result.Failed)
                 throw new BadRequestException(result.Errors);
 
@@ -169,7 +169,7 @@ namespace Fiesta.WebApi.Controllers
 
     public class EmailPasswordRequest
     {
-        public string Email { get; set; }
+        public string EmailOrNickname { get; set; }
         public string Password { get; set; }
     }
 

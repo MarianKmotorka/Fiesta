@@ -1,9 +1,9 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Fiesta.Application.Common.Queries;
 using Fiesta.Domain.Entities.Users;
 using FluentAssertions;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using TestBase;
 using Xunit;
 
@@ -19,33 +19,33 @@ namespace Fiesta.Infrastracture.UnitTests
 
         public QueryBuilderTests()
         {
-            _adeleVance = new FiestaUser("adele@GMAIL.com")
+            _adeleVance = new FiestaUser("adele@GMAIL.com", "Adolfina1")
             {
                 FirstName = "Adele",
                 LastName = "Vance",
                 IsDeleted = true
             };
 
-            _adeleJohnes = new FiestaUser("adele@centrum.com")
+            _adeleJohnes = new FiestaUser("adele@centrum.com", "Adolfina2")
             {
                 FirstName = "Adele",
                 LastName = "Johnes"
             };
 
-            _johnTravolta = new FiestaUser("john@azet.com")
+            _johnTravolta = new FiestaUser("john@azet.com", "Johnny")
             {
                 FirstName = "John",
                 LastName = "Travolta",
                 IsDeleted = true
             };
 
-            _harryClansy = new FiestaUser("harry@gmail.com")
+            _harryClansy = new FiestaUser("harry@gmail.com", "Harietta")
             {
                 FirstName = "Harold",
                 LastName = "Clansy"
             };
 
-            _thomasClansy = new FiestaUser("thomas@bing.com")
+            _thomasClansy = new FiestaUser("thomas@bing.com", "Tommy")
             {
                 FirstName = "Thomas",
                 LastName = "Clansy"

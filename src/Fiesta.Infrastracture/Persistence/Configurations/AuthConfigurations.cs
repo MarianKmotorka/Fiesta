@@ -11,6 +11,7 @@ namespace Fiesta.Infrastracture.Persistence.Configurations
         {
             builder.ToTable("AuthUser");
             builder.Property(x => x.Id).ValueGeneratedOnAdd();
+            builder.HasIndex(x => x.Nickname).IsUnique();
         }
     }
 

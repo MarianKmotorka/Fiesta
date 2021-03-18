@@ -1,22 +1,22 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Fiesta.Application.Common.Constants;
+﻿using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Models;
 using Fiesta.Application.Features.Auth;
 using Fiesta.Application.Features.Auth.CommonDtos;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Fiesta.Application.Common.Interfaces
 {
     public interface IAuthService
     {
-        Task<Result<(string accessToken, string refreshToken, bool authUserCreated, string userId)>> LoginOrRegister(GoogleUserInfoModel model, CancellationToken cancellationToken);
+        Task<Result<(string accessToken, string refreshToken, bool authUserCreated, string userId, string nickname)>> LoginOrRegister(GoogleUserInfoModel model, CancellationToken cancellationToken);
 
-        Task<Result<(string accessToken, string refreshToken)>> Login(string email, string password, CancellationToken cancellationToken);
+        Task<Result<(string accessToken, string refreshToken)>> Login(string emailOrNickname, string password, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Registers new user and returns userId
+        /// Registers new user and returns userId and nickname
         /// </summary>
-        Task<Result<string>> Register(RegisterWithEmailAndPassword.Command command, CancellationToken cancellationToken);
+        Task<Result<(string userId, string nickname)>> Register(RegisterWithEmailAndPassword.Command command, CancellationToken cancellationToken);
 
         Task<Result<(string accessToken, string refreshToken)>> RefreshJwt(string refreshToken, CancellationToken cancellationToken);
 

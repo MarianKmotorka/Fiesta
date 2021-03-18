@@ -1,8 +1,8 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Fiesta.Application.Common.Interfaces;
+﻿using Fiesta.Application.Common.Interfaces;
 using Fiesta.Domain.Entities.Users;
 using MediatR;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Fiesta.Application.Features.Users.EventHandlers
 {
@@ -17,7 +17,7 @@ namespace Fiesta.Application.Features.Users.EventHandlers
 
         public async Task Handle(AuthUserCreatedEvent notification, CancellationToken cancellationToken)
         {
-            var fiestaUser = FiestaUser.CreateWithId(notification.UserId, notification.Email);
+            var fiestaUser = FiestaUser.CreateWithId(notification.UserId, notification.Email, notification.Nickname);
 
             fiestaUser.FirstName = notification.FirstName;
             fiestaUser.LastName = notification.LastName;

@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Fiesta.Application.Common.Constants;
+﻿using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Models;
 using Fiesta.Application.Common.Options;
@@ -11,6 +8,10 @@ using Fiesta.Infrastracture.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Fiesta.Infrastracture.Auth
 {
@@ -212,6 +213,30 @@ namespace Fiesta.Infrastracture.Auth
 
             await _db.SaveChangesAsync(cancellationToken);
             return Result.Success();
+        }
+
+        public async Task<Result<string>> GenerateNickname(string email, CancellationToken cancellationToken)
+        {
+            if (!email.Contains('@'))
+                return Result<string>.Failure(ErrorCodes.InvalidEmailAddress);
+
+            var host = email.Split('@')[0];
+
+            if (host.Length > 4)
+                host = host.Remove(4);
+
+            var nickname = "";
+
+            while (true)
+            {
+                var ticks = DateTime.Now.Ticks.ToString();
+                nickname = $"{host}#{ticks.Remove(0, 9 + host.Length)}";
+
+                if (!(await _db.FiestaUsers.AnyAsync(x => x.Nickname == nickname, cancellationToken)))
+                    break;
+            }
+
+            return Result.Success(nickname);
         }
     }
 }

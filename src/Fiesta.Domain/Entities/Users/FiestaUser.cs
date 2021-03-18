@@ -1,26 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using Fiesta.Domain.Common;
+﻿using Fiesta.Domain.Common;
 using Fiesta.Domain.Entities.Events;
+using System;
+using System.Collections.Generic;
 
 namespace Fiesta.Domain.Entities.Users
 {
     public class FiestaUser : Entity<string>
     {
-        public FiestaUser(string email)
+        public FiestaUser(string email, string nickname)
         {
             Email = email;
+            Nickname = nickname;
             CreatedOnUtc = DateTime.UtcNow;
         }
 
-        public static FiestaUser CreateWithId(string id, string email)
-            => new FiestaUser(email) { Id = id };
+        public static FiestaUser CreateWithId(string id, string email, string nickname)
+            => new FiestaUser(email, nickname) { Id = id };
 
         public string FirstName { get; set; }
 
         public string LastName { get; set; }
 
         public string FullName { get => $"{FirstName} {LastName}"; }
+
+        public string Nickname { get; private set; }
 
         public string Email { get; private set; }
 

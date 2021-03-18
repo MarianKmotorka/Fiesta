@@ -50,7 +50,7 @@ namespace Fiesta.IntegrationTests.Features.Auth
 
             var loginRequest = new EmailPasswordRequest
             {
-                Email = registerRequest.Email,
+                EmailOrNickname = registerRequest.Email,
                 Password = changePasswordRequest.NewPassword
             };
 

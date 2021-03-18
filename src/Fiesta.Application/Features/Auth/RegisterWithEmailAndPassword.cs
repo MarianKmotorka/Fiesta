@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Fiesta.Application.Common.Constants;
+﻿using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Models.Emails;
@@ -8,6 +6,8 @@ using Fiesta.Domain.Entities.Users;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Fiesta.Application.Features.Auth
 {
@@ -45,7 +45,9 @@ namespace Fiesta.Application.Features.Auth
                 if (userIdResult.Failed)
                     throw new BadRequestException(userIdResult.Errors);
 
-                await _mediator.Publish(new AuthUserCreatedEvent(userIdResult.Data, request.Email)
+                var (userId, nickname) = userIdResult.Data;
+
+                await _mediator.Publish(new AuthUserCreatedEvent(userId, request.Email, nickname)
                 {
                     FirstName = request.FirstName,
                     LastName = request.LastName,

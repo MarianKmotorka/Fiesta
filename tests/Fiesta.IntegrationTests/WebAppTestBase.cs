@@ -1,10 +1,10 @@
-﻿using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using Fiesta.Application.Common.Constants;
+﻿using Fiesta.Application.Common.Constants;
 using Fiesta.Domain.Entities.Users;
 using Fiesta.Infrastracture.Auth;
 using Fiesta.IntegrationTests.Helpers;
+using System;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using TestBase;
 using Xunit;
 
@@ -38,13 +38,13 @@ namespace Fiesta.IntegrationTests
 
         private void Authenticate(HttpClient client)
         {
-            var user = new AuthUser("admin@test.com", FiestaRoleEnum.Admin, AuthProviderEnum.EmailAndPassword)
+            var user = new AuthUser("admin@test.com", FiestaRoleEnum.Admin, AuthProviderEnum.EmailAndPassword, "Admin")
             {
                 Id = LoggedInUserId,
                 PasswordHash = "some_fake_passsword_hash",
             };
 
-            var fiestaUser = FiestaUser.CreateWithId(user.Id, user.Email);
+            var fiestaUser = FiestaUser.CreateWithId(user.Id, user.Email, user.Nickname);
 
             ArrangeDb.AddRangeAsync(user, fiestaUser);
             ArrangeDb.SaveChanges();

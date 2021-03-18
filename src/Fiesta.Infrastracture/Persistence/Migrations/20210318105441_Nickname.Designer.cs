@@ -4,14 +4,16 @@ using Fiesta.Infrastracture.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Fiesta.Infrastracture.Persistence.Migrations
 {
     [DbContext(typeof(FiestaDbContext))]
-    partial class FiestaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210318105441_Nickname")]
+    partial class Nickname
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
