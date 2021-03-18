@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-using Fiesta.Application.Features.Users;
+﻿using Fiesta.Application.Features.Users;
 using Fiesta.Domain.Entities.Users;
 using FluentAssertions;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Fiesta.IntegrationTests.Features.Users
@@ -19,8 +19,8 @@ namespace Fiesta.IntegrationTests.Features.Users
         [Fact]
         public async Task GivenSomeUsersMarkedAsDeleted_WhenHandlerIsCalled_OnlyMarkedUsersAreDeleted()
         {
-            ArrangeDb.FiestaUsers.Add(new FiestaUser("deleted@email.com") { IsDeleted = true });
-            var notDeletedUser = ArrangeDb.FiestaUsers.Add(new FiestaUser("NOTdeleted@email.com")).Entity;
+            ArrangeDb.FiestaUsers.Add(new FiestaUser("deleted@email.com", "Deleted") { IsDeleted = true });
+            var notDeletedUser = ArrangeDb.FiestaUsers.Add(new FiestaUser("NOTdeleted@email.com", "NotDeleted")).Entity;
             await ArrangeDb.SaveChangesAsync();
 
             await _sut.Handle(new HardDeleteUsers.Command(), default);

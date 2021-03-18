@@ -1,22 +1,21 @@
-﻿using System;
-using Fiesta.Application.Common.Constants;
+﻿using Fiesta.Application.Common.Constants;
 using Microsoft.AspNetCore.Identity;
+using System;
 
 namespace Fiesta.Infrastracture.Auth
 {
     public class AuthUser : IdentityUser<string>
     {
-        public AuthUser(string email, AuthProviderEnum authProvider) : this(email, FiestaRoleEnum.BasicUser, authProvider)
+        public AuthUser(string email, AuthProviderEnum authProvider, string userName) : this(email, FiestaRoleEnum.BasicUser, authProvider, userName)
         {
         }
 
-        public AuthUser(string email, FiestaRoleEnum role, AuthProviderEnum authProvider)
+        public AuthUser(string email, FiestaRoleEnum role, AuthProviderEnum authProvider, string userName)
         {
             Email = email.Trim().ToLower();
-            UserName = Email;
             Role = role;
             AuthProvider = authProvider;
-
+            UserName = userName;
             if (authProvider == AuthProviderEnum.Google)
                 GoogleEmail = Email;
         }

@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Fiesta.Application.Common.Constants;
+﻿using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Models;
 using Fiesta.Application.Common.Options;
@@ -11,6 +8,10 @@ using Fiesta.Infrastracture.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Fiesta.Infrastracture.Auth
 {
@@ -212,6 +213,30 @@ namespace Fiesta.Infrastracture.Auth
 
             await _db.SaveChangesAsync(cancellationToken);
             return Result.Success();
+        }
+
+        private async Task<string> GenerateUsernamne(string email, CancellationToken cancellationToken)
+        {
+            var host = email.Split('@')[0];
+
+            if (host.Length > 4)
+                host = host.Remove(4);
+
+            var username = "";
+
+            while (true)
+            {
+                var ticks = DateTime.Now.Ticks.ToString();
+
+                //Note: Ticks has length of 18 characters, our normalized username has length of 10 characters (host+#+ticks)
+                //      To ensure standard length of 10 characters we fill empty spaces with ticks (18-(9-host.Length)= 9+host.Length)
+                username = $"{host}#{ticks.Remove(0, 9 + host.Length)}";
+
+                if (!(await _db.FiestaUsers.AnyAsync(x => x.Username == username, cancellationToken)))
+                    break;
+            }
+
+            return username;
         }
     }
 }

@@ -1,10 +1,10 @@
-﻿using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Fiesta.Application.Common.Constants;
+﻿using Fiesta.Application.Common.Constants;
 using Fiesta.Infrastracture.Auth;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using TestBase.Assets;
 using Xunit;
 
@@ -32,7 +32,7 @@ namespace Fiesta.IntegrationTests.Features.Auth
         [Fact]
         public async Task GivenOtherUserWithGoogleEmail_WhenEmailAndPasswordUserConnectingSameGoogleAccount_BadRequestIsReturned()
         {
-            var googleConnectedUser = new AuthUser("some@email.com", AuthProviderEnum.EmailAndPassword);
+            var googleConnectedUser = new AuthUser("some@email.com", AuthProviderEnum.EmailAndPassword, "some");
             googleConnectedUser.AddGoogleAuthProvider(GoogleAssets.JohnyUserInfoModel.Email);
             ArrangeDb.Users.Add(googleConnectedUser);
             await ArrangeDb.SaveChangesAsync();
@@ -48,7 +48,7 @@ namespace Fiesta.IntegrationTests.Features.Auth
         [Fact]
         public async Task GivenUserWithoutConfirmedEmail_WhenConnectingGoogleAccountWithSameEmail_EmailIsVerified()
         {
-            var unverifiedEmailUser = new AuthUser(GoogleAssets.JohnyUserInfoModel.Email, AuthProviderEnum.EmailAndPassword);
+            var unverifiedEmailUser = new AuthUser(GoogleAssets.JohnyUserInfoModel.Email, AuthProviderEnum.EmailAndPassword, GoogleAssets.JohnyUserInfoModel.Name);
             ArrangeDb.Add(unverifiedEmailUser);
             await ArrangeDb.SaveChangesAsync();
 
@@ -63,7 +63,7 @@ namespace Fiesta.IntegrationTests.Features.Auth
         [Fact]
         public async Task GivenUserWithGoogleAccount_WhenConnectingAnotherGoogleAccount_BadRequestIsReturned()
         {
-            var user = new AuthUser("user@gmail.com", AuthProviderEnum.Google);
+            var user = new AuthUser("user@gmail.com", AuthProviderEnum.Google, "User");
             ArrangeDb.Add(user);
             await ArrangeDb.SaveChangesAsync();
 
