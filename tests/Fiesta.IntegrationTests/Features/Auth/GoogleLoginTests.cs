@@ -1,13 +1,13 @@
-﻿using System;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Fiesta.Application.Common.Constants;
+﻿using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Features.Auth.CommonDtos;
 using Fiesta.Infrastracture.Auth;
 using Fiesta.WebApi.Middleware.ExceptionHanlding;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using TestBase.Assets;
 using Xunit;
 
@@ -54,7 +54,7 @@ namespace Fiesta.IntegrationTests.Features.Auth
         [Fact]
         public async Task GivenEmailAndPasswordUser_WhenLoggingInWithSameEmailGoogleAccount_BadRequestIsReturned()
         {
-            var emailAndPasswordUser = new AuthUser(GoogleAssets.JohnyUserInfoModel.Email, AuthProviderEnum.EmailAndPassword);
+            var emailAndPasswordUser = new AuthUser(GoogleAssets.JohnyUserInfoModel.Email, AuthProviderEnum.EmailAndPassword, GoogleAssets.JohnyUserInfoModel.Name);
             ArrangeDb.Add(emailAndPasswordUser);
             await ArrangeDb.SaveChangesAsync();
 
@@ -73,7 +73,7 @@ namespace Fiesta.IntegrationTests.Features.Auth
         [Fact]
         public async Task GivenUserWithEmailAndPasswordAndDifferentEmailGoogleAccount_WhenLoggingInWithSameEmailGoogleAccountAsEmailAndPassword_BadRequestIsReturned()
         {
-            var user = new AuthUser(GoogleAssets.JohnyUserInfoModel.Email, AuthProviderEnum.EmailAndPassword);
+            var user = new AuthUser(GoogleAssets.JohnyUserInfoModel.Email, AuthProviderEnum.EmailAndPassword, GoogleAssets.JohnyUserInfoModel.Name);
             user.AddGoogleAuthProvider("some@gmail.com");
             ArrangeDb.Add(user);
             await ArrangeDb.SaveChangesAsync();

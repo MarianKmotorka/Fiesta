@@ -1,14 +1,14 @@
-﻿using System;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Fiesta.Application.Common.Constants;
+﻿using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Features.Auth;
 using Fiesta.Infrastracture.Auth;
 using Fiesta.WebApi.Middleware.ExceptionHanlding;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Fiesta.IntegrationTests.Features.Auth
@@ -90,7 +90,7 @@ namespace Fiesta.IntegrationTests.Features.Auth
         [Fact]
         public async Task GivenDuplicateEmailRequest_WhenRegisteringNewUser_ErrorResponseIsReturend()
         {
-            ArrangeDb.Users.Add(new AuthUser("duplicate@email.com", AuthProviderEnum.EmailAndPassword));
+            ArrangeDb.Users.Add(new AuthUser("duplicate@email.com", AuthProviderEnum.EmailAndPassword, "Duplicate"));
             await ArrangeDb.SaveChangesAsync();
 
             var request = new RegisterWithEmailAndPassword.Command
@@ -122,7 +122,7 @@ namespace Fiesta.IntegrationTests.Features.Auth
         [Fact]
         public async Task GivenExistingUserWithConnectedGoogleAccount_WhenRegisteringWithSameEmailAsGoogleAccount_ErrorResponseIsReturend()
         {
-            var user = new AuthUser("unique@email.com", AuthProviderEnum.EmailAndPassword);
+            var user = new AuthUser("unique@email.com", AuthProviderEnum.EmailAndPassword, "Unique");
             user.AddGoogleAuthProvider("duplicate@email.com");
             ArrangeDb.Users.Add(user);
             await ArrangeDb.SaveChangesAsync();
