@@ -1,7 +1,7 @@
-﻿using Fiesta.Domain.Common;
-using Fiesta.Domain.Entities.Events;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Fiesta.Domain.Common;
+using Fiesta.Domain.Entities.Events;
 
 namespace Fiesta.Domain.Entities.Users
 {
@@ -28,6 +28,8 @@ namespace Fiesta.Domain.Entities.Users
         public string Email { get; private set; }
 
         public string PictureUrl { get; set; }
+
+        public string Bio { get; set; }
 
         public bool IsDeleted { get; set; }
 
