@@ -99,9 +99,9 @@ namespace Fiesta.Application.Features.Users
                    .MaximumLength(500).WithErrorCode(ErrorCodes.MaxLength).WithState(_ => new { MaxLength = 500 });
             }
 
-            private async Task<bool> BeUnique(string username, CancellationToken cancellationToken)
+            private async Task<bool> BeUnique(Command command, string username, CancellationToken cancellationToken)
             {
-                return await _authService.IsUsernameUnique(username, cancellationToken);
+                return await _authService.IsUsernameUnique(username, command.UserId, cancellationToken);
             }
 
             private bool ContainAllowedCharacters(string username)
