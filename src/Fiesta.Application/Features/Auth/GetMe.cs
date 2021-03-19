@@ -37,7 +37,9 @@ namespace Fiesta.Application.Features.Auth
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     FullName = user.FullName,
+                    Username = user.Username,
                     PictureUrl = user.PictureUrl,
+                    Bio = user.Bio,
                     Role = await _authService.GetRole(user.Id, cancellationToken),
                     GoogleEmail = await _authService.GetGoogleEmail(user.Id, cancellationToken),
                     AuthProvider = await _authService.GetAuthProvider(user.Id, cancellationToken),
@@ -55,11 +57,15 @@ namespace Fiesta.Application.Features.Auth
 
             public string FullName { get; set; }
 
+            public string Username { get; set; }
+
             public string Email { get; set; }
 
             public string GoogleEmail { get; set; }
 
             public string PictureUrl { get; set; }
+
+            public string Bio { get; set; }
 
             public AuthProviderEnum AuthProvider { get; set; }
 

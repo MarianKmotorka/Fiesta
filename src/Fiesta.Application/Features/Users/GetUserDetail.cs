@@ -31,7 +31,9 @@ namespace Fiesta.Application.Features.Users
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     FullName = user.FullName,
+                    Username = user.Username,
                     PictureUrl = user.PictureUrl,
+                    Bio = user.Bio
                 };
             }
         }
@@ -46,9 +48,11 @@ namespace Fiesta.Application.Features.Users
 
             public string FullName { get; set; }
 
-            public string Nick { get; set; }
+            public string Username { get; set; }
 
             public string PictureUrl { get; set; }
+
+            public string Bio { get; set; }
         }
     }
 }

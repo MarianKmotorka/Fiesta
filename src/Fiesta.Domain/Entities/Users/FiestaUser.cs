@@ -1,7 +1,7 @@
-﻿using Fiesta.Domain.Common;
-using Fiesta.Domain.Entities.Events;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Fiesta.Domain.Common;
+using Fiesta.Domain.Entities.Events;
 
 namespace Fiesta.Domain.Entities.Users
 {
@@ -29,6 +29,8 @@ namespace Fiesta.Domain.Entities.Users
 
         public string PictureUrl { get; set; }
 
+        public string Bio { get; set; }
+
         public bool IsDeleted { get; set; }
 
         public DateTime CreatedOnUtc { get; init; }
@@ -37,5 +39,13 @@ namespace Fiesta.Domain.Entities.Users
         public IReadOnlyCollection<Event> OrganizedEvents => _organizedEvents;
 
         public void AddOrganizedEvent(Event organizedEvent) => _organizedEvents.Add(organizedEvent);
+
+        public void UpdateUsername(string username)
+        {
+            if (string.IsNullOrEmpty(username))
+                throw new ArgumentNullException("Username is null");
+
+            Username = username;
+        }
     }
 }

@@ -1,6 +1,6 @@
-﻿using Fiesta.Application.Common.Constants;
+﻿using System;
+using Fiesta.Application.Common.Constants;
 using FluentValidation;
-using System;
 
 namespace Fiesta.Application.Common.Validators
 {
@@ -10,5 +10,7 @@ namespace Fiesta.Application.Common.Validators
         {
             return ruleBuilder.Must(x => Enum.IsDefined(x)).WithErrorCode(ErrorCodes.InvalidEnumValue);
         }
+
+        public const string UsernameAllowedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+#";
     }
 }

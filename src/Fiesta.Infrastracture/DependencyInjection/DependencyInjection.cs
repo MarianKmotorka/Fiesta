@@ -30,7 +30,7 @@ namespace Fiesta.Infrastracture.DependencyInjection
                 o.Password.RequireLowercase = false;
                 o.Password.RequireNonAlphanumeric = false;
                 o.User.RequireUniqueEmail = true;
-                o.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+#";
+                o.User.AllowedUserNameCharacters = Application.Common.Validators.Helpers.UsernameAllowedCharacters;
             })
                .AddRoles<AuthRole>()
                .AddEntityFrameworkStores<FiestaDbContext>()

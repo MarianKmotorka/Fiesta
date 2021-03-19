@@ -1,9 +1,9 @@
-﻿using Fiesta.Application.Common.Constants;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Models;
 using Fiesta.Application.Features.Auth;
 using Fiesta.Application.Features.Auth.CommonDtos;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Fiesta.Application.Common.Interfaces
 {
@@ -47,5 +47,9 @@ namespace Fiesta.Application.Common.Interfaces
         Task<Result> DeleteAccountWithPassword(string userId, string password, CancellationToken cancellationToken);
 
         Task<Result> DeleteAccountWithGoogle(string userId, GoogleUserInfoModel googleUser, CancellationToken cancellationToken);
+
+        Task<bool> IsUsernameUnique(string username, CancellationToken cancellationToken);
+
+        Task<Result> UpdateUsername(string userId, string username, CancellationToken cancellationToken);
     }
 }

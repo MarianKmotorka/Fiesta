@@ -1,4 +1,8 @@
-﻿using Fiesta.Application.Common.Constants;
+﻿using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Models;
 using Fiesta.Application.Common.Options;
@@ -8,10 +12,6 @@ using Fiesta.Infrastracture.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Fiesta.Infrastracture.Auth
 {
@@ -237,6 +237,23 @@ namespace Fiesta.Infrastracture.Auth
             }
 
             return username;
+        }
+
+        public async Task<Result> UpdateUsername(string userId, string username, CancellationToken cancellationToken)
+        {
+            var authUser = await _userManager.FindByIdAsync(userId);
+            var result = await _userManager.SetUserNameAsync(authUser, username);
+
+            if (!result.Succeeded)
+                return Result.Failure(result.Errors.Select(x => x.Description));
+
+            return Result.Success();
+        }
+
+        public async Task<bool> IsUsernameUnique(string username, CancellationToken cancellationToken)
+        {
+            var usernameExists = await _db.Users.AnyAsync(x => x.UserName == username, cancellationToken);
+            return !usernameExists;
         }
     }
 }
