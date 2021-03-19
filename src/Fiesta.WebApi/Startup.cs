@@ -2,6 +2,7 @@ using Autofac;
 using Fiesta.Application;
 using Fiesta.Application.Common.Behaviours.Authorization;
 using Fiesta.Application.Common.Exceptions;
+using Fiesta.Application.Common.Models;
 using Fiesta.Infrastracture.DependencyInjection;
 using Fiesta.WebApi.Extensions;
 using Fiesta.WebApi.Middleware.ExceptionHanlding;
@@ -30,7 +31,11 @@ namespace Fiesta.WebApi
                     .AddInfrastructure(Configuration);
 
             services.AddHttpContextAccessor();
-            services.AddControllers();
+            services.AddControllers()
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.ContractResolver = OptionalContractResolver.CreateReplacement(options.SerializerSettings.ContractResolver);
+                });
         }
 
         public void ConfigureContainer(ContainerBuilder builder)

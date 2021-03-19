@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Fiesta.Application.Common.Behaviours.Authorization;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
+using Fiesta.Application.Common.Models;
+using Fiesta.Application.Common.Validators;
 using Fiesta.Application.Utils;
 using FluentValidation;
 using MediatR;
@@ -14,8 +16,8 @@ namespace Fiesta.Application.Features.Users
         public class Command : IRequest<Response>
         {
             public string UserId { get; set; }
-            public string FirstName { get; set; }
-            public string LastName { get; set; }
+            public Optional<string> FirstName { get; set; }
+            public Optional<string> LastName { get; set; }
         }
 
         public class Handler : IRequestHandler<Command, Response>
@@ -31,8 +33,10 @@ namespace Fiesta.Application.Features.Users
             {
                 var fiestaUser = await _db.FiestaUsers.FindOrNotFoundAsync(cancellationToken, request.UserId);
 
-                fiestaUser.FirstName = request.FirstName;
-                fiestaUser.LastName = request.LastName;
+                if (request.FirstName.HasValue)
+                    fiestaUser.FirstName = request.FirstName.Value;
+                if (request.LastName.HasValue)
+                    fiestaUser.LastName = request.LastName.Value;
 
                 await _db.SaveChangesAsync(cancellationToken);
                 return new Response
@@ -45,16 +49,16 @@ namespace Fiesta.Application.Features.Users
             }
         }
 
-        public class Validator : AbstractValidator<Command>
+        public class Validator : AbstractValidatorPlus<Command>
         {
             public Validator()
             {
-                RuleFor(x => x.FirstName)
+                RuleForOptional(x => x.FirstName)
                    .NotEmpty().WithErrorCode(ErrorCodes.Required)
                    .MinimumLength(2).WithErrorCode(ErrorCodes.MinLength).WithState(_ => new { MinLength = 2 })
                    .MaximumLength(30).WithErrorCode(ErrorCodes.MaxLength).WithState(_ => new { MaxLength = 30 });
 
-                RuleFor(x => x.LastName)
+                RuleForOptional(x => x.LastName)
                     .NotEmpty().WithErrorCode(ErrorCodes.Required)
                     .MinimumLength(2).WithErrorCode(ErrorCodes.MinLength).WithState(_ => new { MinLength = 2 })
                     .MaximumLength(30).WithErrorCode(ErrorCodes.MaxLength).WithState(_ => new { MaxLength = 30 });
