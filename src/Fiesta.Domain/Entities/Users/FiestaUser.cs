@@ -40,6 +40,12 @@ namespace Fiesta.Domain.Entities.Users
 
         public void AddOrganizedEvent(Event organizedEvent) => _organizedEvents.Add(organizedEvent);
 
-        public void UpdateUsername(string username) => Username = username;
+        public void UpdateUsername(string username)
+        {
+            if (string.IsNullOrEmpty(username))
+                throw new ArgumentException("Username is null");
+
+            Username = username;
+        }
     }
 }
