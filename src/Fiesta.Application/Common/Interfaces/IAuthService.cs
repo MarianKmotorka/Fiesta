@@ -48,7 +48,7 @@ namespace Fiesta.Application.Common.Interfaces
 
         Task<Result> DeleteAccountWithGoogle(string userId, GoogleUserInfoModel googleUser, CancellationToken cancellationToken);
 
-        Task<bool> IsUsernameUnique(string username, CancellationToken cancellationToken);
+        Task<bool> IsUsernameUnique(string username, string userId, CancellationToken cancellationToken);
 
         Task<Result> UpdateUsername(string userId, string username, CancellationToken cancellationToken);
     }

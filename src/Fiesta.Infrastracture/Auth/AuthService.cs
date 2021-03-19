@@ -250,9 +250,9 @@ namespace Fiesta.Infrastracture.Auth
             return Result.Success();
         }
 
-        public async Task<bool> IsUsernameUnique(string username, CancellationToken cancellationToken)
+        public async Task<bool> IsUsernameUnique(string username, string userId, CancellationToken cancellationToken)
         {
-            var usernameExists = await _db.Users.AnyAsync(x => x.UserName == username, cancellationToken);
+            var usernameExists = await _db.Users.AnyAsync(x => x.UserName == username && x.Id != userId, cancellationToken);
             return !usernameExists;
         }
     }
