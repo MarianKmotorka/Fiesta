@@ -43,7 +43,7 @@ namespace Fiesta.Domain.Entities.Users
         public void UpdateUsername(string username)
         {
             if (string.IsNullOrEmpty(username))
-                throw new ArgumentException("Username is null");
+                throw new ArgumentNullException("Username is null");
 
             Username = username;
         }
