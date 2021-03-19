@@ -26,5 +26,7 @@
         public const string UnsupportedMediaType = "unsupportedMediaType";
         public const string MaxSize = "maxSize";
         public const string MinSize = "minSize";
+        public const string AlreadyExists = "alreadyExists";
+        public const string CanContainLettersNumberOrSpecialCharacters = "canContainLettersNumberOrSpecialCharacters";
     }
 }
