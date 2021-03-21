@@ -47,5 +47,12 @@ namespace Fiesta.Domain.Entities.Users
 
             Username = username;
         }
+
+        private readonly List<UserFriends> _friends = new List<UserFriends>();
+        public IReadOnlyCollection<UserFriends> Friends => _friends;
+
+        public void AddFriend(UserFriends friend) => _friends.Add(friend);
+
+        public void RemoveFriend(UserFriends friend) => _friends.Remove(friend);
     }
 }
