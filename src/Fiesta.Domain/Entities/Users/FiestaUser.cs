@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Fiesta.Domain.Common;
 using Fiesta.Domain.Entities.Events;
 
@@ -48,11 +49,27 @@ namespace Fiesta.Domain.Entities.Users
             Username = username;
         }
 
-        private readonly List<UserFriends> _friends = new List<UserFriends>();
-        public IReadOnlyCollection<UserFriends> Friends => _friends;
+        private readonly List<UserFriend> _friends = new List<UserFriend>();
+        public IReadOnlyCollection<UserFriend> Friends => _friends;
 
-        public void AddFriend(UserFriends friend) => _friends.Add(friend);
+        public void AddFriendRequest(FiestaUser friend)
+        {
+            _friends.Add(new UserFriend(this, friend ?? throw new ArgumentNullException(nameof(friend))));
+        }
 
-        public void RemoveFriend(UserFriends friend) => _friends.Remove(friend);
+        public void AddFriend(FiestaUser friend)
+        {
+            var foundFriend = _friends.SingleOrDefault(x => x.FriendId == (friend ?? throw new ArgumentNullException(nameof(friend))).Id);
+
+            if (foundFriend is null)
+                throw new InvalidOperationException($"Friend request not found for user IDs {friend.Id} and {Id}");
+
+            foundFriend.ConfirmFriendRequest();
+        }
+
+        public void RemoveFriendOrFriendRequest(UserFriend friend)
+        {
+            _friends.Remove(friend ?? throw new ArgumentNullException(nameof(friend)));
+        }
     }
 }

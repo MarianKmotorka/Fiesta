@@ -88,13 +88,16 @@ namespace Fiesta.Infrastracture.Persistence.Migrations
                     b.ToTable("FiestaUser");
                 });
 
-            modelBuilder.Entity("Fiesta.Domain.Entities.Users.UserFriends", b =>
+            modelBuilder.Entity("Fiesta.Domain.Entities.Users.UserFriend", b =>
                 {
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("FriendId")
                         .HasColumnType("nvarchar(36)");
+
+                    b.Property<bool>("IsFriendRequest")
+                        .HasColumnType("bit");
 
                     b.HasKey("UserId", "FriendId");
 
@@ -378,7 +381,7 @@ namespace Fiesta.Infrastracture.Persistence.Migrations
                     b.Navigation("Organizer");
                 });
 
-            modelBuilder.Entity("Fiesta.Domain.Entities.Users.UserFriends", b =>
+            modelBuilder.Entity("Fiesta.Domain.Entities.Users.UserFriend", b =>
                 {
                     b.HasOne("Fiesta.Domain.Entities.Users.FiestaUser", "Friend")
                         .WithMany()

@@ -11,7 +11,8 @@ namespace Fiesta.Infrastracture.Persistence.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(36)", nullable: false),
-                    FriendId = table.Column<string>(type: "nvarchar(36)", nullable: false)
+                    FriendId = table.Column<string>(type: "nvarchar(36)", nullable: false),
+                    IsFriendRequest = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
