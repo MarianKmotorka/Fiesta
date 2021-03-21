@@ -1,14 +1,14 @@
-﻿using CloudinaryDotNet;
+﻿using System.Collections.Generic;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
+using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Models;
 using Fiesta.Application.Common.Options;
 using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Fiesta.Infrastracture.Resources.Images
 {
@@ -57,7 +57,8 @@ namespace Fiesta.Infrastracture.Resources.Images
 
         private async Task<RawUploadResult> UploadFileToCloudinary(IFormFile formFile, string filePath, string fileType, CancellationToken cancellationToken, bool overwrite = true)
         {
-            var file = new FileDescription(formFile.FileName, formFile.OpenReadStream());
+            using var readStream = formFile.OpenReadStream();
+            var file = new FileDescription(formFile.FileName, readStream);
 
             var parameters = new Dictionary<string, object>()
             {
