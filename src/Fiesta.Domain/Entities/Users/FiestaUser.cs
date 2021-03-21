@@ -49,17 +49,21 @@ namespace Fiesta.Domain.Entities.Users
             Username = username;
         }
 
-        private readonly List<UserFriend> _friends = new List<UserFriend>();
+        private List<UserFriend> _friends;
         public IReadOnlyCollection<UserFriend> Friends => _friends;
 
         public void AddFriendRequest(FiestaUser friend)
         {
+            if (_friends is null)
+                _friends = new List<UserFriend>();
+
             _friends.Add(new UserFriend(this, friend ?? throw new ArgumentNullException(nameof(friend))));
         }
 
         public void AddFriend(FiestaUser friend)
         {
-            var foundFriend = _friends.SingleOrDefault(x => x.FriendId == (friend ?? throw new ArgumentNullException(nameof(friend))).Id);
+            //TODO: Test if entity to entity comparison works
+            var foundFriend = _friends.SingleOrDefault(x => x.Friend == (friend ?? throw new ArgumentNullException(nameof(friend))));
 
             if (foundFriend is null)
                 throw new InvalidOperationException($"Friend request not found for user IDs {friend.Id} and {Id}");
