@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Features.Users;
@@ -41,6 +42,14 @@ namespace Fiesta.WebApi.Controllers
             query.UserId = id;
             var response = await Mediator.Send(query, cancellationToken);
             return Ok(response);
+        }
+
+        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
+        [HttpGet("selector")]
+        public async Task<ActionResult<List<UsersSelector.ResponseDto>>> UsersSelector([FromQuery] UsersSelector.Query query, CancellationToken cancellationToken)
+        {
+            var result = await Mediator.Send(query, cancellationToken);
+            return Ok(result);
         }
     }
 }
