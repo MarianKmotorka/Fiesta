@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Fiesta.Domain.Common;
 using Fiesta.Domain.Entities.Events;
 
@@ -46,6 +47,33 @@ namespace Fiesta.Domain.Entities.Users
                 throw new ArgumentNullException("Username is null");
 
             Username = username;
+        }
+
+        private List<UserFriend> _friends;
+        public IReadOnlyCollection<UserFriend> Friends => _friends;
+
+        public void AddFriendRequest(FiestaUser friend)
+        {
+            if (_friends is null)
+                _friends = new List<UserFriend>();
+
+            _friends.Add(new UserFriend(this, friend ?? throw new ArgumentNullException(nameof(friend))));
+        }
+
+        public void AddFriend(FiestaUser friend)
+        {
+            //TODO: Test if entity to entity comparison works
+            var foundFriend = _friends.SingleOrDefault(x => x.Friend == (friend ?? throw new ArgumentNullException(nameof(friend))));
+
+            if (foundFriend is null)
+                throw new InvalidOperationException($"Friend request not found for user IDs {friend.Id} and {Id}");
+
+            foundFriend.ConfirmFriendRequest();
+        }
+
+        public void RemoveFriendOrFriendRequest(UserFriend friend)
+        {
+            _friends.Remove(friend ?? throw new ArgumentNullException(nameof(friend)));
         }
     }
 }
