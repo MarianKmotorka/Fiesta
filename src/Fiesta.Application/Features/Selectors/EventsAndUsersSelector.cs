@@ -30,19 +30,21 @@ namespace Fiesta.Application.Features.Selectors
             {
                 // TODO: only show public events or that user is part of
 
-                var usersQuery = _db.FiestaUsers.AsNoTracking().Select(x => new ResponseDto
-                {
-                    Id = x.Id,
-                    DisplayName = x.Username,
-                    FirstName = x.FirstName,
-                    LastName = x.LastName,
-                    PictureUrl = x.PictureUrl,
-                    Type = ItemType.User,
-                    StartDate = null,
-                    Description = null,
-                    City = null,
-                    State = null
-                });
+                var usersQuery = _db.FiestaUsers.AsNoTracking()
+                    .Where(x => !x.IsDeleted)
+                    .Select(x => new ResponseDto
+                    {
+                        Id = x.Id,
+                        DisplayName = x.Username,
+                        FirstName = x.FirstName,
+                        LastName = x.LastName,
+                        PictureUrl = x.PictureUrl,
+                        Type = ItemType.User,
+                        StartDate = null,
+                        Description = null,
+                        City = null,
+                        State = null
+                    });
 
                 var eventsQuery = _db.Events.AsNoTracking().Select(x => new ResponseDto
                 {

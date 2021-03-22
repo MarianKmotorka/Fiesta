@@ -26,7 +26,7 @@ namespace Fiesta.Application.Features.Users
 
             public async Task<List<ResponseDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var query = _db.FiestaUsers.AsQueryable();
+                var query = _db.FiestaUsers.AsNoTracking().Where(x => !x.IsDeleted);
 
                 if (!string.IsNullOrEmpty(request.Search))
                     query = query.Where(x => x.Username.Contains(request.Search)
