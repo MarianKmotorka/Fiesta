@@ -1,14 +1,17 @@
-﻿using Fiesta.Domain.Entities.Users;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Fiesta.Domain.Entities.Events;
+using Fiesta.Domain.Entities.Users;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fiesta.Application.Common.Interfaces
 {
     public interface IFiestaDbContext : IDisposable
     {
         DbSet<FiestaUser> FiestaUsers { get; }
+
+        DbSet<Event> Events { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
