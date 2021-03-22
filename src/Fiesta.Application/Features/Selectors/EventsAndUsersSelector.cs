@@ -63,9 +63,7 @@ namespace Fiesta.Application.Features.Selectors
                 var query = usersQuery.Union(eventsQuery);
 
                 if (!string.IsNullOrEmpty(request.Search))
-                    query = query.Where(x => x.DisplayName.Contains(request.Search)
-                                     || x.FirstName.Contains(request.Search)
-                                     || x.LastName.Contains(request.Search));
+                    query = query.Where(x => x.DisplayName.Contains(request.Search) || (x.FirstName + " " + x.LastName).Contains(request.Search));
 
                 return await query.OrderBy(x => x.DisplayName).Take(25).ToListAsync(cancellationToken);
             }
