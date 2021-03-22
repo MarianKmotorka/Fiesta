@@ -29,10 +29,7 @@ namespace Fiesta.Application.Features.Users
                 var query = _db.FiestaUsers.AsNoTracking().Where(x => !x.IsDeleted);
 
                 if (!string.IsNullOrEmpty(request.Search))
-                    query = query.Where(x => x.Username.Contains(request.Search)
-                                          || x.FirstName.Contains(request.Search)
-                                          || x.LastName.Contains(request.Search));
-
+                    query = query.Where(x => x.Username.Contains(request.Search) || (x.FirstName + " " + x.LastName).Contains(request.Search));
 
                 return await query.Select(x => new ResponseDto
                 {
