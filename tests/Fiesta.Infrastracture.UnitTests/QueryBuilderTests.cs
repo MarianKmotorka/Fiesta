@@ -88,7 +88,6 @@ namespace Fiesta.Infrastracture.UnitTests
                     new[] { _thomasClansy.Id, _johnTravolta.Id, _harryClansy.Id, _adeleJohnes.Id, _adeleVance.Id },
                     options => options.WithStrictOrdering()
                     );
-
         }
 
         [Fact]
