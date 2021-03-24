@@ -24,7 +24,7 @@ namespace Fiesta.Application.Features.Users
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var deletedUsers = await _db.FiestaUsers.Where(x => x.IsDeleted).ToListAsync(cancellationToken);
+                var deletedUsers = await _db.FiestaUsers.IgnoreQueryFilters().Where(x => x.IsDeleted).ToListAsync(cancellationToken);
                 _db.FiestaUsers.RemoveRange(deletedUsers);
 
                 await _db.SaveChangesAsync(cancellationToken);

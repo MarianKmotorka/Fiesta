@@ -1,7 +1,8 @@
-﻿using Fiesta.Application.Features.Users;
+﻿using System.Threading.Tasks;
+using Fiesta.Application.Features.Users;
 using Fiesta.Domain.Entities.Users;
 using FluentAssertions;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace Fiesta.IntegrationTests.Features.Users
@@ -19,14 +20,17 @@ namespace Fiesta.IntegrationTests.Features.Users
         [Fact]
         public async Task GivenSomeUsersMarkedAsDeleted_WhenHandlerIsCalled_OnlyMarkedUsersAreDeleted()
         {
-            ArrangeDb.FiestaUsers.Add(new FiestaUser("deleted@email.com", "Deleted") { IsDeleted = true });
+            var deletedUser = ArrangeDb.FiestaUsers.Add(new FiestaUser("deleted@email.com", "Deleted") { IsDeleted = true }).Entity;
             var notDeletedUser = ArrangeDb.FiestaUsers.Add(new FiestaUser("NOTdeleted@email.com", "NotDeleted")).Entity;
             await ArrangeDb.SaveChangesAsync();
 
             await _sut.Handle(new HardDeleteUsers.Command(), default);
 
-            var userDb = await AssertDb.FiestaUsers.FindAsync(notDeletedUser.Id);
+            var userDb = await AssertDb.FiestaUsers.IgnoreQueryFilters().SingleAsync(x => x.Id == notDeletedUser.Id);
             userDb.IsDeleted.Should().BeFalse();
+
+            var deletedUserExists = await AssertDb.FiestaUsers.IgnoreQueryFilters().AnyAsync(x => x.Id == deletedUser.Id);
+            deletedUserExists.Should().BeFalse();
         }
     }
 }

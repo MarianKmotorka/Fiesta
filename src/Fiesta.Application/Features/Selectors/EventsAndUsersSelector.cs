@@ -31,7 +31,6 @@ namespace Fiesta.Application.Features.Selectors
                 // TODO: only show public events or that user is part of
 
                 var usersQuery = _db.FiestaUsers.AsNoTracking()
-                    .Where(x => !x.IsDeleted)
                     .Select(x => new ResponseDto
                     {
                         Id = x.Id,
