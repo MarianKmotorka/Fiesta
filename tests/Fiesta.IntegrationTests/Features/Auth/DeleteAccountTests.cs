@@ -45,7 +45,7 @@ namespace Fiesta.IntegrationTests.Features.Auth
             var deletedUser = await AssertDb.Users.SingleOrDefaultAsync(x => x.Email == registerRequest.Email);
             deletedUser.Should().BeNull();
 
-            var deletedFiestaUser = await AssertDb.FiestaUsers.SingleOrDefaultAsync(x => x.Email == registerRequest.Email);
+            var deletedFiestaUser = await AssertDb.FiestaUsers.IgnoreQueryFilters().SingleAsync(x => x.Email == registerRequest.Email);
             deletedFiestaUser.IsDeleted.Should().BeTrue();
         }
 
@@ -93,7 +93,7 @@ namespace Fiesta.IntegrationTests.Features.Auth
             var deletedUser = await AssertDb.Users.SingleOrDefaultAsync(x => x.Email == GoogleAssets.JohnyUserInfoModel.Email);
             deletedUser.Should().BeNull();
 
-            var deletedFiestaUser = await AssertDb.FiestaUsers.SingleOrDefaultAsync(x => x.Email == GoogleAssets.JohnyUserInfoModel.Email);
+            var deletedFiestaUser = await AssertDb.FiestaUsers.IgnoreQueryFilters().SingleAsync(x => x.Email == GoogleAssets.JohnyUserInfoModel.Email);
             deletedFiestaUser.IsDeleted.Should().BeTrue();
         }
 
