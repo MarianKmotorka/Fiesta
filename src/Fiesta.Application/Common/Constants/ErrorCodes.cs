@@ -28,5 +28,7 @@
         public const string MinSize = "minSize";
         public const string AlreadyExists = "alreadyExists";
         public const string CanContainLettersNumberOrSpecialCharacters = "canContainLettersNumberOrSpecialCharacters";
+        public const string DoesNotExist = "doesNotExist";
+        public const string AlreadyFriends = "alreadyFriends";
     }
 }

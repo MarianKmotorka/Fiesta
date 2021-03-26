@@ -10,23 +10,17 @@ namespace Fiesta.Domain.Entities.Users
         public string FriendId { get; private set; }
         public FiestaUser Friend { get; private set; }
 
-        public bool IsFriendRequest { get; private set; }
-
         public UserFriend(FiestaUser user, FiestaUser friend)
         {
             User = user ?? throw new ArgumentNullException(nameof(user));
             Friend = friend ?? throw new ArgumentNullException(nameof(friend));
-            IsFriendRequest = true;
+            UserId = user.Id;
+            FriendId = friend.Id;
         }
 
         private UserFriend()
         {
 
-        }
-
-        public void ConfirmFriendRequest()
-        {
-            IsFriendRequest = false;
         }
     }
 }
