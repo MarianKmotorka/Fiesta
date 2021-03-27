@@ -1,10 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Utils;
-using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -45,25 +43,6 @@ namespace Fiesta.Application.Features.Users.Friends
                 await _db.SaveChangesAsync(cancellationToken);
 
                 return Unit.Value;
-            }
-        }
-
-        public class Validator : AbstractValidator<Command>
-        {
-            private readonly IFiestaDbContext _db;
-
-            public Validator(IFiestaDbContext db)
-            {
-                _db = db;
-
-                RuleFor(x => x.FriendId)
-                   .NotEmpty().WithErrorCode(ErrorCodes.Required)
-                   .MustAsync(Exist).WithErrorCode(ErrorCodes.DoesNotExist);
-            }
-
-            private async Task<bool> Exist(string userId, CancellationToken cancellationToken)
-            {
-                return await _db.FiestaUsers.AnyAsync(x => x.Id == userId, cancellationToken);
             }
         }
     }

@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Fiesta.Application.Common.Constants;
 using Fiesta.Domain.Entities.Users;
 using Fiesta.IntegrationTests;
 using Fiesta.WebApi.Middleware.ExceptionHanlding;
@@ -13,9 +12,9 @@ using Xunit;
 namespace Fiesta.WebApi.Tests.Features.Users.Friends
 {
     [Collection(nameof(FiestaAppFactory))]
-    public class AddFriendTests : WebAppTestBase
+    public class ConfirmFriendRequestTests : WebAppTestBase
     {
-        public AddFriendTests(FiestaAppFactory factory) : base(factory)
+        public ConfirmFriendRequestTests(FiestaAppFactory factory) : base(factory)
         {
         }
 
@@ -42,7 +41,12 @@ namespace Fiesta.WebApi.Tests.Features.Users.Friends
             var friendShip2 = await AssertDb.UserFriends.SingleOrDefaultAsync(x => x.UserId == fiestaFriend.Id && x.FriendId == LoggedInUserId);
 
             friendShip1.Should().NotBeNull();
+            friendShip1.UserId.Should().BeEquivalentTo(LoggedInUserId);
+            friendShip1.FriendId.Should().BeEquivalentTo(fiestaFriend.Id);
+
             friendShip2.Should().NotBeNull();
+            friendShip2.UserId.Should().BeEquivalentTo(fiestaFriend.Id);
+            friendShip2.FriendId.Should().BeEquivalentTo(LoggedInUserId);
         }
 
         [Fact]
@@ -63,15 +67,8 @@ namespace Fiesta.WebApi.Tests.Features.Users.Friends
             var errorResposne = await response.Content.ReadAsAsync<ErrorResponse>();
             errorResposne.Should().BeEquivalentTo(new
             {
-                ErrorCode = "ValidationError",
-                ErrorDetails = new object[]
-                {
-                    new
-                    {
-                        Code = ErrorCodes.DoesNotExist,
-                        PropertyName="friendId"
-                    }
-                }
+                ErrorCode = "BadRequest",
+                ErrorMessage = "Friend request does not exist",
             });
         }
 

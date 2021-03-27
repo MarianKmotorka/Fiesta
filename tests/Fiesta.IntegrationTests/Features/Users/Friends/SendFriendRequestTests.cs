@@ -12,9 +12,9 @@ using Xunit;
 namespace Fiesta.WebApi.Tests.Features.Users.Friends
 {
     [Collection(nameof(FiestaAppFactory))]
-    public class AddFriendRequestTests : WebAppTestBase
+    public class SendFriendRequestTests : WebAppTestBase
     {
-        public AddFriendRequestTests(FiestaAppFactory factory) : base(factory)
+        public SendFriendRequestTests(FiestaAppFactory factory) : base(factory)
         {
         }
 
@@ -31,6 +31,8 @@ namespace Fiesta.WebApi.Tests.Features.Users.Friends
             var friendRequest = await AssertDb.FriendRequests.SingleOrDefaultAsync(x => x.FromId == LoggedInUserId && x.ToId == fiestaFriend.Id);
 
             friendRequest.Should().NotBeNull();
+            friendRequest.FromId.Should().BeEquivalentTo(LoggedInUserId);
+            friendRequest.ToId.Should().BeEquivalentTo(fiestaFriend.Id);
         }
 
         [Fact]
