@@ -51,7 +51,8 @@ namespace Fiesta.Application.Features.Users.Friends
                 RuleFor(x => x.FriendId)
                    .NotEmpty().WithErrorCode(ErrorCodes.Required)
                    .MustAsync(Exist).WithErrorCode(ErrorCodes.DoesNotExist)
-                   .MustAsync(NotBeFriend).WithErrorCode(ErrorCodes.AlreadyFriends);
+                   .MustAsync(NotBeFriend).WithErrorCode(ErrorCodes.AlreadyFriends)
+                   .Must(NotBeSamePerson).WithErrorCode(ErrorCodes.SenderAndReceiverIdentical);
             }
 
             private async Task<bool> Exist(string userId, CancellationToken cancellationToken)
@@ -62,6 +63,11 @@ namespace Fiesta.Application.Features.Users.Friends
             private async Task<bool> NotBeFriend(Command command, string _, CancellationToken cancellationToken)
             {
                 return !await _db.UserFriends.AnyAsync(x => x.UserId == command.UserId && x.FriendId == command.FriendId, cancellationToken);
+            }
+
+            private bool NotBeSamePerson(Command command, string friendId)
+            {
+                return command.UserId != friendId;
             }
         }
     }

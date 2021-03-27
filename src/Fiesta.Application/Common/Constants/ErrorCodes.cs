@@ -30,5 +30,6 @@
         public const string CanContainLettersNumberOrSpecialCharacters = "canContainLettersNumberOrSpecialCharacters";
         public const string DoesNotExist = "doesNotExist";
         public const string AlreadyFriends = "alreadyFriends";
+        public const string SenderAndReceiverIdentical = "senderAndReceiverIdentical";
     }
 }
