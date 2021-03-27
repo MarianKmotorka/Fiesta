@@ -32,7 +32,7 @@ namespace Fiesta.Infrastracture.Resources.Images
             var result = await UploadFileToCloudinary(picture, filePath, CloudinaryFileTypes.Image, cancellationToken);
 
             if (result.StatusCode == HttpStatusCode.OK)
-                return Result<string>.Success(result.Url.OriginalString);
+                return Result<string>.Success(result.SecureUrl.OriginalString);
             else
                 return Result<string>.Failure(result.Error.Message);
         }
