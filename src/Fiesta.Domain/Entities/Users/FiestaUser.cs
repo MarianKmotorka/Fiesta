@@ -8,6 +8,11 @@ namespace Fiesta.Domain.Entities.Users
 {
     public class FiestaUser : Entity<string>
     {
+        private List<Event> _organizedEvents;
+        private List<UserFriend> _friends;
+        private List<FriendRequest> _recievedFriendRequests;
+        private List<FriendRequest> _sentFriendRequests;
+
         public FiestaUser(string email, string username)
         {
             Email = email;
@@ -36,10 +41,21 @@ namespace Fiesta.Domain.Entities.Users
 
         public DateTime CreatedOnUtc { get; init; }
 
-        private readonly List<Event> _organizedEvents = new List<Event>();
         public IReadOnlyCollection<Event> OrganizedEvents => _organizedEvents;
 
-        public void AddOrganizedEvent(Event organizedEvent) => _organizedEvents.Add(organizedEvent);
+        public IReadOnlyCollection<UserFriend> Friends => _friends;
+
+        public IReadOnlyCollection<FriendRequest> RecievedFriendRequests => _recievedFriendRequests;
+
+        public IReadOnlyCollection<FriendRequest> SentFriendRequests => _sentFriendRequests;
+
+        public void AddOrganizedEvent(Event organizedEvent)
+        {
+            if (_organizedEvents is null)
+                _organizedEvents = new List<Event>();
+
+            _organizedEvents.Add(organizedEvent ?? throw new ArgumentNullException(nameof(organizedEvent)));
+        }
 
         public void UpdateUsername(string username)
         {
@@ -49,31 +65,41 @@ namespace Fiesta.Domain.Entities.Users
             Username = username;
         }
 
-        private List<UserFriend> _friends;
-        public IReadOnlyCollection<UserFriend> Friends => _friends;
-
-        public void AddFriendRequest(FiestaUser friend)
+        public void SendFriendRequest(FiestaUser friend)
         {
-            if (_friends is null)
-                _friends = new List<UserFriend>();
+            if (_sentFriendRequests is null)
+                _sentFriendRequests = new List<FriendRequest>();
 
-            _friends.Add(new UserFriend(this, friend ?? throw new ArgumentNullException(nameof(friend))));
+            _ = friend ?? throw new ArgumentNullException(nameof(friend));
+            _sentFriendRequests.Add(new FriendRequest(this, friend));
         }
 
         public void AddFriend(FiestaUser friend)
         {
-            //TODO: Test if entity to entity comparison works
-            var foundFriend = _friends.SingleOrDefault(x => x.Friend == (friend ?? throw new ArgumentNullException(nameof(friend))));
+            if (_friends is null)
+                _friends = new List<UserFriend>();
 
-            if (foundFriend is null)
-                throw new InvalidOperationException($"Friend request not found for user IDs {friend.Id} and {Id}");
+            _ = friend ?? throw new ArgumentNullException(nameof(friend));
 
-            foundFriend.ConfirmFriendRequest();
+            var friendRelation = _friends.SingleOrDefault(x => x.FriendId == friend.Id);
+
+            if (friendRelation is not null)
+                return;
+
+            _friends.Add(new UserFriend(this, friend));
+            friend.AddFriend(this);
         }
 
-        public void RemoveFriendOrFriendRequest(UserFriend friend)
+        public void RemoveFriend(FiestaUser friend)
         {
-            _friends.Remove(friend ?? throw new ArgumentNullException(nameof(friend)));
+            _ = friend ?? throw new ArgumentNullException(nameof(friend));
+            var friendRelation = _friends.SingleOrDefault(x => x.FriendId == friend.Id);
+
+            if (friendRelation is null)
+                return;
+
+            _friends.Remove(friendRelation);
+            friend.RemoveFriend(this);
         }
     }
 }

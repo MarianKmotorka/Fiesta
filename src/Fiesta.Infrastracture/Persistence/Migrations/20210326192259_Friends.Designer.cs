@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fiesta.Infrastracture.Persistence.Migrations
 {
     [DbContext(typeof(FiestaDbContext))]
-    [Migration("20210321192613_Friends")]
+    [Migration("20210326192259_Friends")]
     partial class Friends
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -90,6 +90,21 @@ namespace Fiesta.Infrastracture.Persistence.Migrations
                     b.ToTable("FiestaUser");
                 });
 
+            modelBuilder.Entity("Fiesta.Domain.Entities.Users.FriendRequest", b =>
+                {
+                    b.Property<string>("FromId")
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<string>("ToId")
+                        .HasColumnType("nvarchar(36)");
+
+                    b.HasKey("FromId", "ToId");
+
+                    b.HasIndex("ToId");
+
+                    b.ToTable("FriendRequests");
+                });
+
             modelBuilder.Entity("Fiesta.Domain.Entities.Users.UserFriend", b =>
                 {
                     b.Property<string>("UserId")
@@ -97,9 +112,6 @@ namespace Fiesta.Infrastracture.Persistence.Migrations
 
                     b.Property<string>("FriendId")
                         .HasColumnType("nvarchar(36)");
-
-                    b.Property<bool>("IsFriendRequest")
-                        .HasColumnType("bit");
 
                     b.HasKey("UserId", "FriendId");
 
@@ -383,6 +395,25 @@ namespace Fiesta.Infrastracture.Persistence.Migrations
                     b.Navigation("Organizer");
                 });
 
+            modelBuilder.Entity("Fiesta.Domain.Entities.Users.FriendRequest", b =>
+                {
+                    b.HasOne("Fiesta.Domain.Entities.Users.FiestaUser", "From")
+                        .WithMany("SentFriendRequests")
+                        .HasForeignKey("FromId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Fiesta.Domain.Entities.Users.FiestaUser", "To")
+                        .WithMany("RecievedFriendRequests")
+                        .HasForeignKey("ToId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("From");
+
+                    b.Navigation("To");
+                });
+
             modelBuilder.Entity("Fiesta.Domain.Entities.Users.UserFriend", b =>
                 {
                     b.HasOne("Fiesta.Domain.Entities.Users.FiestaUser", "Friend")
@@ -458,6 +489,10 @@ namespace Fiesta.Infrastracture.Persistence.Migrations
                     b.Navigation("Friends");
 
                     b.Navigation("OrganizedEvents");
+
+                    b.Navigation("RecievedFriendRequests");
+
+                    b.Navigation("SentFriendRequests");
                 });
 #pragma warning restore 612, 618
         }
