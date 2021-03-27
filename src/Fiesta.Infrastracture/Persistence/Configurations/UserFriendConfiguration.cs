@@ -12,6 +12,8 @@ namespace Fiesta.Infrastracture.Persistence.Configurations
             builder.HasOne(uf => uf.Friend).WithMany().HasForeignKey(fk => fk.FriendId).OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(uf => uf.User).WithMany(f => f.Friends).HasForeignKey(fk => fk.UserId);
             builder.ToTable("UserFriends");
+
+            builder.HasQueryFilter(x => !x.Friend.IsDeleted && !x.User.IsDeleted);
         }
     }
 }
