@@ -10,7 +10,7 @@ namespace Fiesta.Infrastracture.Persistence.Configurations
         {
             builder.ToTable("EventInvitations");
             builder.HasKey(x => new { x.EventId, x.InviterId, x.InviteeId });
-            builder.HasOne(x => x.Invitee).WithMany(x => x.RecievedEventInvitations).HasForeignKey(x => x.InviteeId);
+            builder.HasOne(x => x.Invitee).WithMany(x => x.RecievedEventInvitations).HasForeignKey(x => x.InviteeId).OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(x => x.Inviter).WithMany(x => x.SentEventInvitations).HasForeignKey(x => x.InviterId);
             builder.HasOne(x => x.Event).WithMany(x => x.Invitations).HasForeignKey(x => x.EventId);
 

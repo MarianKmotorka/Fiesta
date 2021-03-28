@@ -15,6 +15,7 @@ namespace Fiesta.Domain.Entities.Users
         private List<EventAttendee> _attendedEvents;
         private List<EventInvitation> _recievedEventInvitations;
         private List<EventInvitation> _sentEventInvitations;
+        private List<EventJoinRequest> _sentEventJoinRequests;
 
         public FiestaUser(string email, string username)
         {
@@ -54,10 +55,20 @@ namespace Fiesta.Domain.Entities.Users
 
         public IReadOnlyCollection<EventAttendee> AttendedEvents => _attendedEvents;
 
+        /// <summary>
+        /// Events that user have been invited to.
+        /// </summary>
         public IReadOnlyCollection<EventInvitation> RecievedEventInvitations => _recievedEventInvitations;
 
+        /// <summary>
+        /// Events that user (event organizator) has invited other users to.
+        /// </summary>
         public IReadOnlyCollection<EventInvitation> SentEventInvitations => _sentEventInvitations;
 
+        /// <summary>
+        /// Events that user requested to join.
+        /// </summary>
+        public IReadOnlyCollection<EventJoinRequest> SentEventJoinRequests => _sentEventJoinRequests;
 
         public void AddOrganizedEvent(Event organizedEvent)
         {

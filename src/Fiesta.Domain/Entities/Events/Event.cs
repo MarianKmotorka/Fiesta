@@ -10,6 +10,7 @@ namespace Fiesta.Domain.Entities.Events
     {
         private List<EventAttendee> _attendees;
         private List<EventInvitation> _invitations;
+        private List<EventJoinRequest> _joinRequests;
 
         public string Name { get; private set; }
 
@@ -30,6 +31,8 @@ namespace Fiesta.Domain.Entities.Events
         public IReadOnlyCollection<EventAttendee> Attendees => _attendees;
 
         public IReadOnlyCollection<EventInvitation> Invitations => _invitations;
+
+        public IReadOnlyCollection<EventJoinRequest> JoinRequests => _joinRequests;
 
         public Event(string name, DateTime startDate, DateTime endDate, AccessibilityType accessibilityType, int capacity, FiestaUser organizer, LocationObject location)
         {
@@ -66,6 +69,14 @@ namespace Fiesta.Domain.Entities.Events
                 _invitations = new();
 
             _invitations.Add(new EventInvitation(this, inviter, invitee));
+        }
+
+        public void AddJoinRequest(FiestaUser interestedUser)
+        {
+            if (_joinRequests is null)
+                _joinRequests = new();
+
+            _joinRequests.Add(new EventJoinRequest(this, interestedUser));
         }
     }
 

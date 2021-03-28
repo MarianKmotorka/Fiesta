@@ -1,4 +1,5 @@
-﻿using Fiesta.Domain.Entities.Users;
+﻿using System;
+using Fiesta.Domain.Entities.Users;
 
 namespace Fiesta.Domain.Entities.Events
 {
@@ -18,6 +19,9 @@ namespace Fiesta.Domain.Entities.Events
 
         public EventInvitation(Event @event, FiestaUser inviter, FiestaUser invitee)
         {
+            if (inviter == invitee)
+                throw new InvalidOperationException("Inviter and invitee cannot be the same entity.");
+
             Event = @event;
             Inviter = inviter;
             Invitee = invitee;
