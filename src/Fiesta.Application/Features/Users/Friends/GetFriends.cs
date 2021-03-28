@@ -1,23 +1,25 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Fiesta.Application.Common.Behaviours.Authorization;
 using Fiesta.Application.Common.Interfaces;
+using Fiesta.Application.Common.Queries;
 using Fiesta.Application.Utils;
-using Fiesta.Domain.Entities.Users;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Fiesta.Application.Features.Users.Friends
 {
     public class GetFriends
     {
-        public class Query : IRequest<Response>
+        public class Query : IRequest<QueryResponse<UserDto>>
         {
+            [JsonIgnore]
             public string Id { get; set; }
+            public QueryDocument QueryDocument { get; set; }
         }
 
-        public class Handler : IRequestHandler<Query, Response>
+        public class Handler : IRequestHandler<Query, QueryResponse<UserDto>>
         {
             private readonly IFiestaDbContext _db;
 
@@ -26,21 +28,31 @@ namespace Fiesta.Application.Features.Users.Friends
                 _db = db;
             }
 
-            public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<QueryResponse<UserDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var user = await _db.FiestaUsers.Include(x => x.Friends).ThenInclude(x => x.Friend).SingleOrNotFoundAsync(x => x.Id == request.Id, cancellationToken);
-                var friends = user.Friends.Select(x => x.Friend).ToList();
 
-                return new Response
-                {
-                    Friends = friends
-                };
+                return await _db.UserFriends.Where(x => x.UserId == request.Id)
+                    .Select(x => new UserDto
+                    {
+                        Id = x.Friend.Id,
+                        Username = x.Friend.Username,
+                        PictureUrl = x.Friend.PictureUrl
+                    })
+                    .BuildResponse(request.QueryDocument, cancellationToken);
             }
         }
 
-        public class Response
+        public class AuthorizationCheck : IAuthorizationCheck<Query>
         {
-            public List<FiestaUser> Friends { get; set; }
+            public Task<bool> IsAuthorized(Query request, IFiestaDbContext db, ICurrentUserService currentUserService, CancellationToken cancellationToken)
+                => Task.FromResult(currentUserService.IsResourceOwnerOrAdmin(request.Id));
+        }
+
+        public class UserDto
+        {
+            public string Id { get; set; }
+            public string Username { get; set; }
+            public string PictureUrl { get; set; }
         }
     }
 }
