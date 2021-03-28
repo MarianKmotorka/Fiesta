@@ -2,7 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
+using Fiesta.Application.Common.Queries;
 using Fiesta.Application.Features.Users;
+using Fiesta.Application.Features.Users.Friends;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,7 +16,7 @@ namespace Fiesta.WebApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<GetUserDetail.Response>> GetUserDetail(string id, CancellationToken cancellationToken)
         {
-            var response = await Mediator.Send(new GetUserDetail.Query { Id = id }, cancellationToken);
+            var response = await Mediator.Send(new GetUserDetail.Query { CurrentUserId = CurrentUserService.UserId, Id = id }, cancellationToken);
             return Ok(response);
         }
 
@@ -50,6 +52,24 @@ namespace Fiesta.WebApi.Controllers
         {
             var result = await Mediator.Send(query, cancellationToken);
             return Ok(result);
+        }
+
+        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
+        [HttpPost("{id}/get-friends")]
+        public async Task<ActionResult<QueryResponse<GetFriends.UserDto>>> GetFriends(string id, GetFriends.Query query, CancellationToken cancellationToken)
+        {
+            query.Id = id;
+            var response = await Mediator.Send(query, cancellationToken);
+            return Ok(response);
+        }
+
+        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
+        [HttpPost("{id}/get-friend-requests")]
+        public async Task<ActionResult<QueryResponse<GetFriendRequests.UserDto>>> GetFriendRequests(string id, GetFriendRequests.Query query, CancellationToken cancellationToken)
+        {
+            query.Id = id;
+            var response = await Mediator.Send(query, cancellationToken);
+            return Ok(response);
         }
     }
 }

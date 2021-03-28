@@ -1,11 +1,11 @@
-﻿using System.Threading;
+﻿using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Utils;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace Fiesta.Application.Features.Users.Friends
 {
