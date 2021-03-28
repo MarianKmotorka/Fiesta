@@ -9,6 +9,7 @@ namespace Fiesta.Domain.Entities.Events
     public class Event : Entity<string>
     {
         private List<EventAttendee> _attendees;
+        private List<EventInvitation> _invitations;
 
         public string Name { get; private set; }
 
@@ -27,6 +28,8 @@ namespace Fiesta.Domain.Entities.Events
         public FiestaUser Organizer { get; private set; }
 
         public IReadOnlyCollection<EventAttendee> Attendees => _attendees;
+
+        public IReadOnlyCollection<EventInvitation> Invitations => _invitations;
 
         public Event(string name, DateTime startDate, DateTime endDate, AccessibilityType accessibilityType, int capacity, FiestaUser organizer, LocationObject location)
         {
@@ -55,6 +58,14 @@ namespace Fiesta.Domain.Entities.Events
         {
             var toBeRemoved = _attendees.Single(x => x.Attendee == attendee);
             _attendees.Remove(toBeRemoved);
+        }
+
+        public void AddInvitation(FiestaUser inviter, FiestaUser invitee)
+        {
+            if (_invitations is null)
+                _invitations = new();
+
+            _invitations.Add(new EventInvitation(this, inviter, invitee));
         }
     }
 

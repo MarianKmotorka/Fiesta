@@ -13,6 +13,8 @@ namespace Fiesta.Domain.Entities.Users
         private List<FriendRequest> _recievedFriendRequests;
         private List<FriendRequest> _sentFriendRequests;
         private List<EventAttendee> _attendedEvents;
+        private List<EventInvitation> _recievedEventInvitations;
+        private List<EventInvitation> _sentEventInvitations;
 
         public FiestaUser(string email, string username)
         {
@@ -51,6 +53,11 @@ namespace Fiesta.Domain.Entities.Users
         public IReadOnlyCollection<FriendRequest> SentFriendRequests => _sentFriendRequests;
 
         public IReadOnlyCollection<EventAttendee> AttendedEvents => _attendedEvents;
+
+        public IReadOnlyCollection<EventInvitation> RecievedEventInvitations => _recievedEventInvitations;
+
+        public IReadOnlyCollection<EventInvitation> SentEventInvitations => _sentEventInvitations;
+
 
         public void AddOrganizedEvent(Event organizedEvent)
         {
