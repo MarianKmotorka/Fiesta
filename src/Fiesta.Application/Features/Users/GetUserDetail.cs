@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Utils;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fiesta.Application.Features.Users
 {
@@ -10,6 +11,7 @@ namespace Fiesta.Application.Features.Users
     {
         public class Query : IRequest<Response>
         {
+            public string CurrentUserId { get; set; }
             public string Id { get; set; }
         }
 
@@ -25,6 +27,17 @@ namespace Fiesta.Application.Features.Users
             public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
             {
                 var user = await _db.FiestaUsers.SingleOrNotFoundAsync(x => x.Id == request.Id, cancellationToken);
+                var numberOfFriends = await _db.UserFriends.CountAsync(x => x.UserId == request.Id, cancellationToken);
+
+                var friendStatus = FriendStatus.None;
+
+                if (await _db.UserFriends.AnyAsync(x => x.UserId == request.CurrentUserId && x.FriendId == request.Id, cancellationToken))
+                    friendStatus = FriendStatus.Friend;
+                else if (await _db.FriendRequests.AnyAsync(x => x.FromId == request.CurrentUserId && x.ToId == request.Id, cancellationToken))
+                    friendStatus = FriendStatus.FriendRequestSent;
+                else if (await _db.FriendRequests.AnyAsync(x => x.FromId == request.Id && x.ToId == request.CurrentUserId, cancellationToken))
+                    friendStatus = FriendStatus.FriendRequestRecieved;
+
                 return new Response
                 {
                     Id = user.Id,
@@ -33,7 +46,9 @@ namespace Fiesta.Application.Features.Users
                     FullName = user.FullName,
                     Username = user.Username,
                     PictureUrl = user.PictureUrl,
-                    Bio = user.Bio
+                    Bio = user.Bio,
+                    NumberOfFriends = numberOfFriends,
+                    FriendStatus = friendStatus
                 };
             }
         }
@@ -53,6 +68,18 @@ namespace Fiesta.Application.Features.Users
             public string PictureUrl { get; set; }
 
             public string Bio { get; set; }
+
+            public int NumberOfFriends { get; set; }
+
+            public FriendStatus FriendStatus { get; set; }
+        }
+
+        public enum FriendStatus
+        {
+            None,
+            Friend,
+            FriendRequestSent,
+            FriendRequestRecieved
         }
     }
 }
