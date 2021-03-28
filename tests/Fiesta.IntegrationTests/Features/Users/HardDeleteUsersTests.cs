@@ -5,7 +5,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
-namespace Fiesta.IntegrationTests.Features.Users
+namespace Fiesta.WebApi.Tests.Features.Users
 {
     [Collection(nameof(FiestaAppFactory))]
     public class HardDeleteUsersTests : WebAppTestBase

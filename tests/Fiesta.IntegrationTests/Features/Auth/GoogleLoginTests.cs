@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using TestBase.Assets;
 using Xunit;
 
-namespace Fiesta.IntegrationTests.Features.Auth
+namespace Fiesta.WebApi.Tests.Features.Auth
 {
     [Collection(nameof(FiestaAppFactory))]
     public class GoogleLoginTests : WebAppTestBase

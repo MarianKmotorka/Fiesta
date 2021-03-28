@@ -5,7 +5,7 @@ using FluentAssertions;
 using TestBase.Assets;
 using Xunit;
 
-namespace Fiesta.IntegrationTests.Features.Users
+namespace Fiesta.WebApi.Tests.Features.Users
 {
     [Collection(nameof(FiestaAppFactory))]
     public class DeleteProfilePictureTests : WebAppTestBase

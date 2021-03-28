@@ -2,7 +2,6 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Fiesta.Domain.Entities.Users;
-using Fiesta.IntegrationTests;
 using Fiesta.WebApi.Middleware.ExceptionHanlding;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;

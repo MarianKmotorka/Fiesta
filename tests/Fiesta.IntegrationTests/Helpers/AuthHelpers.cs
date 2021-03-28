@@ -8,7 +8,7 @@ using Fiesta.Infrastracture;
 using Fiesta.Infrastracture.Auth;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Fiesta.IntegrationTests.Helpers
+namespace Fiesta.WebApi.Tests.Helpers
 {
     public static class AuthHelpers
     {

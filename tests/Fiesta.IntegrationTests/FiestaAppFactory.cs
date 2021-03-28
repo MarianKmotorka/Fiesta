@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TestBase.Mocks;
 
-namespace Fiesta.IntegrationTests
+namespace Fiesta.WebApi.Tests
 {
     public class FiestaAppFactory : WebApplicationFactory<Startup>
     {

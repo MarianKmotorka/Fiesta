@@ -1,6 +1,5 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
-using Fiesta.IntegrationTests;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using TestBase.Assets;

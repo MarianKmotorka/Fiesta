@@ -1,14 +1,14 @@
-﻿using Fiesta.Application.Common.Constants;
-using Fiesta.Domain.Entities.Users;
-using Fiesta.Infrastracture.Auth;
-using Fiesta.IntegrationTests.Helpers;
-using System;
+﻿using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using Fiesta.Application.Common.Constants;
+using Fiesta.Domain.Entities.Users;
+using Fiesta.Infrastracture.Auth;
+using Fiesta.WebApi.Tests.Helpers;
 using TestBase;
 using Xunit;
 
-namespace Fiesta.IntegrationTests
+namespace Fiesta.WebApi.Tests
 {
     public abstract class WebAppTestBase : DbTestBase, IDisposable
     {

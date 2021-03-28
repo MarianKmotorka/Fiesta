@@ -9,7 +9,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Fiesta.IntegrationTests.Features.Auth
+namespace Fiesta.WebApi.Tests.Features.Auth
 {
     [Collection(nameof(FiestaAppFactory))]
     public class AddPasswordTests : WebAppTestBase

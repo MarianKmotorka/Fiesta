@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Features.Events.CommonDtos;
 using Fiesta.Domain.Entities.Events;
-using Fiesta.IntegrationTests;
 using Fiesta.WebApi.Middleware.ExceptionHanlding;
 using FluentAssertions;
 using Xunit;
