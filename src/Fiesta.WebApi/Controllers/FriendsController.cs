@@ -57,5 +57,21 @@ namespace Fiesta.WebApi.Controllers
             await Mediator.Send(query, cancellationToken);
             return NoContent();
         }
+
+        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
+        [HttpGet("{id}")]
+        public async Task<ActionResult> GetFriends(string id, CancellationToken cancellationToken)
+        {
+            var response = await Mediator.Send(new GetFriends.Query { Id = id }, cancellationToken);
+            return Ok(response);
+        }
+
+        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
+        [HttpGet("friend-requests/{id}")]
+        public async Task<ActionResult> GetFriendRequests(string id, CancellationToken cancellationToken)
+        {
+            var response = await Mediator.Send(new GetFriendRequests.Query { Id = id }, cancellationToken);
+            return Ok(response);
+        }
     }
 }
