@@ -26,7 +26,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
             var @event = ArrangeDb.SeedEvent(organizer);
             await ArrangeDb.SaveChangesAsync();
 
-            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/invite", new { invitedIds = new[] { user1.Id, user2.Id } });
+            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/invitations", new { invitedIds = new[] { user1.Id, user2.Id } });
             response.EnsureSuccessStatusCode();
 
             var eventDb = await AssertDb.Events.Include(x => x.Invitations).SingleAsync(x => x.Id == @event.Id);
@@ -47,7 +47,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
             @event.AddInvitation(organizer, user1);
             await ArrangeDb.SaveChangesAsync();
 
-            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/invite", new { invitedIds = new[] { user1.Id, user2.Id } });
+            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/invitations", new { invitedIds = new[] { user1.Id, user2.Id } });
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
             var errorResposne = await response.Content.ReadAsAsync<ErrorResponse>();
@@ -75,7 +75,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
             @event.AddAttendee(user1);
             await ArrangeDb.SaveChangesAsync();
 
-            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/invite", new { invitedIds = new[] { user1.Id, user2.Id } });
+            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/invitations", new { invitedIds = new[] { user1.Id, user2.Id } });
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
             var errorResposne = await response.Content.ReadAsAsync<ErrorResponse>();
@@ -100,7 +100,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
             var @event = ArrangeDb.SeedEvent(organizer);
             await ArrangeDb.SaveChangesAsync();
 
-            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/invite", new { invitedIds = new[] { organizer.Id } });
+            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/invitations", new { invitedIds = new[] { organizer.Id } });
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
             var errorResposne = await response.Content.ReadAsAsync<ErrorResponse>();
@@ -125,7 +125,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
             var @event = ArrangeDb.SeedEvent(organizer);
             await ArrangeDb.SaveChangesAsync();
 
-            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/invite", new { invitedIds = new[] { "some_id" } });
+            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/invitations", new { invitedIds = new[] { "some_id" } });
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
     }
