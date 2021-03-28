@@ -12,6 +12,7 @@ namespace Fiesta.Domain.Entities.Users
         private List<UserFriend> _friends;
         private List<FriendRequest> _recievedFriendRequests;
         private List<FriendRequest> _sentFriendRequests;
+        private List<EventAttendee> _attendedEvents;
 
         public FiestaUser(string email, string username)
         {
@@ -49,6 +50,8 @@ namespace Fiesta.Domain.Entities.Users
 
         public IReadOnlyCollection<FriendRequest> SentFriendRequests => _sentFriendRequests;
 
+        public IReadOnlyCollection<EventAttendee> AttendedEvents => _attendedEvents;
+
         public void AddOrganizedEvent(Event organizedEvent)
         {
             if (_organizedEvents is null)
@@ -60,7 +63,7 @@ namespace Fiesta.Domain.Entities.Users
         public void UpdateUsername(string username)
         {
             if (string.IsNullOrEmpty(username))
-                throw new ArgumentNullException("Username is null");
+                throw new ArgumentNullException(nameof(username));
 
             Username = username;
         }
