@@ -28,6 +28,8 @@ namespace Fiesta.Domain.Entities.Events
 
         public FiestaUser Organizer { get; private set; }
 
+        public string OrganizerId { get; private set; }
+
         public IReadOnlyCollection<EventAttendee> Attendees => _attendees;
 
         public IReadOnlyCollection<EventInvitation> Invitations => _invitations;
@@ -42,6 +44,7 @@ namespace Fiesta.Domain.Entities.Events
             AccessibilityType = accessibilityType;
             Capacity = capacity;
             Organizer = organizer;
+            OrganizerId = organizer.Id;
             Location = location;
         }
 
