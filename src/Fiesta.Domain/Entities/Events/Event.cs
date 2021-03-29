@@ -17,7 +17,7 @@ namespace Fiesta.Domain.Entities.Events
 
         public DateTime EndDate { get; private set; }
 
-        public AccessibilityType AccessibilityType { get; private set; }
+        public AccessibilityType AccessibilityType { get; set; }
 
         public int Capacity { get; private set; }
 

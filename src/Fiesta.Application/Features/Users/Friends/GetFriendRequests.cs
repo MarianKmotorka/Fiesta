@@ -16,7 +16,7 @@ namespace Fiesta.Application.Features.Users.Friends
         {
             [JsonIgnore]
             public string Id { get; set; }
-            public QueryDocument QueryDocument { get; set; }
+            public QueryDocument QueryDocument { get; set; } = new();
         }
 
         public class Handler : IRequestHandler<Query, QueryResponse<UserDto>>

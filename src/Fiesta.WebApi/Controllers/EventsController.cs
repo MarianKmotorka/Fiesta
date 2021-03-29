@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
+using Fiesta.Application.Common.Queries;
 using Fiesta.Application.Features.Events;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -65,12 +66,27 @@ namespace Fiesta.WebApi.Controllers
             return NoContent();
         }
 
+        [HttpPost("{id}/delete-join-request")]
+        public async Task<ActionResult> DeleteJoinRequest(string id, CancellationToken cancellationToken)
+        {
+            await Mediator.Send(new DeleteEventJoinRequest.Command { CurrentUserId = CurrentUserService.UserId, EventId = id }, cancellationToken);
+            return NoContent();
+        }
+
         [HttpPost("{id}/delete-attendees")]
         public async Task<ActionResult> ReplyToJoinRequest(string id, DeleteEventAttendees.Command command, CancellationToken cancellationToken)
         {
             command.EventId = id;
             await Mediator.Send(command, cancellationToken);
             return NoContent();
+        }
+
+        [HttpPost("{id}/get-attendees")]
+        public async Task<ActionResult<QueryResponse<GetEventAttendees.AttendeeDto>>> GetAttendees(string id, GetEventAttendees.Query request, CancellationToken cancellationToken)
+        {
+            request.EventId = id;
+            var result = await Mediator.Send(request, cancellationToken);
+            return Ok(result);
         }
     }
 }
