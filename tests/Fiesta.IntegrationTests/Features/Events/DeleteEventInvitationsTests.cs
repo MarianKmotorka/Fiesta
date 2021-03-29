@@ -22,8 +22,8 @@ namespace Fiesta.WebApi.Tests.Features.Events
             var (_, user1) = ArrangeDb.SeedBasicUser();
             var (_, user2) = ArrangeDb.SeedBasicUser();
             var @event = ArrangeDb.SeedEvent(organizer);
-            @event.AddInvitation(organizer, user1);
-            @event.AddInvitation(organizer, user2);
+            @event.AddInvitation(user1);
+            @event.AddInvitation(user2);
             await ArrangeDb.SaveChangesAsync();
 
             var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/delete-invitations", new { RemoveUserIds = new[] { user1.Id } });

@@ -66,12 +66,16 @@ namespace Fiesta.Domain.Entities.Events
             _attendees.Remove(toBeRemoved);
         }
 
-        public void AddInvitation(FiestaUser inviter, FiestaUser invitee)
+
+        public void AddInvitation(FiestaUser invitee)
         {
             if (_invitations is null)
                 _invitations = new();
 
-            _invitations.Add(new EventInvitation(this, inviter, invitee));
+            if (Organizer is null)
+                throw new Exception("Event.Organizor entity not loaded.");
+
+            _invitations.Add(new EventInvitation(this, Organizer, invitee));
         }
 
         public void AddJoinRequest(FiestaUser interestedUser)

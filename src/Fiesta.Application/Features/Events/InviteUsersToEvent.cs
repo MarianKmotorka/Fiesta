@@ -37,12 +37,11 @@ namespace Fiesta.Application.Features.Events
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var @event = await _db.Events.FindOrNotFoundAsync(cancellationToken, request.EventId);
-                var invitor = await _db.FiestaUsers.FindOrNotFoundAsync(cancellationToken, request.CurrentUserId);
+                var @event = await _db.Events.Include(x => x.Organizer).SingleOrNotFoundAsync(x => x.Id == request.EventId, cancellationToken);
                 var invitedUsers = await _db.FiestaUsers.Where(x => request.InvitedIds.Contains(x.Id)).ToListAsync(cancellationToken);
 
                 foreach (var user in invitedUsers)
-                    @event.AddInvitation(invitor, user);
+                    @event.AddInvitation(user);
 
                 await _db.SaveChangesAsync(cancellationToken);
                 return Unit.Value;

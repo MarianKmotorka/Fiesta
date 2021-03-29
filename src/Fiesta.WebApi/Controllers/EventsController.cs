@@ -36,5 +36,14 @@ namespace Fiesta.WebApi.Controllers
             var response = await Mediator.Send(command, cancellationToken);
             return Ok(response);
         }
+
+        [HttpPost("{id}/invitation-reply")]
+        public async Task<ActionResult> InvitationReply(string id, ReplyToInvitation.Command command, CancellationToken cancellationToken)
+        {
+            command.CurrentUserId = CurrentUserService.UserId;
+            command.EventId = id;
+            var response = await Mediator.Send(command, cancellationToken);
+            return Ok(response);
+        }
     }
 }
