@@ -56,5 +56,13 @@ namespace Fiesta.WebApi.Controllers
 
             return NoContent();
         }
+
+        [HttpPost("{id}/join-request-reply")]
+        public async Task<ActionResult> ReplyToJoinRequest(string id, ReplyToEventJoinRequest.Command command, CancellationToken cancellationToken)
+        {
+            command.EventId = id;
+            await Mediator.Send(command, cancellationToken);
+            return NoContent();
+        }
     }
 }
