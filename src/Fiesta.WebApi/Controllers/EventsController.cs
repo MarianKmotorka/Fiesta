@@ -24,8 +24,8 @@ namespace Fiesta.WebApi.Controllers
         {
             command.CurrentUserId = CurrentUserService.UserId;
             command.EventId = id;
-            var response = await Mediator.Send(command, cancellationToken);
-            return Ok(response);
+            await Mediator.Send(command, cancellationToken);
+            return NoContent();
         }
 
         [HttpPost("{id}/delete-invitations")]
@@ -33,8 +33,8 @@ namespace Fiesta.WebApi.Controllers
         {
             command.CurrentUserId = CurrentUserService.UserId;
             command.EventId = id;
-            var response = await Mediator.Send(command, cancellationToken);
-            return Ok(response);
+            await Mediator.Send(command, cancellationToken);
+            return NoContent();
         }
 
         [HttpPost("{id}/invitation-reply")]
@@ -42,8 +42,19 @@ namespace Fiesta.WebApi.Controllers
         {
             command.CurrentUserId = CurrentUserService.UserId;
             command.EventId = id;
-            var response = await Mediator.Send(command, cancellationToken);
-            return Ok(response);
+            await Mediator.Send(command, cancellationToken);
+            return NoContent();
+        }
+
+        [HttpPost("{id}/join-requests")]
+        public async Task<ActionResult> RequestToJoin(string id, CancellationToken cancellationToken)
+        {
+            await Mediator.Send(
+                new RequestToJoinEvent.Command { CurrentUserId = CurrentUserService.UserId, EventId = id },
+                cancellationToken
+                );
+
+            return NoContent();
         }
     }
 }
