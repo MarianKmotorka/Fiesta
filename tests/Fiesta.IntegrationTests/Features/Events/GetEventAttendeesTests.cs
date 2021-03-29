@@ -40,66 +40,50 @@ namespace Fiesta.WebApi.Tests.Features.Events
             });
         }
 
-        [Fact]
-        public async Task GivenAttendeesInDb_WhenAttendeeGettingPrivateEventAttendees_ListIsReturned()
+        [Theory]
+        [InlineData(AccessibilityType.Public, HttpStatusCode.OK)]
+        [InlineData(AccessibilityType.FriendsOnly, HttpStatusCode.Forbidden)]
+        [InlineData(AccessibilityType.Private, HttpStatusCode.Forbidden)]
+        public async Task GivenUserIsNotAttendeeNorFriend_WhenGettingEventAttendees_ExpectedResponseIsReturned(AccessibilityType accessibility, HttpStatusCode statusCode)
         {
-            var attendee = await ArrangeDb.FiestaUsers.FindAsync(LoggedInUserId);
             var (_, organizer) = ArrangeDb.SeedBasicUser();
-            var @event = ArrangeDb.SeedEvent(organizer, x => x.AccessibilityType = AccessibilityType.Private);
-            @event.AddAttendee(attendee);
+            var @event = ArrangeDb.SeedEvent(organizer, x => x.AccessibilityType = accessibility);
             await ArrangeDb.SaveChangesAsync();
 
             var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/get-attendees", new { });
-            response.EnsureSuccessStatusCode();
-
-            var content = await response.Content.ReadAsAsync<QueryResponse<GetEventAttendees.AttendeeDto>>();
-            content.Entries.Should().BeEquivalentTo(new[]
-            {
-                new { attendee.Id },
-            });
+            response.StatusCode.Should().Be(statusCode);
         }
 
-        [Fact]
-        public async Task GivenAttendeesInDb_WhenFriendGettingFriendsOnlyEventAttendees_ListIsReturned()
+        [Theory]
+        [InlineData(AccessibilityType.Public, HttpStatusCode.OK)]
+        [InlineData(AccessibilityType.FriendsOnly, HttpStatusCode.OK)]
+        [InlineData(AccessibilityType.Private, HttpStatusCode.OK)]
+        public async Task GivenUserIsAttendee_WhenGettingEventAttendees_ExpectedResponseIsReturned(AccessibilityType accessibility, HttpStatusCode statusCode)
         {
             var me = await ArrangeDb.FiestaUsers.FindAsync(LoggedInUserId);
             var (_, organizer) = ArrangeDb.SeedBasicUser();
-            var (_, attendee) = ArrangeDb.SeedBasicUser();
-            me.AddFriend(organizer);
-            var @event = ArrangeDb.SeedEvent(organizer, x => x.AccessibilityType = AccessibilityType.FriendsOnly);
-            @event.AddAttendee(attendee);
+            var @event = ArrangeDb.SeedEvent(organizer, x => x.AccessibilityType = accessibility);
+            @event.AddAttendee(me);
             await ArrangeDb.SaveChangesAsync();
 
             var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/get-attendees", new { });
-            response.EnsureSuccessStatusCode();
-
-            var content = await response.Content.ReadAsAsync<QueryResponse<GetEventAttendees.AttendeeDto>>();
-            content.Entries.Should().BeEquivalentTo(new[]
-            {
-                new { attendee.Id },
-            });
+            response.StatusCode.Should().Be(statusCode);
         }
 
-        [Fact]
-        public async Task GivenAttendeesInDb_WhenNotAttendeeGettingPrivateEventAttendees_ForbiddenIsReturned()
+        [Theory]
+        [InlineData(AccessibilityType.Public, HttpStatusCode.OK)]
+        [InlineData(AccessibilityType.FriendsOnly, HttpStatusCode.OK)]
+        [InlineData(AccessibilityType.Private, HttpStatusCode.Forbidden)]
+        public async Task GivenUserIsFriend_WhenGettingEventAttendees_ExpectedResponseIsReturned(AccessibilityType accessibility, HttpStatusCode statusCode)
         {
+            var me = await ArrangeDb.FiestaUsers.FindAsync(LoggedInUserId);
             var (_, organizer) = ArrangeDb.SeedBasicUser();
-            var @event = ArrangeDb.SeedEvent(organizer, x => x.AccessibilityType = AccessibilityType.Private);
+            organizer.AddFriend(me);
+            var @event = ArrangeDb.SeedEvent(organizer, x => x.AccessibilityType = accessibility);
             await ArrangeDb.SaveChangesAsync();
 
             var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/get-attendees", new { });
-            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-        }
-
-        [Fact]
-        public async Task GivenAttendeesInDb_WhenNotFriendNorAttendeeGettingFriendsOnlyEventAttendees_ForbiddenIsReturned()
-        {
-            var (_, organizer) = ArrangeDb.SeedBasicUser();
-            var @event = ArrangeDb.SeedEvent(organizer, x => x.AccessibilityType = AccessibilityType.FriendsOnly);
-            await ArrangeDb.SaveChangesAsync();
-
-            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/get-attendees", new { });
-            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+            response.StatusCode.Should().Be(statusCode);
         }
     }
 }
