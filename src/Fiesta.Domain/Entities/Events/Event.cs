@@ -21,7 +21,7 @@ namespace Fiesta.Domain.Entities.Events
 
         public int Capacity { get; private set; }
 
-        public string Description { get; set; }
+        public string Description { get; private set; }
 
         public LocationObject Location { get; private set; }
 
@@ -76,6 +76,11 @@ namespace Fiesta.Domain.Entities.Events
                 _joinRequests = new();
 
             _joinRequests.Add(new EventJoinRequest(this, interestedUser));
+        }
+
+        public void SetDescription(string description)
+        {
+            Description = description.Replace(Environment.NewLine, "").Trim();
         }
     }
 

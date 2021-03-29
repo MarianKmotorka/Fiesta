@@ -39,7 +39,7 @@ namespace Fiesta.Domain.Entities.Users
 
         public string PictureUrl { get; set; }
 
-        public string Bio { get; set; }
+        public string Bio { get; private set; }
 
         public bool IsDeleted { get; set; }
 
@@ -121,6 +121,11 @@ namespace Fiesta.Domain.Entities.Users
 
             _friends.Remove(friendRelation);
             friend.RemoveFriend(this);
+        }
+
+        public void SetBio(string bio)
+        {
+            Bio = bio.Replace(Environment.NewLine, "").Trim();
         }
     }
 }

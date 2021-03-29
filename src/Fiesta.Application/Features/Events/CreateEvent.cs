@@ -1,4 +1,8 @@
-﻿using Fiesta.Application.Common.Constants;
+﻿using System;
+using System.Text.Json.Serialization;
+using System.Threading;
+using System.Threading.Tasks;
+using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Validators;
 using Fiesta.Application.Features.Events.CommonDtos;
@@ -6,10 +10,6 @@ using Fiesta.Domain.Entities;
 using Fiesta.Domain.Entities.Events;
 using FluentValidation;
 using MediatR;
-using System;
-using System.Text.Json.Serialization;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Fiesta.Application.Features.Events
 {
@@ -25,6 +25,7 @@ namespace Fiesta.Application.Features.Events
             public AccessibilityType AccessibilityType { get; set; }
             public int Capacity { get; set; }
             public LocationDto Location { get; set; }
+            public string Description { get; set; }
         }
 
         public class Handler : IRequestHandler<Command, Response>
@@ -64,10 +65,15 @@ namespace Fiesta.Application.Features.Events
                     location
                     );
 
+                organizedEvent.SetDescription(request.Description);
+
                 fiestaUser.AddOrganizedEvent(organizedEvent);
                 await _fiestaDbContext.SaveChangesAsync(cancellationToken);
 
-                return new Response { Id = organizedEvent.Id };
+                return new Response
+                {
+                    Id = organizedEvent.Id
+                };
             }
         }
 
