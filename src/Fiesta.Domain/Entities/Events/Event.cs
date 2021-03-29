@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Fiesta.Domain.Common;
 using Fiesta.Domain.Entities.Users;
 
@@ -59,13 +58,6 @@ namespace Fiesta.Domain.Entities.Events
 
             _attendees.Add(new EventAttendee(attendee, this));
         }
-
-        public void RemoveAttendee(FiestaUser attendee)
-        {
-            var toBeRemoved = _attendees.Single(x => x.Attendee == attendee);
-            _attendees.Remove(toBeRemoved);
-        }
-
 
         public void AddInvitation(FiestaUser invitee)
         {
