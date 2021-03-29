@@ -64,5 +64,12 @@ namespace Fiesta.WebApi.Controllers
             await Mediator.Send(command, cancellationToken);
             return NoContent();
         }
+
+        [HttpPost("{id}/delete-join-request")]
+        public async Task<ActionResult> ReplyToJoinRequest(string id, CancellationToken cancellationToken)
+        {
+            await Mediator.Send(new DeleteEventJoinRequest.Command { CurrentUserId = CurrentUserService.UserId, EventId = id }, cancellationToken);
+            return NoContent();
+        }
     }
 }
