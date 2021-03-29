@@ -9,14 +9,14 @@ using Xunit;
 namespace Fiesta.WebApi.Tests.Features.Events
 {
     [Collection(nameof(FiestaAppFactory))]
-    public class ReplyToInvitationTests : WebAppTestBase
+    public class ReplyToEventInvitationTests : WebAppTestBase
     {
-        public ReplyToInvitationTests(FiestaAppFactory factory) : base(factory)
+        public ReplyToEventInvitationTests(FiestaAppFactory factory) : base(factory)
         {
         }
 
         [Fact]
-        public async Task GiveEXistingInvitation_WhenAcceptingTheInvitation_EventAttendeeIsAddedAndInvitationIsRemoved()
+        public async Task GiveExistingInvitation_WhenAcceptingTheInvitation_EventAttendeeIsAddedAndInvitationIsRemoved()
         {
             var invitee = await ArrangeDb.FiestaUsers.FindAsync(LoggedInUserId);
             var (_, organizer) = ArrangeDb.SeedBasicUser();
@@ -40,7 +40,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
         }
 
         [Fact]
-        public async Task GiveEXistingInvitation_WhenRejectingTheInvitation_InvitationIsRemoved()
+        public async Task GiveExistingInvitation_WhenRejectingTheInvitation_InvitationIsRemoved()
         {
             var invitee = await ArrangeDb.FiestaUsers.FindAsync(LoggedInUserId);
             var (_, organizer) = ArrangeDb.SeedBasicUser();

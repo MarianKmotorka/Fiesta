@@ -38,7 +38,7 @@ namespace Fiesta.WebApi.Controllers
         }
 
         [HttpPost("{id}/invitation-reply")]
-        public async Task<ActionResult> InvitationReply(string id, ReplyToInvitation.Command command, CancellationToken cancellationToken)
+        public async Task<ActionResult> InvitationReply(string id, ReplyToEventInvitation.Command command, CancellationToken cancellationToken)
         {
             command.CurrentUserId = CurrentUserService.UserId;
             command.EventId = id;

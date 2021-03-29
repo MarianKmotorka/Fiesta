@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Fiesta.Application.Features.Events
 {
-    public class ReplyToInvitation
+    public class ReplyToEventInvitation
     {
         public class Command : IRequest
         {
