@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Validators;
-using Fiesta.Application.Features.Events.CommonDtos;
+using Fiesta.Application.Features.Events.Common;
 using Fiesta.Domain.Entities;
 using Fiesta.Domain.Entities.Events;
 using FluentValidation;

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Fiesta.Application.Common.Behaviours.Authorization;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Queries;
+using Fiesta.Application.Features.Common;
 using Fiesta.Application.Utils;
 using MediatR;
 
@@ -46,13 +47,6 @@ namespace Fiesta.Application.Features.Users.Friends
         {
             public Task<bool> IsAuthorized(Query request, IFiestaDbContext db, ICurrentUserService currentUserService, CancellationToken cancellationToken)
                 => Task.FromResult(currentUserService.IsResourceOwnerOrAdmin(request.Id));
-        }
-
-        public class UserDto
-        {
-            public string Id { get; set; }
-            public string Username { get; set; }
-            public string PictureUrl { get; set; }
         }
     }
 }

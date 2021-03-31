@@ -11,14 +11,14 @@ using Xunit;
 namespace Fiesta.WebApi.Tests.Features.Events
 {
     [Collection(nameof(FiestaAppFactory))]
-    public class GetEventAttendeesTests : WebAppTestBase
+    public class GetEventDetailTests : WebAppTestBase
     {
-        public GetEventAttendeesTests(FiestaAppFactory factory) : base(factory)
+        public GetEventDetailTests(FiestaAppFactory factory) : base(factory)
         {
         }
 
         [Fact]
-        public async Task GivenAttendeesInDb_WhenCallingGetAttendees_ListIsReturned()
+        public async Task GivenEVentStoredInDb_WhenGettingDetail_DetailReturned()
         {
             var organizer = await ArrangeDb.FiestaUsers.FindAsync(LoggedInUserId);
             var (_, attendee) = ArrangeDb.SeedBasicUser();

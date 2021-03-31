@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Queries;
+using Fiesta.Application.Features.Common;
 using Fiesta.Application.Features.Events;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -82,10 +83,17 @@ namespace Fiesta.WebApi.Controllers
         }
 
         [HttpPost("{id}/get-attendees")]
-        public async Task<ActionResult<QueryResponse<GetEventAttendees.AttendeeDto>>> GetAttendees(string id, GetEventAttendees.Query request, CancellationToken cancellationToken)
+        public async Task<ActionResult<QueryResponse<UserDto>>> GetAttendees(string id, GetEventAttendees.Query request, CancellationToken cancellationToken)
         {
             request.EventId = id;
             var result = await Mediator.Send(request, cancellationToken);
+            return Ok(result);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<QueryResponse<UserDto>>> GetDetail(string id, CancellationToken cancellationToken)
+        {
+            var result = await Mediator.Send(new GetEventDetail.Query { Id = id }, cancellationToken);
             return Ok(result);
         }
     }

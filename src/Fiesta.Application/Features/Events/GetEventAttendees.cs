@@ -1,13 +1,13 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Behaviours.Authorization;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Queries;
+using Fiesta.Application.Features.Common;
+using Fiesta.Application.Features.Events.Common;
 using Fiesta.Application.Utils;
-using Fiesta.Domain.Entities.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,7 +15,7 @@ namespace Fiesta.Application.Features.Events
 {
     public class GetEventAttendees
     {
-        public class Query : IRequest<QueryResponse<AttendeeDto>>
+        public class Query : IRequest<QueryResponse<UserDto>>
         {
             [JsonIgnore]
             public string EventId { get; set; }
@@ -23,7 +23,7 @@ namespace Fiesta.Application.Features.Events
             public QueryDocument QueryDocument { get; set; } = new();
         }
 
-        public class Handler : IRequestHandler<Query, QueryResponse<AttendeeDto>>
+        public class Handler : IRequestHandler<Query, QueryResponse<UserDto>>
         {
             private IFiestaDbContext _db;
 
@@ -32,12 +32,12 @@ namespace Fiesta.Application.Features.Events
                 _db = db;
             }
 
-            public async Task<QueryResponse<AttendeeDto>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<QueryResponse<UserDto>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var @event = await _db.Events.Include(x => x.Organizer).SingleOrNotFoundAsync(x => x.Id == request.EventId, cancellationToken);
 
                 return await _db.EventAttendees.Where(x => x.EventId == request.EventId)
-                    .Select(x => new AttendeeDto
+                    .Select(x => new UserDto
                     {
                         Id = x.AttendeeId,
                         PictureUrl = x.Attendee.PictureUrl,
@@ -50,36 +50,7 @@ namespace Fiesta.Application.Features.Events
         public class AuthorizationCheck : IAuthorizationCheck<Query>
         {
             public async Task<bool> IsAuthorized(Query request, IFiestaDbContext db, ICurrentUserService currentUserService, CancellationToken cancellationToken)
-            {
-                var @event = await db.Events.FindOrNotFoundAsync(cancellationToken, request.EventId);
-
-                if (@event.AccessibilityType == AccessibilityType.Public || @event.OrganizerId == currentUserService.UserId)
-                    return true;
-
-                var isAttendee = await db.EventAttendees
-                    .Where(x => x.EventId == request.EventId)
-                    .AnyAsync(x => x.AttendeeId == currentUserService.UserId, cancellationToken);
-
-                if (@event.AccessibilityType == AccessibilityType.Private)
-                    return isAttendee;
-
-                var isOrganizerFriend = await db.UserFriends
-                    .AnyAsync(x => x.UserId == currentUserService.UserId && x.FriendId == @event.OrganizerId, cancellationToken);
-
-                if (@event.AccessibilityType == AccessibilityType.FriendsOnly)
-                    return isOrganizerFriend || isAttendee;
-
-                throw new NotSupportedException($"Accessibility type {@event.AccessibilityType} not supported.");
-            }
-        }
-
-        public class AttendeeDto
-        {
-            public string Id { get; set; }
-
-            public string Username { get; set; }
-
-            public string PictureUrl { get; set; }
+                => await Helpers.CanViewEvent(request.EventId, db, currentUserService, cancellationToken);
         }
     }
 }

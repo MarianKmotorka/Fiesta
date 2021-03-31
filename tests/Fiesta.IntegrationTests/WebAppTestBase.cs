@@ -38,7 +38,7 @@ namespace Fiesta.WebApi.Tests
 
         private void Authenticate(HttpClient client)
         {
-            var user = new AuthUser("admin@test.com", FiestaRoleEnum.Admin, AuthProviderEnum.EmailAndPassword, "Admin")
+            var user = new AuthUser("basicUser@test.com", FiestaRoleEnum.BasicUser, AuthProviderEnum.EmailAndPassword, "BasicUser")
             {
                 Id = LoggedInUserId,
                 PasswordHash = "some_fake_passsword_hash",

@@ -80,7 +80,7 @@ namespace Fiesta.Domain.Entities.Events
 
         public void SetDescription(string description)
         {
-            Description = description.Replace(Environment.NewLine, "").Trim();
+            Description = description?.Replace(Environment.NewLine, "").Trim();
         }
     }
 
