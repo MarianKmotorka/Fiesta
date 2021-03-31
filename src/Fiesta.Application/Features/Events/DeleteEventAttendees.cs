@@ -36,8 +36,7 @@ namespace Fiesta.Application.Features.Events
                     .Where(x => x.EventId == request.EventId && request.RemoveUserIds.Contains(x.AttendeeId))
                     .ToListAsync(cancellationToken);
 
-                foreach (var attendee in attendees)
-                    _db.EventAttendees.Remove(attendee);
+                _db.EventAttendees.RemoveRange(attendees);
 
                 await _db.SaveChangesAsync(cancellationToken);
                 return Unit.Value;
