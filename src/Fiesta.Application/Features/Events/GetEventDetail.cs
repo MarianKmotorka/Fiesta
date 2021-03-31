@@ -36,7 +36,7 @@ namespace Fiesta.Application.Features.Events
                     Name = x.Name,
                     StartDate = x.StartDate,
                     EndDate = x.EndDate,
-                    PictureUrl = "TODO: picture url",
+                    // TOOD: PictureUrl ,
                     AccessibilityType = x.AccessibilityType,
                     AttendeesCount = _db.EventAttendees.Count(x => x.EventId == request.Id),
                     Organizer = new UserDto
