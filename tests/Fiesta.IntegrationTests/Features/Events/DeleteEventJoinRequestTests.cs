@@ -23,7 +23,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
             @event.AddJoinRequest(requestedUser);
             await ArrangeDb.SaveChangesAsync();
 
-            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/delete-join-request", new { });
+            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/join-requests/delete", new { });
             response.EnsureSuccessStatusCode();
 
             var eventDb = await AssertDb.Events.Include(x => x.JoinRequests).SingleAsync(x => x.Id == @event.Id);

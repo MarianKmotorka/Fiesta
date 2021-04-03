@@ -21,10 +21,10 @@ namespace Fiesta.WebApi.Tests.Features.Events
             var invitee = await ArrangeDb.FiestaUsers.FindAsync(LoggedInUserId);
             var (_, organizer) = ArrangeDb.SeedBasicUser();
             var @event = ArrangeDb.SeedEvent(organizer);
-            @event.AddInvitation(invitee);
+            @event.AddInvitations(invitee);
             await ArrangeDb.SaveChangesAsync();
 
-            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/invitation-reply", new { Accepted = true });
+            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/invitations/reply", new { Accepted = true });
             response.EnsureSuccessStatusCode();
 
             var eventDb = await AssertDb.Events
@@ -45,10 +45,10 @@ namespace Fiesta.WebApi.Tests.Features.Events
             var invitee = await ArrangeDb.FiestaUsers.FindAsync(LoggedInUserId);
             var (_, organizer) = ArrangeDb.SeedBasicUser();
             var @event = ArrangeDb.SeedEvent(organizer);
-            @event.AddInvitation(invitee);
+            @event.AddInvitations(invitee);
             await ArrangeDb.SaveChangesAsync();
 
-            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/invitation-reply", new { Accepted = false });
+            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/invitations/reply", new { Accepted = false });
             response.EnsureSuccessStatusCode();
 
             var eventDb = await AssertDb.Events

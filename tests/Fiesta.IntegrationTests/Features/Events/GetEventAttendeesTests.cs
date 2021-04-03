@@ -28,7 +28,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
             @event.AddAttendee(attendee2);
             await ArrangeDb.SaveChangesAsync();
 
-            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/get-attendees", new { });
+            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/attendees/query", new { });
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsAsync<QueryResponse<UserDto>>();
@@ -50,7 +50,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
             var @event = ArrangeDb.SeedEvent(organizer, x => x.AccessibilityType = accessibility);
             await ArrangeDb.SaveChangesAsync();
 
-            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/get-attendees", new { });
+            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/attendees/query", new { });
             response.StatusCode.Should().Be(statusCode);
         }
 
@@ -66,7 +66,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
             @event.AddAttendee(me);
             await ArrangeDb.SaveChangesAsync();
 
-            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/get-attendees", new { });
+            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/attendees/query", new { });
             response.StatusCode.Should().Be(statusCode);
         }
 
@@ -82,7 +82,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
             var @event = ArrangeDb.SeedEvent(organizer, x => x.AccessibilityType = accessibility);
             await ArrangeDb.SaveChangesAsync();
 
-            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/get-attendees", new { });
+            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/attendees/query", new { });
             response.StatusCode.Should().Be(statusCode);
         }
     }

@@ -26,7 +26,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
             @event.AddAttendee(user2);
             await ArrangeDb.SaveChangesAsync();
 
-            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/delete-attendees", new { RemoveUserIds = new[] { user1.Id } });
+            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/attendees/delete", new { RemoveUserIds = new[] { user1.Id } });
             response.EnsureSuccessStatusCode();
 
             var eventDb = await AssertDb.Events.Include(x => x.Attendees).SingleAsync(x => x.Id == @event.Id);
@@ -43,7 +43,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
             var @event = ArrangeDb.SeedEvent(organizer);
             await ArrangeDb.SaveChangesAsync();
 
-            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/delete-attendees", new { RemoveUserIds = new[] { "some_id" } });
+            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/attendees/delete", new { RemoveUserIds = new[] { "some_id" } });
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
     }

@@ -30,7 +30,7 @@ namespace Fiesta.WebApi.Controllers
             return NoContent();
         }
 
-        [HttpPost("{id}/delete-invitations")]
+        [HttpPost("{id}/invitations/delete")]
         public async Task<ActionResult> DeleteInvitations(string id, DeleteEventInvitations.Command command, CancellationToken cancellationToken)
         {
             command.CurrentUserId = CurrentUserService.UserId;
@@ -39,8 +39,8 @@ namespace Fiesta.WebApi.Controllers
             return NoContent();
         }
 
-        [HttpPost("{id}/invitation-reply")]
-        public async Task<ActionResult> InvitationReply(string id, ReplyToEventInvitation.Command command, CancellationToken cancellationToken)
+        [HttpPost("{id}/invitations/reply")]
+        public async Task<ActionResult> ReplyToInvitation(string id, ReplyToEventInvitation.Command command, CancellationToken cancellationToken)
         {
             command.CurrentUserId = CurrentUserService.UserId;
             command.EventId = id;
@@ -59,7 +59,7 @@ namespace Fiesta.WebApi.Controllers
             return NoContent();
         }
 
-        [HttpPost("{id}/join-request-reply")]
+        [HttpPost("{id}/join-requests/reply")]
         public async Task<ActionResult> ReplyToJoinRequest(string id, ReplyToEventJoinRequest.Command command, CancellationToken cancellationToken)
         {
             command.EventId = id;
@@ -67,14 +67,14 @@ namespace Fiesta.WebApi.Controllers
             return NoContent();
         }
 
-        [HttpPost("{id}/delete-join-request")]
+        [HttpPost("{id}/join-requests/delete")]
         public async Task<ActionResult> DeleteJoinRequest(string id, CancellationToken cancellationToken)
         {
             await Mediator.Send(new DeleteEventJoinRequest.Command { CurrentUserId = CurrentUserService.UserId, EventId = id }, cancellationToken);
             return NoContent();
         }
 
-        [HttpPost("{id}/delete-attendees")]
+        [HttpPost("{id}/attendees/delete")]
         public async Task<ActionResult> ReplyToJoinRequest(string id, DeleteEventAttendees.Command command, CancellationToken cancellationToken)
         {
             command.EventId = id;
@@ -82,7 +82,7 @@ namespace Fiesta.WebApi.Controllers
             return NoContent();
         }
 
-        [HttpPost("{id}/get-attendees")]
+        [HttpPost("{id}/attendees/query")]
         public async Task<ActionResult<QueryResponse<UserDto>>> GetAttendees(string id, GetEventAttendees.Query request, CancellationToken cancellationToken)
         {
             request.EventId = id;

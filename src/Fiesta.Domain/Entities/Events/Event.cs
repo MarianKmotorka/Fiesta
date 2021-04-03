@@ -59,15 +59,16 @@ namespace Fiesta.Domain.Entities.Events
             _attendees.Add(new EventAttendee(attendee, this));
         }
 
-        public void AddInvitation(FiestaUser invitee)
+        public void AddInvitations(params FiestaUser[] invitees)
         {
             if (_invitations is null)
                 _invitations = new();
 
             if (Organizer is null)
-                throw new Exception("Event.Organizor entity not loaded.");
+                throw new Exception("Event.Organizer entity not loaded.");
 
-            _invitations.Add(new EventInvitation(this, Organizer, invitee));
+            foreach (var invitee in invitees)
+                _invitations.Add(new EventInvitation(this, Organizer, invitee));
         }
 
         public void AddJoinRequest(FiestaUser interestedUser)

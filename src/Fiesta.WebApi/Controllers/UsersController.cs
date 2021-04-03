@@ -56,7 +56,7 @@ namespace Fiesta.WebApi.Controllers
         }
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
-        [HttpPost("{id}/get-friends")]
+        [HttpPost("{id}/friends/query")]
         public async Task<ActionResult<QueryResponse<UserDto>>> GetFriends(string id, GetFriends.Query query, CancellationToken cancellationToken)
         {
             query.Id = id;
@@ -65,7 +65,7 @@ namespace Fiesta.WebApi.Controllers
         }
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
-        [HttpPost("{id}/get-friend-requests")]
+        [HttpPost("{id}/friend-requests/query")]
         public async Task<ActionResult<QueryResponse<UserDto>>> GetFriendRequests(string id, GetFriendRequests.Query query, CancellationToken cancellationToken)
         {
             query.Id = id;
@@ -74,7 +74,7 @@ namespace Fiesta.WebApi.Controllers
         }
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
-        [HttpPost("{id}/get-events")]
+        [HttpPost("{id}/events/query")]
         public async Task<ActionResult<QueryResponse<GetUserEvents.EventDto>>> GetUserEvents(string id, GetUserEvents.Query query, CancellationToken cancellationToken)
         {
             query.UserId = id;

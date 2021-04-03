@@ -40,8 +40,7 @@ namespace Fiesta.Application.Features.Events
                 var @event = await _db.Events.Include(x => x.Organizer).SingleOrNotFoundAsync(x => x.Id == request.EventId, cancellationToken);
                 var invitedUsers = await _db.FiestaUsers.Where(x => request.InvitedIds.Contains(x.Id)).ToListAsync(cancellationToken);
 
-                foreach (var user in invitedUsers)
-                    @event.AddInvitation(user);
+                @event.AddInvitations(invitedUsers.ToArray());
 
                 await _db.SaveChangesAsync(cancellationToken);
                 return Unit.Value;
@@ -73,7 +72,6 @@ namespace Fiesta.Application.Features.Events
 
                 if (alreadyInvited)
                     return false;
-
 
                 var alreadyAttendee = await _db.Events.Where(x => x.Id == command.EventId)
                     .SelectMany(x => x.Attendees.Select(a => a.AttendeeId))

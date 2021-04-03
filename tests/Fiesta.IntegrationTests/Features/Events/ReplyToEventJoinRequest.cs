@@ -25,7 +25,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
             @event.AddJoinRequest(requestedUser);
             await ArrangeDb.SaveChangesAsync();
 
-            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/join-request-reply", new { Accepted = true, UserId = requestedUser.Id });
+            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/join-requests/reply", new { Accepted = true, UserId = requestedUser.Id });
             response.EnsureSuccessStatusCode();
 
             var eventDb = await AssertDb.Events
@@ -49,7 +49,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
             @event.AddJoinRequest(requestedUser);
             await ArrangeDb.SaveChangesAsync();
 
-            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/join-request-reply", new { Accepted = false, UserId = requestedUser.Id });
+            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/join-requests/reply", new { Accepted = false, UserId = requestedUser.Id });
             response.EnsureSuccessStatusCode();
 
             var eventDb = await AssertDb.Events
@@ -70,7 +70,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
             @event.AddJoinRequest(requestedUser);
             await ArrangeDb.SaveChangesAsync();
 
-            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/join-request-reply", new { Accepted = true, UserId = requestedUser.Id });
+            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/join-requests/reply", new { Accepted = true, UserId = requestedUser.Id });
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
     }
