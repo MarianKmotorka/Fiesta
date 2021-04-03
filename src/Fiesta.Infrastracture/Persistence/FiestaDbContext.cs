@@ -24,9 +24,18 @@ namespace Fiesta.Infrastracture.Persistence
         }
 
         public DbSet<FiestaUser> FiestaUsers { get; set; }
+
         public DbSet<Event> Events { get; set; }
+
         public DbSet<FriendRequest> FriendRequests { get; set; }
+
         public DbSet<UserFriend> UserFriends { get; set; }
+
+        public DbSet<EventInvitation> EventInvitations { get; set; }
+
+        public DbSet<EventJoinRequest> EventJoinRequests { get; set; }
+
+        public DbSet<EventAttendee> EventAttendees { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {

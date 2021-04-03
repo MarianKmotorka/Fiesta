@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Fiesta.Application.Common.Behaviours.Authorization;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Queries;
+using Fiesta.Application.Features.Common;
 using Fiesta.Application.Utils;
 using MediatR;
 
@@ -16,7 +17,7 @@ namespace Fiesta.Application.Features.Users.Friends
         {
             [JsonIgnore]
             public string Id { get; set; }
-            public QueryDocument QueryDocument { get; set; }
+            public QueryDocument QueryDocument { get; set; } = new();
         }
 
         public class Handler : IRequestHandler<Query, QueryResponse<UserDto>>
@@ -30,7 +31,6 @@ namespace Fiesta.Application.Features.Users.Friends
 
             public async Task<QueryResponse<UserDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-
                 return await _db.UserFriends.Where(x => x.UserId == request.Id)
                     .Select(x => new UserDto
                     {
@@ -46,13 +46,6 @@ namespace Fiesta.Application.Features.Users.Friends
         {
             public Task<bool> IsAuthorized(Query request, IFiestaDbContext db, ICurrentUserService currentUserService, CancellationToken cancellationToken)
                 => Task.FromResult(currentUserService.IsResourceOwnerOrAdmin(request.Id));
-        }
-
-        public class UserDto
-        {
-            public string Id { get; set; }
-            public string Username { get; set; }
-            public string PictureUrl { get; set; }
         }
     }
 }

@@ -31,5 +31,6 @@
         public const string DoesNotExist = "doesNotExist";
         public const string AlreadyFriends = "alreadyFriends";
         public const string SenderAndReceiverIdentical = "senderAndReceiverIdentical";
+        public const string AlreadyAttendeeOrInvited = "alreadyAttendeeOrInvited";
     }
 }

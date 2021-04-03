@@ -17,6 +17,12 @@ namespace Fiesta.Application.Common.Interfaces
 
         DbSet<UserFriend> UserFriends { get; }
 
+        DbSet<EventInvitation> EventInvitations { get; }
+
+        DbSet<EventJoinRequest> EventJoinRequests { get; }
+
+        DbSet<EventAttendee> EventAttendees { get; }
+
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Behaviours.Authorization;
@@ -54,7 +53,7 @@ namespace Fiesta.Application.Features.Users
                     fiestaUser.UpdateUsername(request.Username.Value);
                 }
                 if (request.Bio.HasValue)
-                    fiestaUser.Bio = request.Bio.Value.Replace(Environment.NewLine, "").Trim();
+                    fiestaUser.SetBio(request.Bio.Value);
 
                 await _db.SaveChangesAsync(cancellationToken);
 
