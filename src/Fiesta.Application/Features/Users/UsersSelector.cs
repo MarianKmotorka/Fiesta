@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Interfaces;
+using Fiesta.Application.Features.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -45,15 +46,9 @@ namespace Fiesta.Application.Features.Users
             }
         }
 
-        public class ResponseDto
+        public class ResponseDto : UserDto
         {
-            public string Id { get; set; }
-
-            public string Username { get; set; }
-
             public string FullName { get; set; }
-
-            public string PictureUrl { get; set; }
         }
     }
 }

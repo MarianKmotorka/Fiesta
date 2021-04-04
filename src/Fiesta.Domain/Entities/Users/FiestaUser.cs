@@ -12,6 +12,10 @@ namespace Fiesta.Domain.Entities.Users
         private List<UserFriend> _friends;
         private List<FriendRequest> _recievedFriendRequests;
         private List<FriendRequest> _sentFriendRequests;
+        private List<EventAttendee> _attendedEvents;
+        private List<EventInvitation> _recievedEventInvitations;
+        private List<EventInvitation> _sentEventInvitations;
+        private List<EventJoinRequest> _sentEventJoinRequests;
 
         public FiestaUser(string email, string username)
         {
@@ -35,7 +39,7 @@ namespace Fiesta.Domain.Entities.Users
 
         public string PictureUrl { get; set; }
 
-        public string Bio { get; set; }
+        public string Bio { get; private set; }
 
         public bool IsDeleted { get; set; }
 
@@ -49,6 +53,23 @@ namespace Fiesta.Domain.Entities.Users
 
         public IReadOnlyCollection<FriendRequest> SentFriendRequests => _sentFriendRequests;
 
+        public IReadOnlyCollection<EventAttendee> AttendedEvents => _attendedEvents;
+
+        /// <summary>
+        /// Events that user have been invited to.
+        /// </summary>
+        public IReadOnlyCollection<EventInvitation> RecievedEventInvitations => _recievedEventInvitations;
+
+        /// <summary>
+        /// Events that user (event organizator) has invited other users to.
+        /// </summary>
+        public IReadOnlyCollection<EventInvitation> SentEventInvitations => _sentEventInvitations;
+
+        /// <summary>
+        /// Events that user requested to join.
+        /// </summary>
+        public IReadOnlyCollection<EventJoinRequest> SentEventJoinRequests => _sentEventJoinRequests;
+
         public void AddOrganizedEvent(Event organizedEvent)
         {
             if (_organizedEvents is null)
@@ -60,7 +81,7 @@ namespace Fiesta.Domain.Entities.Users
         public void UpdateUsername(string username)
         {
             if (string.IsNullOrEmpty(username))
-                throw new ArgumentNullException("Username is null");
+                throw new ArgumentNullException(nameof(username));
 
             Username = username;
         }
@@ -100,6 +121,11 @@ namespace Fiesta.Domain.Entities.Users
 
             _friends.Remove(friendRelation);
             friend.RemoveFriend(this);
+        }
+
+        public void SetBio(string bio)
+        {
+            Bio = bio.Replace(Environment.NewLine, "").Trim();
         }
     }
 }

@@ -49,7 +49,7 @@ namespace Fiesta.Application.Features.Selectors
                 {
                     Id = x.Id,
                     DisplayName = x.Name,
-                    Description = "Some hard coded description, bla bla bla, ble ble ell, mengeleho deto sa bude smazit",
+                    Description = x.Description,
                     StartDate = x.StartDate,
                     Type = ItemType.Event,
                     City = x.Location.City,

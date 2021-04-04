@@ -1,4 +1,4 @@
-﻿namespace Fiesta.Application.Features.Events.CommonDtos
+﻿namespace Fiesta.Application.Features.Events.Common
 {
     public class LocationDto
     {

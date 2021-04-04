@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Queries;
+using Fiesta.Application.Features.Common;
 using Fiesta.Application.Features.Users;
 using Fiesta.Application.Features.Users.Friends;
 using Microsoft.AspNetCore.Authorization;
@@ -55,8 +56,8 @@ namespace Fiesta.WebApi.Controllers
         }
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
-        [HttpPost("{id}/get-friends")]
-        public async Task<ActionResult<QueryResponse<GetFriends.UserDto>>> GetFriends(string id, GetFriends.Query query, CancellationToken cancellationToken)
+        [HttpPost("{id}/friends/query")]
+        public async Task<ActionResult<QueryResponse<UserDto>>> GetFriends(string id, GetFriends.Query query, CancellationToken cancellationToken)
         {
             query.Id = id;
             var response = await Mediator.Send(query, cancellationToken);
@@ -64,10 +65,19 @@ namespace Fiesta.WebApi.Controllers
         }
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
-        [HttpPost("{id}/get-friend-requests")]
-        public async Task<ActionResult<QueryResponse<GetFriendRequests.UserDto>>> GetFriendRequests(string id, GetFriendRequests.Query query, CancellationToken cancellationToken)
+        [HttpPost("{id}/friend-requests/query")]
+        public async Task<ActionResult<QueryResponse<UserDto>>> GetFriendRequests(string id, GetFriendRequests.Query query, CancellationToken cancellationToken)
         {
             query.Id = id;
+            var response = await Mediator.Send(query, cancellationToken);
+            return Ok(response);
+        }
+
+        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
+        [HttpPost("{id}/events/query")]
+        public async Task<ActionResult<QueryResponse<GetUserEvents.EventDto>>> GetUserEvents(string id, GetUserEvents.Query query, CancellationToken cancellationToken)
+        {
+            query.UserId = id;
             var response = await Mediator.Send(query, cancellationToken);
             return Ok(response);
         }

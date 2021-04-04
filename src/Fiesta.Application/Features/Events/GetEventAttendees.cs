@@ -6,23 +6,26 @@ using Fiesta.Application.Common.Behaviours.Authorization;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Queries;
 using Fiesta.Application.Features.Common;
+using Fiesta.Application.Features.Events.Common;
 using Fiesta.Application.Utils;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
-namespace Fiesta.Application.Features.Users.Friends
+namespace Fiesta.Application.Features.Events
 {
-    public class GetFriendRequests
+    public class GetEventAttendees
     {
         public class Query : IRequest<QueryResponse<UserDto>>
         {
             [JsonIgnore]
-            public string Id { get; set; }
+            public string EventId { get; set; }
+
             public QueryDocument QueryDocument { get; set; } = new();
         }
 
         public class Handler : IRequestHandler<Query, QueryResponse<UserDto>>
         {
-            private readonly IFiestaDbContext _db;
+            private IFiestaDbContext _db;
 
             public Handler(IFiestaDbContext db)
             {
@@ -31,13 +34,14 @@ namespace Fiesta.Application.Features.Users.Friends
 
             public async Task<QueryResponse<UserDto>> Handle(Query request, CancellationToken cancellationToken)
             {
+                var @event = await _db.Events.Include(x => x.Organizer).SingleOrNotFoundAsync(x => x.Id == request.EventId, cancellationToken);
 
-                return await _db.FriendRequests.Where(x => x.ToId == request.Id)
+                return await _db.EventAttendees.Where(x => x.EventId == request.EventId)
                     .Select(x => new UserDto
                     {
-                        Id = x.From.Id,
-                        Username = x.From.Username,
-                        PictureUrl = x.From.PictureUrl
+                        Id = x.AttendeeId,
+                        PictureUrl = x.Attendee.PictureUrl,
+                        Username = x.Attendee.Username
                     })
                     .BuildResponse(request.QueryDocument, cancellationToken);
             }
@@ -45,8 +49,8 @@ namespace Fiesta.Application.Features.Users.Friends
 
         public class AuthorizationCheck : IAuthorizationCheck<Query>
         {
-            public Task<bool> IsAuthorized(Query request, IFiestaDbContext db, ICurrentUserService currentUserService, CancellationToken cancellationToken)
-                => Task.FromResult(currentUserService.IsResourceOwnerOrAdmin(request.Id));
+            public async Task<bool> IsAuthorized(Query request, IFiestaDbContext db, ICurrentUserService currentUserService, CancellationToken cancellationToken)
+                => await Helpers.CanViewEvent(request.EventId, db, currentUserService, cancellationToken);
         }
     }
 }
