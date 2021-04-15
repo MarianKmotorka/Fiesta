@@ -128,15 +128,14 @@ namespace Fiesta.Application.Common.Queries
             }
 
             var someValue = Expression.Constant(Convert.ChangeType(propertyValue, propertyExp.Type), propertyExp.Type);
-            var ignoreCaseExp = Expression.Constant(StringComparison.OrdinalIgnoreCase);
 
             if (propertyExp.Type == typeof(string))
                 containsMethodExp = operation switch
                 {
-                    Operation.Equals => Expression.Call(propertyExp, StringMethods.Equals, someValue, ignoreCaseExp),
-                    Operation.Contains => Expression.Call(propertyExp, StringMethods.Contains, someValue, ignoreCaseExp),
-                    Operation.StartsWith => Expression.Call(propertyExp, StringMethods.StartsWith, someValue, ignoreCaseExp),
-                    Operation.EndsWith => Expression.Call(propertyExp, StringMethods.EndsWith, someValue, ignoreCaseExp),
+                    Operation.Equals => Expression.Call(propertyExp, StringMethods.Equals, someValue),
+                    Operation.Contains => Expression.Call(propertyExp, StringMethods.Contains, someValue),
+                    Operation.StartsWith => Expression.Call(propertyExp, StringMethods.StartsWith, someValue),
+                    Operation.EndsWith => Expression.Call(propertyExp, StringMethods.EndsWith, someValue),
                     _ => throw new NotSupportedException("Not allowed OperationEnum for string type"),
                 };
 
