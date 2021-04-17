@@ -37,7 +37,9 @@ namespace Fiesta.Application.Features.Events
                     StartDate = x.StartDate,
                     EndDate = x.EndDate,
                     Description = x.Description,
-                    // TOOD: PictureUrl ,
+                    BannerUrl = null,
+                    Location = $"{x.Location.City}, {x.Location.State}",
+                    GoogleMapsUrl = x.Location.GoogleMapsUrl,
                     AccessibilityType = x.AccessibilityType,
                     AttendeesCount = _db.EventAttendees.Count(x => x.EventId == request.Id),
                     Organizer = new UserDto
@@ -59,7 +61,7 @@ namespace Fiesta.Application.Features.Events
 
             public string Name { get; set; }
 
-            public string PictureUrl { get; set; }
+            public string BannerUrl { get; set; }
 
             public string Description { get; set; }
 
@@ -70,6 +72,10 @@ namespace Fiesta.Application.Features.Events
             public AccessibilityType AccessibilityType { get; set; }
 
             public int AttendeesCount { get; set; }
+
+            public string Location { get; set; }
+
+            public string GoogleMapsUrl { get; set; }
 
             public UserDto Organizer { get; set; }
         }
