@@ -90,6 +90,7 @@ namespace Fiesta.WebApi.Controllers
             return Ok(result);
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<QueryResponse<UserDto>>> GetDetail(string id, CancellationToken cancellationToken)
         {

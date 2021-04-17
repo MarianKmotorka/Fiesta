@@ -15,6 +15,9 @@ namespace Fiesta.Application.Features.Events.Common
         {
             var @event = await db.Events.FindOrNotFoundAsync(cancellationToken, eventId);
 
+            if (string.IsNullOrEmpty(currentUserService.UserId) && @event.AccessibilityType != AccessibilityType.Public)
+                return false;
+
             if (@event.AccessibilityType == AccessibilityType.Public || currentUserService.IsResourceOwnerOrAdmin(@event.OrganizerId))
                 return true;
 

@@ -106,7 +106,7 @@ namespace Fiesta.Application.Features.Events
                     .Must(x => LocationObject.ValidateLatitudeAndLongitude(x.Latitude, x.Longitude)).WithErrorCode(ErrorCodes.InvalidLatitudeOrLongitude);
 
                 RuleFor(x => x.Description)
-                    .MaximumLength(500).WithErrorCode(ErrorCodes.MaxLength).WithState(_ => new { MaxLength = 500 });
+                    .MaximumLength(2000).WithErrorCode(ErrorCodes.MaxLength).WithState(_ => new { MaxLength = 2000 });
             }
         }
 
