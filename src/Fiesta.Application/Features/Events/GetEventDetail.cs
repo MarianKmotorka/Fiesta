@@ -37,7 +37,7 @@ namespace Fiesta.Application.Features.Events
                     StartDate = x.StartDate,
                     EndDate = x.EndDate,
                     Description = x.Description,
-                    BannerUrl = null,
+                    BannerUrl = x.BannerUrl,
                     Location = $"{x.Location.City}, {x.Location.State}",
                     GoogleMapsUrl = x.Location.GoogleMapsUrl,
                     AccessibilityType = x.AccessibilityType,

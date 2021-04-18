@@ -114,5 +114,13 @@ namespace Fiesta.WebApi.Controllers
             var result = await Mediator.Send(new GetEventForUpdate.Query { Id = id }, cancellationToken);
             return Ok(result);
         }
+
+        [HttpPost("{id}/banner")]
+        public async Task<ActionResult<UploadEventBanner.Response>> GetAttendees(string id, [FromForm] UploadEventBanner.Command request, CancellationToken cancellationToken)
+        {
+            request.EventId = id;
+            var result = await Mediator.Send(request, cancellationToken);
+            return Ok(result);
+        }
     }
 }

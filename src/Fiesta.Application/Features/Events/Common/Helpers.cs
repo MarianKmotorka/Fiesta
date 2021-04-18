@@ -36,5 +36,14 @@ namespace Fiesta.Application.Features.Events.Common
 
             throw new NotSupportedException($"Accessibility type {@event.AccessibilityType} not supported.");
         }
+
+        public static async Task<bool> IsOrganizerOrAdmin(string eventId, IFiestaDbContext db, ICurrentUserService currentUserService, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(currentUserService.UserId))
+                return false;
+
+            var @event = await db.Events.FindOrNotFoundAsync(cancellationToken, eventId);
+            return currentUserService.IsResourceOwnerOrAdmin(@event.OrganizerId);
+        }
     }
 }
