@@ -107,5 +107,12 @@ namespace Fiesta.WebApi.Controllers
             var result = await Mediator.Send(new GetEventDetail.Query { Id = id }, cancellationToken);
             return Ok(result);
         }
+
+        [HttpGet("{id}/update")]
+        public async Task<ActionResult<GetEventForUpdate.Response>> GetEventForUpdate(string id, CancellationToken cancellationToken)
+        {
+            var result = await Mediator.Send(new GetEventForUpdate.Query { Id = id }, cancellationToken);
+            return Ok(result);
+        }
     }
 }

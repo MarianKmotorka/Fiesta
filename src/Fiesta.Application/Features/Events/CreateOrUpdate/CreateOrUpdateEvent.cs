@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Fiesta.Application.Common.Behaviours.Authorization;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Validators;
@@ -16,6 +18,8 @@ namespace Fiesta.Application.Features.Events.CreateOrUpdate
     {
         public class Command : SharedDto, IRequest<Response>
         {
+            [JsonIgnore]
+            public string OrganizerId { get; set; }
         }
 
         public class Handler : IRequestHandler<Command, Response>
@@ -60,6 +64,7 @@ namespace Fiesta.Application.Features.Events.CreateOrUpdate
                     @event = await _db.Events.FindOrNotFoundAsync(cancellationToken, request.Id);
 
                 @event.SetDescription(request.Description);
+                @event.Name = request.Name;
                 @event.Location = location;
                 @event.StartDate = request.StartDate;
                 @event.EndDate = request.EndDate;
@@ -84,12 +89,12 @@ namespace Fiesta.Application.Features.Events.CreateOrUpdate
 
                 RuleFor(x => x.StartDate)
                     .NotEmpty().WithErrorCode(ErrorCodes.Required)
-                    .GreaterThanOrEqualTo(DateTime.Now.Date).WithErrorCode(ErrorCodes.InvalidDateTime);
+                    .GreaterThanOrEqualTo(DateTime.Now.Date).WithErrorCode(ErrorCodes.MustBeInTheFuture);
 
                 RuleFor(x => x.EndDate)
                     .NotEmpty().WithErrorCode(ErrorCodes.Required)
-                    .GreaterThanOrEqualTo(DateTime.Now.Date).WithErrorCode(ErrorCodes.InvalidDateTime)
-                    .GreaterThanOrEqualTo(x => x.StartDate).WithErrorCode(ErrorCodes.InvalidDateTime);
+                    .GreaterThanOrEqualTo(DateTime.Now.Date).WithErrorCode(ErrorCodes.MustBeInTheFuture)
+                    .GreaterThanOrEqualTo(x => x.StartDate).WithErrorCode(ErrorCodes.MustBeAfterStartDate);
 
                 RuleFor(x => x.AccessibilityType)
                   .NotNull().WithErrorCode(ErrorCodes.Required)
@@ -110,6 +115,18 @@ namespace Fiesta.Application.Features.Events.CreateOrUpdate
         public class Response
         {
             public string Id { get; set; }
+        }
+
+        public class AuthorizationCheck : IAuthorizationCheck<Command>
+        {
+            public async Task<bool> IsAuthorized(Command request, IFiestaDbContext db, ICurrentUserService currentUserService, CancellationToken cancellationToken)
+            {
+                if (request.Id == default)
+                    return true;
+
+                var resource = await db.Events.FindOrNotFoundAsync(cancellationToken, request.Id);
+                return currentUserService.IsResourceOwnerOrAdmin(resource.OrganizerId);
+            }
         }
     }
 }

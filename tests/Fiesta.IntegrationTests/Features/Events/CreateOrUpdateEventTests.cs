@@ -181,6 +181,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
                 request.EndDate,
                 request.Capacity,
                 request.Description,
+                request.Name,
                 Location = new
                 {
                     location.City,

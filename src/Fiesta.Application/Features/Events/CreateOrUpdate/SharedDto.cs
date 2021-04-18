@@ -10,9 +10,6 @@ namespace Fiesta.Application.Features.Events.CreateOrUpdate
         [JsonIgnore]
         public string Id { get; set; }
 
-        [JsonIgnore]
-        public string OrganizerId { get; set; }
-
         public string Name { get; set; }
 
         public DateTime StartDate { get; set; }

@@ -18,7 +18,8 @@
         public const string RefreshTokenExpired = "refreshTokenExpired";
         public const string AccountAlreadyConnectedToGoogleWithDifferentEmail = "accounutAlreadyConnectedToGoogleWithDifferentEmail";
         public const string GoogleAccountNotConnected = "thisGoogleAccountIsNotConnected";
-        public const string InvalidDateTime = "invalidDateTime";
+        public const string MustBeInTheFuture = "mustBeInTheFuture";
+        public const string MustBeAfterStartDate = "mustBeAfterStartDate";
         public const string Max = "max";
         public const string Min = "min";
         public const string InvalidEnumValue = "invalidEnumValue";
