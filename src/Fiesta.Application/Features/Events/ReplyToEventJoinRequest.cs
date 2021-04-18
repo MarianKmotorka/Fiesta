@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Behaviours.Authorization;
 using Fiesta.Application.Common.Interfaces;
+using Fiesta.Application.Features.Events.Common;
 using Fiesta.Application.Utils;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -64,10 +65,8 @@ namespace Fiesta.Application.Features.Events
         public class AuthorizationCheck : IAuthorizationCheck<Command>
         {
             public async Task<bool> IsAuthorized(Command request, IFiestaDbContext db, ICurrentUserService currentUserService, CancellationToken cancellationToken)
-            {
-                var @event = await db.Events.FindOrNotFoundAsync(cancellationToken, request.EventId);
-                return @event.OrganizerId == currentUserService.UserId;
-            }
+                => await Helpers.IsOrganizerOrAdmin(request.EventId, db, currentUserService, cancellationToken);
+
         }
     }
 }

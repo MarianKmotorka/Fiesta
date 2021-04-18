@@ -29,6 +29,8 @@ namespace Fiesta.Domain.Entities.Events
 
         public string OrganizerId { get; private set; }
 
+        public string BannerUrl { get; set; }
+
         public IReadOnlyCollection<EventAttendee> Attendees => _attendees;
 
         public IReadOnlyCollection<EventInvitation> Invitations => _invitations;
