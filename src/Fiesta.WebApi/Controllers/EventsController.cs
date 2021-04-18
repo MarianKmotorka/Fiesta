@@ -4,6 +4,7 @@ using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Queries;
 using Fiesta.Application.Features.Common;
 using Fiesta.Application.Features.Events;
+using Fiesta.Application.Features.Events.CreateOrUpdate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,8 +15,17 @@ namespace Fiesta.WebApi.Controllers
     public class EventsController : BaseController
     {
         [HttpPost("create")]
-        public async Task<ActionResult<CreateEvent.Response>> CreateEvent(CreateEvent.Command command, CancellationToken cancellationToken)
+        public async Task<ActionResult<CreateOrUpdateEvent.Response>> CreateEvent(CreateOrUpdateEvent.Command command, CancellationToken cancellationToken)
         {
+            command.OrganizerId = CurrentUserService.UserId;
+            var response = await Mediator.Send(command, cancellationToken);
+            return Ok(response);
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<ActionResult<CreateOrUpdateEvent.Response>> UpdateEvent(string id, CreateOrUpdateEvent.Command command, CancellationToken cancellationToken)
+        {
+            command.Id = id;
             command.OrganizerId = CurrentUserService.UserId;
             var response = await Mediator.Send(command, cancellationToken);
             return Ok(response);

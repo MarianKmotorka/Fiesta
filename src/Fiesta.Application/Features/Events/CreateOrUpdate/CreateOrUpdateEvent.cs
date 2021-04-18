@@ -1,46 +1,34 @@
 ﻿using System;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Validators;
-using Fiesta.Application.Features.Events.Common;
+using Fiesta.Application.Utils;
 using Fiesta.Domain.Entities;
 using Fiesta.Domain.Entities.Events;
 using FluentValidation;
 using MediatR;
 
-namespace Fiesta.Application.Features.Events
+namespace Fiesta.Application.Features.Events.CreateOrUpdate
 {
-    public class CreateEvent
+    public class CreateOrUpdateEvent
     {
-        public class Command : IRequest<Response>
+        public class Command : SharedDto, IRequest<Response>
         {
-            [JsonIgnore]
-            public string OrganizerId { get; set; }
-            public string Name { get; set; }
-            public DateTime StartDate { get; set; }
-            public DateTime EndDate { get; set; }
-            public AccessibilityType AccessibilityType { get; set; }
-            public int Capacity { get; set; }
-            public LocationDto Location { get; set; }
-            public string Description { get; set; }
         }
 
         public class Handler : IRequestHandler<Command, Response>
         {
-            private readonly IFiestaDbContext _fiestaDbContext;
+            private readonly IFiestaDbContext _db;
 
-            public Handler(IFiestaDbContext fiestaDbContext)
+            public Handler(IFiestaDbContext db)
             {
-                _fiestaDbContext = fiestaDbContext;
+                _db = db;
             }
 
             public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
             {
-                var fiestaUser = _fiestaDbContext.FiestaUsers.FindAsync(new[] { request.OrganizerId }, cancellationToken).Result;
-
                 var location = new LocationObject(
                     request.Location.Latitude,
                     request.Location.Longitude,
@@ -54,24 +42,34 @@ namespace Fiesta.Application.Features.Events
                     request.Location.PostalCode
                     );
 
-                var organizedEvent = new Event(
-                    request.Name,
-                    request.StartDate.ToUniversalTime(),
-                    request.EndDate.ToUniversalTime(),
-                    request.AccessibilityType,
-                    request.Capacity,
-                    fiestaUser,
-                    location
-                    );
+                Event @event;
+                if (request.Id == default)
+                {
+                    var organizer = await _db.FiestaUsers.FindAsync(new[] { request.OrganizerId }, cancellationToken);
+                    @event = _db.Events.Add(new Event(
+                        request.Name,
+                        request.StartDate.ToUniversalTime(),
+                        request.EndDate.ToUniversalTime(),
+                        request.AccessibilityType,
+                        request.Capacity,
+                        organizer,
+                        location
+                    )).Entity;
+                }
+                else
+                    @event = await _db.Events.FindOrNotFoundAsync(cancellationToken, request.Id);
 
-                organizedEvent.SetDescription(request.Description);
-
-                fiestaUser.AddOrganizedEvent(organizedEvent);
-                await _fiestaDbContext.SaveChangesAsync(cancellationToken);
+                @event.SetDescription(request.Description);
+                @event.Location = location;
+                @event.StartDate = request.StartDate;
+                @event.EndDate = request.EndDate;
+                @event.Capacity = request.Capacity;
+                @event.AccessibilityType = request.AccessibilityType;
+                await _db.SaveChangesAsync(cancellationToken);
 
                 return new Response
                 {
-                    Id = organizedEvent.Id
+                    Id = @event.Id
                 };
             }
         }
