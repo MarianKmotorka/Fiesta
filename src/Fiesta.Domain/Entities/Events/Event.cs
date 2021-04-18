@@ -11,19 +11,19 @@ namespace Fiesta.Domain.Entities.Events
         private List<EventInvitation> _invitations;
         private List<EventJoinRequest> _joinRequests;
 
-        public string Name { get; private set; }
+        public string Name { get; set; }
 
-        public DateTime StartDate { get; private set; }
+        public DateTime StartDate { get; set; }
 
-        public DateTime EndDate { get; private set; }
+        public DateTime EndDate { get; set; }
 
         public AccessibilityType AccessibilityType { get; set; }
 
-        public int Capacity { get; private set; }
+        public int Capacity { get; set; }
 
-        public string Description { get; private set; }
+        public string Description { get; set; }
 
-        public LocationObject Location { get; private set; }
+        public LocationObject Location { get; set; }
 
         public FiestaUser Organizer { get; private set; }
 

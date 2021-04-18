@@ -63,7 +63,7 @@ namespace Fiesta.Domain.Entities
 
         private string NormalizePostalCode(string postalCode)
         {
-            return postalCode.Replace(" ", "");
+            return postalCode?.Replace(" ", "");
         }
     }
 }

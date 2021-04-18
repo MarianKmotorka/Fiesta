@@ -1,4 +1,6 @@
-﻿namespace Fiesta.Application.Features.Events.Common
+﻿using Fiesta.Domain.Entities;
+
+namespace Fiesta.Application.Features.Events.Common
 {
     public class LocationDto
     {
@@ -13,5 +15,21 @@
         public string AdministrativeAreaLevel2 { get; set; }
         public string PostalCode { get; set; }
         public string GoogleMapsUrl { get; set; }
+
+        public static LocationDto Map(LocationObject location)
+            => new()
+            {
+                Latitude = location.Latitude,
+                Longitude = location.Longitude,
+                Street = location.Street,
+                StreetNumber = location.StreetNumber,
+                Premise = location.Premise,
+                City = location.City,
+                State = location.State,
+                AdministrativeAreaLevel1 = location.AdministrativeAreaLevel1,
+                AdministrativeAreaLevel2 = location.AdministrativeAreaLevel2,
+                PostalCode = location.PostalCode,
+                GoogleMapsUrl = location.GoogleMapsUrl
+            };
     }
 }

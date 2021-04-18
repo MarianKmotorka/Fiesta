@@ -14,7 +14,7 @@ namespace TestBase.Helpers
 
             var request = new HttpRequestMessage
             {
-                RequestUri = new Uri(client.BaseAddress + requestUri),
+                RequestUri = new Uri(client.BaseAddress + requestUri.Trim('/')),
                 Method = new HttpMethod("PATCH"),
                 Content = jsonContent
             };

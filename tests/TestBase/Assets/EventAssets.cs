@@ -8,8 +8,11 @@ namespace TestBase.Assets
 {
     public static class EventAssets
     {
-        public static Event SeedEvent(this FiestaDbContext db, FiestaUser organizer, Action<Event> configure = null)
+        public static Event SeedEvent(this FiestaDbContext db, FiestaUser organizer = null, Action<Event> configure = null)
         {
+            if (organizer is null)
+                organizer = db.SeedBasicUser().fiestaUser;
+
             var @event = new Event(
                     "New year rager",
                     new DateTime(2025, 1, 1),
