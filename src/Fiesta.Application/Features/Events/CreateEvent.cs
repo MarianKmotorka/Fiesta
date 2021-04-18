@@ -51,8 +51,7 @@ namespace Fiesta.Application.Features.Events
                     request.Location.State,
                     request.Location.AdministrativeAreaLevel1,
                     request.Location.AdministrativeAreaLevel2,
-                    request.Location.PostalCode,
-                    request.Location.GoogleMapsUrl
+                    request.Location.PostalCode
                     );
 
                 var organizedEvent = new Event(

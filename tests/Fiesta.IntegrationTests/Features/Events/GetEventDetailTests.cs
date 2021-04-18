@@ -40,7 +40,9 @@ namespace Fiesta.WebApi.Tests.Features.Events
                 AttendeesCount = 2,
                 EndDate = @event.EndDate,
                 StartDate = @event.StartDate,
-                // TODO: PictureUrl
+                BannerUrl = null,
+                Location = $"{@event.Location.City}, {@event.Location.State}",
+                GoogleMapsUrl = $"https://www.google.com/maps/search/?api=1&query={@event.Location.Latitude},{@event.Location.Latitude}",
                 Organizer = new UserDto
                 {
                     Id = organizer.Id,

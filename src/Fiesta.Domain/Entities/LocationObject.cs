@@ -1,6 +1,6 @@
-﻿using Fiesta.Domain.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Fiesta.Domain.Common;
 
 namespace Fiesta.Domain.Entities
 {
@@ -21,7 +21,7 @@ namespace Fiesta.Domain.Entities
 
         public LocationObject(double latitude, double longitude, string street = "", string streetNumber = "",
             string premise = "", string city = "", string state = "", string administrativeAreaLevel1 = "", string administrativeAreaLevel2 = "",
-            string postalCode = "", string googleMapsUrl = "")
+            string postalCode = "")
         {
             if (!ValidateLatitudeAndLongitude(latitude, longitude))
                 throw new ArgumentException("Invalid latitude or longitude");
@@ -37,7 +37,7 @@ namespace Fiesta.Domain.Entities
             AdministrativeAreaLevel2 = administrativeAreaLevel2;
             PostalCode = postalCode;
             PostalCodeNormalized = NormalizePostalCode(postalCode);
-            GoogleMapsUrl = googleMapsUrl;
+            GoogleMapsUrl = $"https://www.google.com/maps/search/?api=1&query={latitude},{longitude}";
         }
 
         protected override IEnumerable<object> GetEqualityComponents()
