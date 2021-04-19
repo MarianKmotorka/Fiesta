@@ -1,17 +1,17 @@
-﻿using Fiesta.Application.Common.Constants;
+﻿using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Fiesta.Application.Common.Constants;
 using Fiesta.Infrastracture.Auth;
 using Fiesta.WebApi.Middleware.ExceptionHanlding;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Fiesta.WebApi.Tests.Features.Auth
 {
-    [Collection(nameof(FiestaAppFactory))]
+    [Collection(nameof(TestCollection))]
     public class AddPasswordTests : WebAppTestBase
     {
         public AddPasswordTests(FiestaAppFactory factory) : base(factory)

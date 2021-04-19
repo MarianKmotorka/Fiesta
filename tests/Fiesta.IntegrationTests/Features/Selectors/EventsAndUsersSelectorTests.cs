@@ -14,6 +14,8 @@ namespace Fiesta.WebApi.Tests.Features.Selectors
     // NOTE: The Dto property mappings in the Select() statement in the Handler class need to be in the same order
     //       (mapping to User and mapping to Event need to have same property mapping order)
     //       otherwise EF Core InMemory Provider fails to do the mapping.
+
+    [Collection(nameof(TestCollection))]
     public class EventsAndUsersSelectorTests : DbTestBase
     {
         private FiestaUser _user;

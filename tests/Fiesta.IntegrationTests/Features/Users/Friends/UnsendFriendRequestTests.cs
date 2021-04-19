@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Fiesta.WebApi.Tests.Features.Users.Friends
 {
-    [Collection(nameof(FiestaAppFactory))]
+    [Collection(nameof(TestCollection))]
     public class UnsendFriendRequestTests : WebAppTestBase
     {
         public UnsendFriendRequestTests(FiestaAppFactory factory) : base(factory)

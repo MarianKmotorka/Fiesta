@@ -1,16 +1,16 @@
-﻿using Fiesta.Application.Common.Constants;
+﻿using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Fiesta.Application.Common.Constants;
 using Fiesta.Infrastracture.Auth;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 using TestBase.Assets;
 using Xunit;
 
 namespace Fiesta.WebApi.Tests.Features.Auth
 {
-    [Collection(nameof(FiestaAppFactory))]
+    [Collection(nameof(TestCollection))]
     public class ConnectGoogleAccountTests : WebAppTestBase
     {
         public ConnectGoogleAccountTests(FiestaAppFactory factory) : base(factory)
