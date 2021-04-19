@@ -85,6 +85,22 @@ namespace Fiesta.WebApi.Tests.Features.Events
         [Theory]
         [InlineData(AccessibilityType.Public, HttpStatusCode.OK)]
         [InlineData(AccessibilityType.FriendsOnly, HttpStatusCode.OK)]
+        [InlineData(AccessibilityType.Private, HttpStatusCode.OK)]
+        public async Task GivenUserIsInvited_WhenGettingDetail_ExpectedResponseIsReturned(AccessibilityType accessibility, HttpStatusCode statusCode)
+        {
+            var me = await ArrangeDb.FiestaUsers.FindAsync(LoggedInUserId);
+            var (_, organizer) = ArrangeDb.SeedBasicUser();
+            var @event = ArrangeDb.SeedEvent(organizer, x => x.AccessibilityType = accessibility);
+            @event.AddAttendee(me);
+            await ArrangeDb.SaveChangesAsync();
+
+            var response = await Client.GetAsync($"/api/events/{@event.Id}");
+            response.StatusCode.Should().Be(statusCode);
+        }
+
+        [Theory]
+        [InlineData(AccessibilityType.Public, HttpStatusCode.OK)]
+        [InlineData(AccessibilityType.FriendsOnly, HttpStatusCode.OK)]
         [InlineData(AccessibilityType.Private, HttpStatusCode.Forbidden)]
         public async Task GivenUserIsFriend_WhenGettingDetail_ExpectedResponseIsReturned(AccessibilityType accessibility, HttpStatusCode statusCode)
         {

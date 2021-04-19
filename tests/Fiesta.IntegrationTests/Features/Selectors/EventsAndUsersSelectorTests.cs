@@ -28,7 +28,9 @@ namespace Fiesta.WebApi.Tests.Features.Selectors
             _publicEvent = ArrangeDb.SeedEvent();
             _friendsOnlyEvent = ArrangeDb.SeedEvent(null, x => x.AccessibilityType = AccessibilityType.FriendsOnly);
             _privateEvent = ArrangeDb.SeedEvent(null, x => x.AccessibilityType = AccessibilityType.Private);
+
             _sut = new Handler(ActDb);
+
             ArrangeDb.SaveChanges();
         }
 
