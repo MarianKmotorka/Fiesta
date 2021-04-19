@@ -70,14 +70,6 @@ namespace Fiesta.Domain.Entities.Users
         /// </summary>
         public IReadOnlyCollection<EventJoinRequest> SentEventJoinRequests => _sentEventJoinRequests;
 
-        public void AddOrganizedEvent(Event organizedEvent)
-        {
-            if (_organizedEvents is null)
-                _organizedEvents = new List<Event>();
-
-            _organizedEvents.Add(organizedEvent ?? throw new ArgumentNullException(nameof(organizedEvent)));
-        }
-
         public void UpdateUsername(string username)
         {
             if (string.IsNullOrEmpty(username))

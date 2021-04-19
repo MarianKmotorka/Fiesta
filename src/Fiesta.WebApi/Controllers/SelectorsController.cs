@@ -9,13 +9,18 @@ using Microsoft.AspNetCore.Mvc;
 namespace Fiesta.WebApi.Controllers
 {
     [Route("api/selectors")]
+    [Authorize(nameof(FiestaRoleEnum.BasicUser))]
     public class SelectorsController : BaseController
     {
-        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
         [HttpGet("events-and-users")]
-        public async Task<ActionResult<List<EventsAndUsersSelector.ResponseDto>>> UsersSelector([FromQuery] EventsAndUsersSelector.Query query, CancellationToken cancellationToken)
+        public async Task<ActionResult<List<EventsAndUsersSelector.ResponseDto>>> UsersSelector(string search, CancellationToken cancellationToken)
         {
-            var result = await Mediator.Send(query, cancellationToken);
+            var result = await Mediator.Send(new EventsAndUsersSelector.Query
+            {
+                Search = search,
+                Role = CurrentUserService.Role,
+                CurrentUserId = CurrentUserService.UserId
+            }, cancellationToken);
             return Ok(result);
         }
     }
