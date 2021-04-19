@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using static System.Reflection.BindingFlags;
 
-namespace Quadrotech.Autopilot
+namespace TestBase.Helpers
 {
     public static class ObjectExtensions
     {

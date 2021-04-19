@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Fiesta.WebApi.Tests.Features.Events
 {
-    [Collection(nameof(FiestaAppFactory))]
+    [Collection(nameof(TestCollection))]
     public class RequestToJoinEventTests : WebAppTestBase
     {
         public RequestToJoinEventTests(FiestaAppFactory factory) : base(factory)

@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Fiesta.WebApi.Tests.Features.Auth
 {
-    [Collection(nameof(FiestaAppFactory))]
+    [Collection(nameof(TestCollection))]
     public class DeleteAccountTests : WebAppTestBase
     {
         public DeleteAccountTests(FiestaAppFactory factory) : base(factory)

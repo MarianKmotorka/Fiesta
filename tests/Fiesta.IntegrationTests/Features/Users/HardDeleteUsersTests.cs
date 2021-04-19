@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Fiesta.WebApi.Tests.Features.Users
 {
-    [Collection(nameof(FiestaAppFactory))]
+    [Collection(nameof(TestCollection))]
     public class HardDeleteUsersTests : WebAppTestBase
     {
         private HardDeleteUsers.Handler _sut;

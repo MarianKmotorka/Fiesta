@@ -21,18 +21,18 @@ namespace Fiesta.Application.Features.Events.Common
             if (@event.AccessibilityType == AccessibilityType.Public || currentUserService.IsResourceOwnerOrAdmin(@event.OrganizerId))
                 return true;
 
-            var isAttendee = await db.EventAttendees
-                .Where(x => x.EventId == eventId)
-                .AnyAsync(x => x.AttendeeId == currentUserService.UserId, cancellationToken);
+            var isAttendeeOrInvited = await db.Events.Where(x => x.Id == eventId)
+                .AnyAsync(x => x.Attendees.Any(a => a.AttendeeId == currentUserService.UserId)
+                            || x.Invitations.Any(i => i.InviteeId == currentUserService.UserId), cancellationToken);
 
             if (@event.AccessibilityType == AccessibilityType.Private)
-                return isAttendee;
+                return isAttendeeOrInvited;
 
             var isOrganizerFriend = await db.UserFriends
                 .AnyAsync(x => x.UserId == currentUserService.UserId && x.FriendId == @event.OrganizerId, cancellationToken);
 
             if (@event.AccessibilityType == AccessibilityType.FriendsOnly)
-                return isOrganizerFriend || isAttendee;
+                return isOrganizerFriend || isAttendeeOrInvited;
 
             throw new NotSupportedException($"Accessibility type {@event.AccessibilityType} not supported.");
         }
