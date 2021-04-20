@@ -46,7 +46,7 @@ namespace Fiesta.WebApi.Middleware.ExceptionHanlding
             return new ErrorResponse
             {
                 ErrorCode = "NotFound",
-                ErrorMessage = errorMessage ?? "Please check if you typed the url correctly."
+                ErrorMessage = errorMessage ?? "Resource was not found."
             };
         }
 

@@ -41,6 +41,7 @@ namespace Fiesta.Application.Features.Events
                     Location = $"{x.Location.City}, {x.Location.State}",
                     GoogleMapsUrl = x.Location.GoogleMapsUrl,
                     AccessibilityType = x.AccessibilityType,
+                    Capacity = x.Capacity,
                     AttendeesCount = _db.EventAttendees.Count(x => x.EventId == request.Id),
                     Organizer = new UserDto
                     {
@@ -76,6 +77,8 @@ namespace Fiesta.Application.Features.Events
             public string Location { get; set; }
 
             public string GoogleMapsUrl { get; set; }
+
+            public int Capacity { get; set; }
 
             public UserDto Organizer { get; set; }
         }
