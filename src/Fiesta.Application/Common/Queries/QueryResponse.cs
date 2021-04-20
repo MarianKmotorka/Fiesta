@@ -18,5 +18,7 @@ namespace Fiesta.Application.Common.Queries
         public int TotalPages { get; set; }
 
         public int TotalEntries { get; set; }
+
+        public bool HasMore => Page + 1 < TotalPages;
     }
 }
