@@ -11,6 +11,9 @@ namespace Fiesta.Application.Common.Queries
 
         public IEnumerable<T> Entries { get; set; }
 
+        /// <summary>
+        /// Page index starting from zero
+        /// </summary>
         public int Page { get; set; }
 
         public int PageSize { get; set; }
@@ -20,5 +23,7 @@ namespace Fiesta.Application.Common.Queries
         public int TotalEntries { get; set; }
 
         public bool HasMore => Page + 1 < TotalPages;
+
+        public int NextPage => Page + 1;
     }
 }
