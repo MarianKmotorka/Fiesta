@@ -40,6 +40,15 @@ namespace Fiesta.WebApi.Controllers
             return NoContent();
         }
 
+        [HttpPost("{id}/invitations/query")]
+        public async Task<ActionResult> GetInvitations(string id, string search, GetEventInvitations.Query query, CancellationToken cancellationToken)
+        {
+            query.EventId = id;
+            query.Search = search;
+            var response = await Mediator.Send(query, cancellationToken);
+            return Ok(response);
+        }
+
         [HttpPost("{id}/invitations/delete")]
         public async Task<ActionResult> DeleteInvitations(string id, DeleteEventInvitations.Command command, CancellationToken cancellationToken)
         {
@@ -93,9 +102,10 @@ namespace Fiesta.WebApi.Controllers
         }
 
         [HttpPost("{id}/attendees/query")]
-        public async Task<ActionResult<QueryResponse<UserDto>>> GetAttendees(string id, GetEventAttendees.Query request, CancellationToken cancellationToken)
+        public async Task<ActionResult<QueryResponse<UserDto>>> GetAttendees(string id, string search, GetEventAttendees.Query request, CancellationToken cancellationToken)
         {
             request.EventId = id;
+            request.Search = search;
             var result = await Mediator.Send(request, cancellationToken);
             return Ok(result);
         }

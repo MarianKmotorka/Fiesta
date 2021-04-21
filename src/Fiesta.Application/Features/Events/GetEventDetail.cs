@@ -43,6 +43,7 @@ namespace Fiesta.Application.Features.Events
                     AccessibilityType = x.AccessibilityType,
                     Capacity = x.Capacity,
                     AttendeesCount = _db.EventAttendees.Count(x => x.EventId == request.Id),
+                    InvitationsCount = _db.EventInvitations.Count(x => x.EventId == request.Id),
                     Organizer = new UserDto
                     {
                         Id = x.Organizer.Id,
@@ -73,6 +74,8 @@ namespace Fiesta.Application.Features.Events
             public AccessibilityType AccessibilityType { get; set; }
 
             public int AttendeesCount { get; set; }
+
+            public int InvitationsCount { get; set; }
 
             public string Location { get; set; }
 

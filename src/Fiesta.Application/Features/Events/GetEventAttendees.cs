@@ -7,7 +7,6 @@ using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Queries;
 using Fiesta.Application.Features.Common;
 using Fiesta.Application.Features.Events.Common;
-using Fiesta.Application.Utils;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +20,9 @@ namespace Fiesta.Application.Features.Events
             public string EventId { get; set; }
 
             public QueryDocument QueryDocument { get; set; } = new();
+
+            [JsonIgnore]
+            public string Search { get; set; }
         }
 
         public class Handler : IRequestHandler<Query, QueryResponse<UserDto>>
@@ -34,16 +36,18 @@ namespace Fiesta.Application.Features.Events
 
             public async Task<QueryResponse<UserDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var @event = await _db.Events.Include(x => x.Organizer).SingleOrNotFoundAsync(x => x.Id == request.EventId, cancellationToken);
-
-                return await _db.EventAttendees.Where(x => x.EventId == request.EventId)
+                var query = _db.EventAttendees.AsNoTracking().Where(x => x.EventId == request.EventId)
                     .Select(x => new UserDto
                     {
                         Id = x.AttendeeId,
                         PictureUrl = x.Attendee.PictureUrl,
                         Username = x.Attendee.Username
-                    })
-                    .BuildResponse(request.QueryDocument, cancellationToken);
+                    });
+
+                if (!string.IsNullOrEmpty(request.Search))
+                    query = query.Where(x => x.Username.Contains(request.Search));
+
+                return await query.BuildResponse(request.QueryDocument, cancellationToken);
             }
         }
 

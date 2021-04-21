@@ -17,6 +17,8 @@ namespace Fiesta.Domain.Entities.Events
 
         public string InviteeId { get; init; }
 
+        public DateTime CreatedAtUtc { get; set; }
+
         public EventInvitation(Event @event, FiestaUser inviter, FiestaUser invitee)
         {
             if (inviter == invitee)
@@ -28,6 +30,8 @@ namespace Fiesta.Domain.Entities.Events
             EventId = @event.Id;
             InviterId = inviter.Id;
             InviteeId = invitee.Id;
+
+            CreatedAtUtc = DateTime.UtcNow;
         }
 
         private EventInvitation()
