@@ -6,13 +6,11 @@ namespace Fiesta.WebApi.Middleware.ExceptionHanlding
     public class ErrorResponseFactory
     {
         public static ErrorResponse CreateBadRequestErrorResponse(string errorMessage)
-        {
-            return new ErrorResponse
+            => new()
             {
                 ErrorCode = "BadRequest",
                 ErrorMessage = errorMessage
             };
-        }
 
         public static ErrorResponse CreateBadRequestErrorResponse(IEnumerable<ValidationFailure> validationFailures)
         {
@@ -43,7 +41,7 @@ namespace Fiesta.WebApi.Middleware.ExceptionHanlding
             if (errorMessage != null && string.IsNullOrWhiteSpace(errorMessage))
                 errorMessage = null;
 
-            return new ErrorResponse
+            return new()
             {
                 ErrorCode = "NotFound",
                 ErrorMessage = errorMessage ?? "Resource was not found."
@@ -51,10 +49,17 @@ namespace Fiesta.WebApi.Middleware.ExceptionHanlding
         }
 
         public static ErrorResponse CreateForbiden403Response(string message = null)
-            => new ErrorResponse
+            => new()
             {
                 ErrorCode = "Forbidden",
                 ErrorMessage = string.IsNullOrEmpty(message) ? "You cannot access this resource." : message
+            };
+
+        public static ErrorResponse CreateUnauthorizedn401Response(string message = null)
+            => new()
+            {
+                ErrorCode = "Unauthorized",
+                ErrorMessage = string.IsNullOrEmpty(message) ? "Request lacks valid authentication header." : message
             };
     }
 }

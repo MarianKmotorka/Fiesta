@@ -24,6 +24,11 @@ namespace Fiesta.Application.Common.Behaviours.Authorization
             if (_authorizationCheck is null || await _authorizationCheck.IsAuthorized(request, _db, _currentUserService, cancellationToken))
                 return await next();
 
+            // if authorization fails because of expired bearer, 401 should be returned
+            // e.g. EventDetail is public endpoint only with AuthorizationCheck for certain event types (private, friendsOnly)
+            if (string.IsNullOrEmpty(_currentUserService.UserId))
+                throw new Unauthorized401Exception();
+
             throw new Forbidden403Exception();
         }
     }
