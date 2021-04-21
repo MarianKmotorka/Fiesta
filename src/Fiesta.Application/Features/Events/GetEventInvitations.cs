@@ -40,7 +40,8 @@ namespace Fiesta.Application.Features.Events
                 var query = _db.EventInvitations.AsNoTracking().Where(x => x.EventId == request.EventId);
 
                 if (!string.IsNullOrEmpty(request.Search))
-                    query = query.Where(x => x.Invitee.Username.Contains(request.Search));
+                    query = query
+                        .Where(x => x.Invitee.Username.Contains(request.Search) || (x.Invitee.FirstName + " " + x.Invitee.LastName).Contains(request.Search));
 
                 return await query
                     .OrderBy(x => x.Invitee.Username)
@@ -50,13 +51,17 @@ namespace Fiesta.Application.Features.Events
                         {
                             Id = x.InviteeId,
                             Username = x.Invitee.Username,
-                            PictureUrl = x.Invitee.PictureUrl
+                            PictureUrl = x.Invitee.PictureUrl,
+                            FirstName = x.Invitee.FirstName,
+                            LastName = x.Invitee.LastName,
                         },
                         Inviter = new UserDto
                         {
                             Id = x.InviterId,
                             Username = x.Inviter.Username,
-                            PictureUrl = x.Inviter.PictureUrl
+                            PictureUrl = x.Inviter.PictureUrl,
+                            FirstName = x.Invitee.FirstName,
+                            LastName = x.Invitee.LastName,
                         },
                         CreatedAtUtc = x.CreatedAtUtc
                     })

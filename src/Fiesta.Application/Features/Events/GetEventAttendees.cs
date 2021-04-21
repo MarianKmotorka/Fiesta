@@ -41,11 +41,13 @@ namespace Fiesta.Application.Features.Events
                     {
                         Id = x.AttendeeId,
                         PictureUrl = x.Attendee.PictureUrl,
-                        Username = x.Attendee.Username
+                        Username = x.Attendee.Username,
+                        FirstName = x.Attendee.FirstName,
+                        LastName = x.Attendee.LastName,
                     });
 
                 if (!string.IsNullOrEmpty(request.Search))
-                    query = query.Where(x => x.Username.Contains(request.Search));
+                    query = query.Where(x => x.Username.Contains(request.Search) || (x.FirstName + " " + x.LastName).Contains(request.Search));
 
                 return await query.BuildResponse(request.QueryDocument, cancellationToken);
             }

@@ -132,5 +132,17 @@ namespace Fiesta.WebApi.Controllers
             var result = await Mediator.Send(request, cancellationToken);
             return Ok(result);
         }
+
+        [HttpGet("{id}/invitations/new")]
+        public async Task<ActionResult> UsersForEventInvitationSelector(string id, string search, CancellationToken cancellationToken)
+        {
+            var result = await Mediator.Send(new UsersForEventInvitationSelector.Query
+            {
+                CurrentUserId = CurrentUserService.UserId,
+                EventId = id,
+                Search = search
+            }, cancellationToken);
+            return Ok(result);
+        }
     }
 }
