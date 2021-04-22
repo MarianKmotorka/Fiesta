@@ -46,8 +46,9 @@ namespace Fiesta.Application.Features.Events
         public class AuthorizationCheck : IAuthorizationCheck<Command>
         {
             public async Task<bool> IsAuthorized(Command request, IFiestaDbContext db, ICurrentUserService currentUserService, CancellationToken cancellationToken)
-               => await Helpers.IsOrganizerOrAdmin(request.EventId, db, currentUserService, cancellationToken);
-
+               => request.RemoveUserIds.Count == 1 &&
+                  request.RemoveUserIds.Single() == currentUserService.UserId ||
+                  await Helpers.IsOrganizerOrAdmin(request.EventId, db, currentUserService, cancellationToken);
         }
     }
 }

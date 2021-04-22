@@ -17,6 +17,8 @@ namespace Fiesta.Application.Features.Events
         public class Query : IRequest<Response>
         {
             public string Id { get; set; }
+
+            public string CurrentUserId { get; set; }
         }
 
         public class Handler : IRequestHandler<Query, Response>
@@ -42,8 +44,10 @@ namespace Fiesta.Application.Features.Events
                     GoogleMapsUrl = x.Location.GoogleMapsUrl,
                     AccessibilityType = x.AccessibilityType,
                     Capacity = x.Capacity,
-                    AttendeesCount = _db.EventAttendees.Count(x => x.EventId == request.Id),
-                    InvitationsCount = _db.EventInvitations.Count(x => x.EventId == request.Id),
+                    AttendeesCount = x.Attendees.Count(),
+                    InvitationsCount = x.Invitations.Count(),
+                    IsCurrentUserInvited = x.Invitations.Any(x => x.InviteeId == request.CurrentUserId),
+                    IsCurrentUserAttendee = x.Attendees.Any(x => x.AttendeeId == request.CurrentUserId),
                     Organizer = new UserDto
                     {
                         Id = x.Organizer.Id,
@@ -82,6 +86,10 @@ namespace Fiesta.Application.Features.Events
             public string GoogleMapsUrl { get; set; }
 
             public int Capacity { get; set; }
+
+            public bool IsCurrentUserInvited { get; set; }
+
+            public bool IsCurrentUserAttendee { get; set; }
 
             public UserDto Organizer { get; set; }
         }

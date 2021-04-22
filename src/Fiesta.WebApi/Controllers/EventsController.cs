@@ -114,7 +114,7 @@ namespace Fiesta.WebApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<QueryResponse<UserDto>>> GetDetail(string id, CancellationToken cancellationToken)
         {
-            var result = await Mediator.Send(new GetEventDetail.Query { Id = id }, cancellationToken);
+            var result = await Mediator.Send(new GetEventDetail.Query { Id = id, CurrentUserId = CurrentUserService.UserId }, cancellationToken);
             return Ok(result);
         }
 
