@@ -36,7 +36,8 @@ namespace Fiesta.Application.Features.Events
             {
                 var invitedUserIds = _db.EventInvitations.Where(x => x.EventId == request.EventId).Select(x => x.InviteeId);
                 var attendeeIds = _db.EventAttendees.Where(x => x.EventId == request.EventId).Select(x => x.AttendeeId);
-                var omitIds = invitedUserIds.Union(attendeeIds);
+                var organizerId = _db.Events.Where(x => x.Id == request.EventId).Select(x => x.OrganizerId);
+                var omitIds = invitedUserIds.Union(attendeeIds).Union(organizerId);
 
                 var query = _db.FiestaUsers.Where(x => !omitIds.Contains(x.Id)).Select(x => new ResponseDto
                 {
