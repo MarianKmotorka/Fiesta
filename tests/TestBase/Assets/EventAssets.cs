@@ -23,6 +23,8 @@ namespace TestBase.Assets
                     new LocationObject(0, 0)
                 );
 
+            @event.BannerUrl = "https://BannerUrl";
+
             if (configure is not null)
                 configure(@event);
 

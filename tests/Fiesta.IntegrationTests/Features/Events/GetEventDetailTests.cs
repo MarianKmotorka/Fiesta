@@ -23,9 +23,11 @@ namespace Fiesta.WebApi.Tests.Features.Events
             var organizer = await ArrangeDb.FiestaUsers.FindAsync(LoggedInUserId);
             var (_, attendee) = ArrangeDb.SeedBasicUser();
             var (_, attendee2) = ArrangeDb.SeedBasicUser();
+            var (_, invited) = ArrangeDb.SeedBasicUser();
             var @event = ArrangeDb.SeedEvent(organizer);
             @event.AddAttendee(attendee);
             @event.AddAttendee(attendee2);
+            @event.AddInvitations(invited);
             await ArrangeDb.SaveChangesAsync();
 
             var response = await Client.GetAsync($"/api/events/{@event.Id}");
@@ -38,9 +40,11 @@ namespace Fiesta.WebApi.Tests.Features.Events
                 Name = @event.Name,
                 AccessibilityType = @event.AccessibilityType,
                 AttendeesCount = 2,
+                InvitationsCount = 1,
                 EndDate = @event.EndDate,
                 StartDate = @event.StartDate,
-                BannerUrl = null,
+                BannerUrl = @event.BannerUrl,
+                Capacity = @event.Capacity,
                 Location = $"{@event.Location.City}, {@event.Location.State}",
                 GoogleMapsUrl = $"https://www.google.com/maps/search/?api=1&query={@event.Location.Latitude},{@event.Location.Latitude}",
                 Organizer = new UserDto
