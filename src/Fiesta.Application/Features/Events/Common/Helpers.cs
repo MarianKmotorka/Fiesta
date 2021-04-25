@@ -37,6 +37,16 @@ namespace Fiesta.Application.Features.Events.Common
             throw new NotSupportedException($"Accessibility type {@event.AccessibilityType} not supported.");
         }
 
+        public static async Task<bool> IsOrganizerOrAttendeeOrAdmin(string eventId, IFiestaDbContext db, ICurrentUserService currentUserService, CancellationToken cancellationToken)
+        {
+            if (await IsOrganizerOrAdmin(eventId, db, currentUserService, cancellationToken))
+                return true;
+
+            return await db.Events
+                .Where(x => x.Id == eventId)
+                .AnyAsync(x => x.Attendees.Any(a => a.AttendeeId == currentUserService.UserId));
+        }
+
         public static async Task<bool> IsOrganizerOrAdmin(string eventId, IFiestaDbContext db, ICurrentUserService currentUserService, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(currentUserService.UserId))

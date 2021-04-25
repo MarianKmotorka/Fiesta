@@ -23,6 +23,8 @@ namespace Fiesta.Application.Common.Interfaces
 
         DbSet<EventAttendee> EventAttendees { get; }
 
+        DbSet<EventComment> EventComments { get; }
+
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

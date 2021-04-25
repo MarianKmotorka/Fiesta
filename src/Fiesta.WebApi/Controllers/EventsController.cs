@@ -12,7 +12,7 @@ namespace Fiesta.WebApi.Controllers
 {
     [Authorize(nameof(FiestaRoleEnum.BasicUser))]
     [Route("api/events")]
-    public class EventsController : BaseController
+    public partial class EventsController : BaseController
     {
         [HttpPost("create")]
         public async Task<ActionResult<CreateOrUpdateEvent.Response>> CreateEvent(CreateOrUpdateEvent.Command command, CancellationToken cancellationToken)
