@@ -15,5 +15,13 @@ namespace Fiesta.WebApi.Controllers
             var response = await Mediator.Send(request, cancellationToken);
             return Ok(response);
         }
+
+        [HttpPost("{id}/comments/query")]
+        public async Task<ActionResult> GetComments(string id, GetComments.Query request, CancellationToken cancellationToken)
+        {
+            request.EventId = id;
+            var response = await Mediator.Send(request, cancellationToken);
+            return Ok(response);
+        }
     }
 }

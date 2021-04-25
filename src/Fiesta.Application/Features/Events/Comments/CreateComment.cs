@@ -84,7 +84,7 @@ namespace Fiesta.Application.Features.Events.Comments
 
                 RuleFor(x => x.Text)
                     .NotEmpty().WithErrorCode(ErrorCodes.Required)
-                    .MaximumLength(1000).WithErrorCode(ErrorCodes.MaxLength).WithState(_ => new { Max = 1000 });
+                    .MaximumLength(1000).WithErrorCode(ErrorCodes.MaxLength).WithState(_ => new { MaxLength = 1000 });
 
                 RuleFor(x => x.ParentId).MustAsync(CannotBeReplyToReplyComment).WithErrorCode(ErrorCodes.InvalidOperation);
             }
