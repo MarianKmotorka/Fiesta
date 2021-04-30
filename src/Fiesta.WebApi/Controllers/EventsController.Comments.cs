@@ -23,5 +23,12 @@ namespace Fiesta.WebApi.Controllers
             var response = await Mediator.Send(request, cancellationToken);
             return Ok(response);
         }
+
+        [HttpDelete("{eventId}/comments/{commentId}")]
+        public async Task<ActionResult> DeleteComment([FromRoute] DeleteComment.Command request, CancellationToken cancellationToken)
+        {
+            await Mediator.Send(request, cancellationToken);
+            return NoContent();
+        }
     }
 }
