@@ -12,7 +12,7 @@ namespace Fiesta.Domain.Entities.Events
         public EventComment(string text, FiestaUser sender, Event @event, EventComment parent = null)
         {
             CreatedAt = DateTime.UtcNow;
-            Text = text;
+            Text = text.Trim();
 
             Sender = sender;
             SenderId = sender.Id;
