@@ -14,12 +14,19 @@ namespace Fiesta.WebApi.Controllers
     [Route("api/events")]
     public partial class EventsController : BaseController
     {
-        [HttpPost("create")]
+        [HttpPost]
         public async Task<ActionResult<CreateOrUpdateEvent.Response>> CreateEvent(CreateOrUpdateEvent.Command command, CancellationToken cancellationToken)
         {
             command.OrganizerId = CurrentUserService.UserId;
             var response = await Mediator.Send(command, cancellationToken);
             return Ok(response);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<CreateOrUpdateEvent.Response>> DeleteEvent([FromRoute] DeleteEvent.Command request, CancellationToken cancellationToken)
+        {
+            await Mediator.Send(request, cancellationToken);
+            return NoContent();
         }
 
         [HttpPatch("{id}")]
