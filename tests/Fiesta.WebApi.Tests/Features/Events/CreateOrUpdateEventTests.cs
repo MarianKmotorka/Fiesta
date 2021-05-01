@@ -43,7 +43,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
                 Description = "Description",
             };
 
-            var createResponse = await Client.PostAsJsonAsync("/api/events/create", request);
+            var createResponse = await Client.PostAsJsonAsync("/api/events", request);
             createResponse.EnsureSuccessStatusCode();
             var content = await createResponse.Content.ReadAsAsync<CreateOrUpdateEvent.Response>();
 
@@ -86,7 +86,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
                 location
             };
 
-            var createResponse = await Client.PostAsJsonAsync("/api/events/create", organizedEvent);
+            var createResponse = await Client.PostAsJsonAsync("/api/events", organizedEvent);
             createResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
             var errorResposne = await createResponse.Content.ReadAsAsync<ErrorResponse>();
@@ -123,7 +123,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
                 location
             };
 
-            var createResponse = await Client.PostAsJsonAsync("/api/events/create", organizedEvent);
+            var createResponse = await Client.PostAsJsonAsync("/api/events", organizedEvent);
             createResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
             var errorResposne = await createResponse.Content.ReadAsAsync<ErrorResponse>();
