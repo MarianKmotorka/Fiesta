@@ -56,7 +56,11 @@ namespace Fiesta.Application.Features.Events.Comments
                 }
                 else
                 {
-                    comment = await _db.EventComments.Include(x => x.Sender).SingleOrNotFoundAsync(x => x.Id == request.CommentId, cancellationToken);
+                    comment = await _db.EventComments
+                        .Include(x => x.Sender)
+                        .Include(x => x.Replies)
+                        .SingleOrNotFoundAsync(x => x.Id == request.CommentId, cancellationToken);
+
                     comment.Edit(request.Text);
                 }
 
@@ -69,7 +73,7 @@ namespace Fiesta.Application.Features.Events.Comments
                     CreatedAt = comment.CreatedAt,
                     IsEdited = comment.IsEdited,
                     ParentId = comment.ParentId,
-                    ReplyCount = 0,
+                    ReplyCount = comment.Replies.Count,
                     Sender = new UserDto
                     {
                         Id = comment.Sender.Id,

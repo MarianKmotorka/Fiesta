@@ -22,6 +22,8 @@ namespace Fiesta.Domain.Entities.Events
 
             Parent = parent;
             ParentId = parent?.Id;
+
+            _replies = new();
         }
 
         private EventComment()
