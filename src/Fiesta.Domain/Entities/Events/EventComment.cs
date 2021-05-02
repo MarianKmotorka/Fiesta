@@ -52,7 +52,7 @@ namespace Fiesta.Domain.Entities.Events
 
         public void Edit(string text)
         {
-            Text = text;
+            Text = text.Trim();
             IsEdited = true;
         }
     }
