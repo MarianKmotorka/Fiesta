@@ -11,10 +11,11 @@ using Fiesta.Application.Utils;
 using Fiesta.Domain.Entities.Events;
 using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fiesta.Application.Features.Events.Comments
 {
-    public class CreateComment
+    public class CreateOrUpdateComment
     {
         public class Command : IRequest<CommentDto>
         {
@@ -23,6 +24,9 @@ namespace Fiesta.Application.Features.Events.Comments
 
             [JsonIgnore]
             public string CurrentUserId { get; set; }
+
+            [JsonIgnore]
+            public string CommentId { get; set; }
 
             public string Text { get; set; }
 
@@ -40,29 +44,39 @@ namespace Fiesta.Application.Features.Events.Comments
 
             public async Task<CommentDto> Handle(Command request, CancellationToken cancellationToken)
             {
-                var @event = await _db.Events.FindOrNotFoundAsync(cancellationToken, request.EventId);
-                var sender = await _db.FiestaUsers.FindAsync(new[] { request.CurrentUserId }, cancellationToken);
-                var parent = string.IsNullOrEmpty(request.ParentId) ? null : await _db.EventComments.FindOrNotFoundAsync(cancellationToken, request.ParentId);
+                EventComment comment;
+                if (request.CommentId == default)
+                {
+                    var @event = await _db.Events.FindOrNotFoundAsync(cancellationToken, request.EventId);
+                    var sender = await _db.FiestaUsers.FindAsync(new[] { request.CurrentUserId }, cancellationToken);
+                    var parent = string.IsNullOrEmpty(request.ParentId) ? null : await _db.EventComments.FindOrNotFoundAsync(cancellationToken, request.ParentId);
 
-                var newComment = new EventComment(request.Text, sender, @event, parent);
-                _db.EventComments.Add(newComment);
+                    comment = new EventComment(request.Text, sender, @event, parent);
+                    _db.EventComments.Add(comment);
+                }
+                else
+                {
+                    comment = await _db.EventComments.Include(x => x.Sender).SingleOrNotFoundAsync(x => x.Id == request.CommentId, cancellationToken);
+                    comment.Edit(request.Text);
+                }
+
                 await _db.SaveChangesAsync(cancellationToken);
 
                 return new CommentDto
                 {
-                    Id = newComment.Id,
-                    Text = newComment.Text,
-                    CreatedAt = newComment.CreatedAt,
-                    IsEdited = newComment.IsEdited,
-                    ParentId = newComment.ParentId,
+                    Id = comment.Id,
+                    Text = comment.Text,
+                    CreatedAt = comment.CreatedAt,
+                    IsEdited = comment.IsEdited,
+                    ParentId = comment.ParentId,
                     ReplyCount = 0,
                     Sender = new UserDto
                     {
-                        Id = newComment.Sender.Id,
-                        Username = newComment.Sender.Username,
-                        PictureUrl = newComment.Sender.PictureUrl,
-                        FirstName = newComment.Sender.FirstName,
-                        LastName = newComment.Sender.LastName,
+                        Id = comment.Sender.Id,
+                        Username = comment.Sender.Username,
+                        PictureUrl = comment.Sender.PictureUrl,
+                        FirstName = comment.Sender.FirstName,
+                        LastName = comment.Sender.LastName,
                     },
                 };
             }
@@ -71,7 +85,14 @@ namespace Fiesta.Application.Features.Events.Comments
         public class AuthorizationCheck : IAuthorizationCheck<Command>
         {
             public async Task<bool> IsAuthorized(Command request, IFiestaDbContext db, ICurrentUserService currentUserService, CancellationToken cancellationToken)
-                => await Helpers.IsOrganizerOrAttendeeOrAdmin(request.EventId, db, currentUserService, cancellationToken);
+            {
+                if (request.CommentId == default)
+                    return await Helpers.IsOrganizerOrAttendeeOrAdmin(request.EventId, db, currentUserService, cancellationToken);
+
+                var comment = await db.EventComments.FindOrNotFoundAsync(cancellationToken, request.CommentId);
+                return currentUserService.IsResourceOwnerOrAdmin(comment.SenderId);
+            }
+
         }
 
         public class Validator : AbstractValidator<Command>
