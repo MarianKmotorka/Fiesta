@@ -1,5 +1,8 @@
-﻿using System.Net.Http;
+﻿using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Fiesta.Application.Common.Constants;
+using Fiesta.WebApi.Middleware.ExceptionHanlding;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using TestBase.Assets;
@@ -58,6 +61,32 @@ namespace Fiesta.WebApi.Tests.Features.Events
 
             eventDb.Invitations.Should().BeEmpty();
             eventDb.Attendees.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task GiveExistingInvitationOnFullEvent_WhenAcceptingTheInvitation_BadRequestIsReturned()
+        {
+            var invitee = await ArrangeDb.FiestaUsers.FindAsync(LoggedInUserId);
+            var (_, organizer) = ArrangeDb.SeedBasicUser();
+            var @event = ArrangeDb.SeedEvent(organizer, x => x.Capacity = 1);
+            @event.AddInvitations(invitee);
+            await ArrangeDb.SaveChangesAsync();
+
+            var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/invitations/reply", new { Accepted = true });
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+            var error = await response.Content.ReadAsAsync<ErrorResponse>();
+            error.Should().BeEquivalentTo(new
+            {
+                ErrorCode = "ValidationError",
+                ErrorDetails = new object[]
+                {
+                    new
+                    {
+                        Code = ErrorCodes.EventIsFull
+                    }
+                }
+            });
         }
     }
 }

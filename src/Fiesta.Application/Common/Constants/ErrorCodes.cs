@@ -34,5 +34,6 @@
         public const string SenderAndReceiverIdentical = "senderAndReceiverIdentical";
         public const string AlreadyAttendeeOrInvited = "alreadyAttendeeOrInvited";
         public const string InvalidOperation = "invalidOperation";
+        public const string EventIsFull = "eventIsFull";
     }
 }

@@ -1,8 +1,11 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Utils;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -58,6 +61,29 @@ namespace Fiesta.Application.Features.Events
 
                 await _db.SaveChangesAsync(cancellationToken);
                 return Unit.Value;
+            }
+        }
+
+        public class Validator : AbstractValidator<Command>
+        {
+            private readonly IFiestaDbContext _db;
+
+            public Validator(IFiestaDbContext db)
+            {
+                _db = db;
+
+                RuleFor(x => x.Accepted).MustAsync(EventCapacityIsNotExceeded).WithErrorCode(ErrorCodes.EventIsFull);
+            }
+
+            private async Task<bool> EventCapacityIsNotExceeded(Command command, bool accepted, CancellationToken cancellationToken)
+            {
+                if (!accepted) return true;
+
+                var @event = await _db.Events
+                    .Select(x => new { x.Id, x.Capacity, AttendeesCount = x.Attendees.Count() })
+                    .SingleOrNotFoundAsync(x => x.Id == command.EventId, cancellationToken);
+
+                return @event.Capacity > @event.AttendeesCount + 1; // Capacity > Attendees + Organizer
             }
         }
     }
