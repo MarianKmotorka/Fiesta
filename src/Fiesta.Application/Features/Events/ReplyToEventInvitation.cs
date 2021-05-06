@@ -83,7 +83,7 @@ namespace Fiesta.Application.Features.Events
                     .Select(x => new { x.Id, x.Capacity, AttendeesCount = x.Attendees.Count() })
                     .SingleOrNotFoundAsync(x => x.Id == command.EventId, cancellationToken);
 
-                return @event.Capacity > @event.AttendeesCount + 1; // Capacity > Attendees + Organizer
+                return @event.Capacity > @event.AttendeesCount;
             }
         }
     }

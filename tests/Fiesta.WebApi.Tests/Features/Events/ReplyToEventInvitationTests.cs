@@ -67,9 +67,11 @@ namespace Fiesta.WebApi.Tests.Features.Events
         public async Task GiveExistingInvitationOnFullEvent_WhenAcceptingTheInvitation_BadRequestIsReturned()
         {
             var invitee = await ArrangeDb.FiestaUsers.FindAsync(LoggedInUserId);
+            var (_, attendee) = ArrangeDb.SeedBasicUser();
             var (_, organizer) = ArrangeDb.SeedBasicUser();
             var @event = ArrangeDb.SeedEvent(organizer, x => x.Capacity = 1);
             @event.AddInvitations(invitee);
+            @event.AddAttendee(attendee);
             await ArrangeDb.SaveChangesAsync();
 
             var response = await Client.PostAsJsonAsync($"/api/events/{@event.Id}/invitations/reply", new { Accepted = true });
