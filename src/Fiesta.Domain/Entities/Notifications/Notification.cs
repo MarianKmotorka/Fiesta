@@ -11,13 +11,9 @@ namespace Fiesta.Domain.Entities.Notifications
         {
         }
 
-        public Notification(NotificationType type, FiestaUser user) : this(type, user, null)
+        public Notification(FiestaUser user, INotificationModel model)
         {
-        }
-
-        public Notification(NotificationType type, FiestaUser user, object model)
-        {
-            Type = type;
+            Type = model.Type;
             User = user;
             UserId = user.Id;
             Model = JsonConvert.SerializeObject(model);
@@ -36,7 +32,7 @@ namespace Fiesta.Domain.Entities.Notifications
 
         public string UserId { get; private set; }
 
-        public T GetModel<T>() where T : class
+        public T GetModel<T>() where T : new()
         {
             return JsonConvert.DeserializeObject<T>(Model);
         }

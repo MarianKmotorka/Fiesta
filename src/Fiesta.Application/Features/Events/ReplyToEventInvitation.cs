@@ -68,7 +68,7 @@ namespace Fiesta.Application.Features.Events
             private async Task SendNotification(EventInvitation invitation, bool accepted)
             {
                 var notificationModel = new EventInvitationReplyNotification(invitation, accepted);
-                _db.Notifications.Add(new Notification(NotificationType.EventInvitationReply, invitation.Inviter, notificationModel));
+                _db.Notifications.Add(new Notification(invitation.Inviter, notificationModel));
 
                 //TODO: SignalR notification
             }

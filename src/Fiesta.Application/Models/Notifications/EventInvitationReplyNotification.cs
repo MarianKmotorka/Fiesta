@@ -1,8 +1,9 @@
 ﻿using Fiesta.Domain.Entities.Events;
+using Fiesta.Domain.Entities.Notifications;
 
 namespace Fiesta.Application.Models.Notifications
 {
-    public class EventInvitationReplyNotification
+    public class EventInvitationReplyNotification : INotificationModel
     {
         public EventInvitationReplyNotification(EventInvitation invitation, bool accepted)
         {
@@ -26,5 +27,7 @@ namespace Fiesta.Application.Models.Notifications
         public string InvitedUsername { get; set; }
 
         public string InvitedId { get; set; }
+
+        public NotificationType Type => NotificationType.EventInvitationReply;
     }
 }
