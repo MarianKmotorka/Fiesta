@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
+using Fiesta.Application.Models.Notifications;
 using Fiesta.WebApi.Middleware.ExceptionHanlding;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -40,6 +41,18 @@ namespace Fiesta.WebApi.Tests.Features.Events
             {
                 new{ AttendeeId = invitee.Id, EventId=@event.Id },
             });
+
+            var notification = await AssertDb.Notifications.SingleAsync();
+            notification.Seen.Should().BeFalse();
+            notification.UserId.Should().Be(organizer.Id);
+            notification.GetModel<EventInvitationReplyNotification>().Should().BeEquivalentTo(new
+            {
+                EventId = @event.Id,
+                EventName = @event.Name,
+                Accepted = true,
+                InvitedUsername = invitee.Username,
+                InvitedId = invitee.Id
+            });
         }
 
         [Fact]
@@ -61,6 +74,18 @@ namespace Fiesta.WebApi.Tests.Features.Events
 
             eventDb.Invitations.Should().BeEmpty();
             eventDb.Attendees.Should().BeEmpty();
+
+            var notification = await AssertDb.Notifications.SingleAsync();
+            notification.Seen.Should().BeFalse();
+            notification.UserId.Should().Be(organizer.Id);
+            notification.GetModel<EventInvitationReplyNotification>().Should().BeEquivalentTo(new
+            {
+                EventId = @event.Id,
+                EventName = @event.Name,
+                Accepted = false,
+                InvitedUsername = invitee.Username,
+                InvitedId = invitee.Id
+            });
         }
 
         [Fact]

@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Domain.Entities.Events;
+using Fiesta.Domain.Entities.Notifications;
 using Fiesta.Domain.Entities.Users;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,6 +25,8 @@ namespace Fiesta.Application.Common.Interfaces
         DbSet<EventAttendee> EventAttendees { get; }
 
         DbSet<EventComment> EventComments { get; }
+
+        DbSet<Notification> Notifications { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
