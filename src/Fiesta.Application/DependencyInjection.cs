@@ -19,8 +19,8 @@ namespace Fiesta.Application
             FluentValidationCamelCasePropertyNameResolver.UseFluentValidationCamelCasePropertyResolver();
 
             services.AddMediatR(Assembly.GetExecutingAssembly());
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthorizationCheckBehavior<,>)); // Register this IPipelineBehavior before other IPipelineBehavior-s so AuthCheck is executed first
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthorizationCheckBehavior<,>));
             services.AddHttpClient();
 
             services.AddHardDeleteUsersWorker(configuration);

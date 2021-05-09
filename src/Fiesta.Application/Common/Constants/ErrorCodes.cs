@@ -35,5 +35,6 @@
         public const string AlreadyAttendeeOrInvited = "alreadyAttendeeOrInvited";
         public const string InvalidOperation = "invalidOperation";
         public const string EventIsFull = "eventIsFull";
+        public const string CannotBeLessThanCurrentAttendeesCount = "cannotBeLessThanCurrentAttendeesCount";
     }
 }

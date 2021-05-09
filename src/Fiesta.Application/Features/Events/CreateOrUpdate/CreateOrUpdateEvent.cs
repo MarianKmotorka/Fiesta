@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using Fiesta.Domain.Entities;
 using Fiesta.Domain.Entities.Events;
 using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fiesta.Application.Features.Events.CreateOrUpdate
 {
@@ -81,8 +83,12 @@ namespace Fiesta.Application.Features.Events.CreateOrUpdate
 
         public class Validator : AbstractValidator<Command>
         {
-            public Validator()
+            private readonly IFiestaDbContext _db;
+
+            public Validator(IFiestaDbContext db)
             {
+                _db = db;
+
                 RuleFor(x => x.Name)
                     .NotEmpty().WithErrorCode(ErrorCodes.Required)
                     .MaximumLength(30).WithErrorCode(ErrorCodes.MaxLength).WithState(_ => new { MaxLength = 30 });
@@ -101,14 +107,25 @@ namespace Fiesta.Application.Features.Events.CreateOrUpdate
                   .HasEnumValidValue();
 
                 RuleFor(x => x.Capacity)
+                  .Cascade(CascadeMode.Stop)
                   .NotEmpty().WithErrorCode(ErrorCodes.Required)
-                  .GreaterThanOrEqualTo(2).WithErrorCode(ErrorCodes.Min).WithState(_ => new { Min = 2 });
+                  .GreaterThanOrEqualTo(2).WithErrorCode(ErrorCodes.Min).WithState(_ => new { Min = 2 })
+                  .MustAsync(GreaterThanNumberOfAttendees).WithErrorCode(ErrorCodes.CannotBeLessThanCurrentAttendeesCount);
 
                 RuleFor(x => x.Location)
                     .Must(x => LocationObject.ValidateLatitudeAndLongitude(x.Latitude, x.Longitude)).WithErrorCode(ErrorCodes.InvalidLatitudeOrLongitude);
 
                 RuleFor(x => x.Description)
                     .MaximumLength(2000).WithErrorCode(ErrorCodes.MaxLength).WithState(_ => new { MaxLength = 2000 });
+            }
+
+            private async Task<bool> GreaterThanNumberOfAttendees(Command command, int capacity, CancellationToken cancellationToken)
+            {
+                if (command.Id == default)
+                    return true;
+
+                var attendeesCount = await _db.Events.Where(x => x.Id == command.Id).SelectMany(x => x.Attendees).CountAsync(cancellationToken);
+                return command.Capacity >= attendeesCount;
             }
         }
 
