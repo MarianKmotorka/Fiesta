@@ -7,7 +7,10 @@ using Fiesta.Application.Common.Behaviours.Authorization;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Features.Events.Common;
+using Fiesta.Application.Models.Notifications;
 using Fiesta.Application.Utils;
+using Fiesta.Domain.Entities.Events;
+using Fiesta.Domain.Entities.Notifications;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -42,9 +45,21 @@ namespace Fiesta.Application.Features.Events
                 var invitedUsers = await _db.FiestaUsers.Where(x => request.InvitedIds.Contains(x.Id)).ToListAsync(cancellationToken);
 
                 @event.AddInvitations(invitedUsers.ToArray());
+                await SendNotification(@event.Invitations);
 
                 await _db.SaveChangesAsync(cancellationToken);
                 return Unit.Value;
+            }
+
+            private async Task SendNotification(IEnumerable<EventInvitation> invitations)
+            {
+                foreach (var invitation in invitations)
+                {
+                    var model = new EventInvitationCreatedNotification(invitation);
+                    _db.Notifications.Add(new Notification(invitation.Invitee, model));
+
+                    await Task.CompletedTask; // TODO replace with SignalR call
+                }
             }
         }
 

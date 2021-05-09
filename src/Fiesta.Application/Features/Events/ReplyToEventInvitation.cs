@@ -4,7 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
+using Fiesta.Application.Models.Notifications;
 using Fiesta.Application.Utils;
+using Fiesta.Domain.Entities.Events;
+using Fiesta.Domain.Entities.Notifications;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -36,6 +39,9 @@ namespace Fiesta.Application.Features.Events
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 var invitation = await _db.EventInvitations
+                    .Include(x => x.Invitee)
+                    .Include(x => x.Inviter)
+                    .Include(x => x.Event)
                     .SingleOrNotFoundAsync(x => x.EventId == request.EventId && x.InviteeId == request.CurrentUserId, cancellationToken);
 
                 _db.EventInvitations.Remove(invitation);
@@ -51,16 +57,20 @@ namespace Fiesta.Application.Features.Events
                     var invitedUser = await _db.FiestaUsers.FindOrNotFoundAsync(cancellationToken, request.CurrentUserId);
                     var @event = await _db.Events.FindOrNotFoundAsync(cancellationToken, request.EventId);
                     @event.AddAttendee(invitedUser);
+                }
 
-                    //TODO: Send accepted notification
-                }
-                else
-                {
-                    //TODO: SEnd rejected notification
-                }
+                await SendNotification(invitation, request.Accepted);
 
                 await _db.SaveChangesAsync(cancellationToken);
                 return Unit.Value;
+            }
+
+            private async Task SendNotification(EventInvitation invitation, bool accepted)
+            {
+                var notificationModel = new EventInvitationReplyNotification(invitation, accepted);
+                _db.Notifications.Add(new Notification(invitation.Inviter, notificationModel));
+
+                await Task.CompletedTask; // TODO replace with SignalR call
             }
         }
 

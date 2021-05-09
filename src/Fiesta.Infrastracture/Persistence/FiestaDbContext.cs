@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Domain.Common;
 using Fiesta.Domain.Entities.Events;
+using Fiesta.Domain.Entities.Notifications;
 using Fiesta.Domain.Entities.Users;
 using Fiesta.Infrastracture.Auth;
 using MediatR;
@@ -38,6 +39,8 @@ namespace Fiesta.Infrastracture.Persistence
         public DbSet<EventAttendee> EventAttendees { get; set; }
 
         public DbSet<EventComment> EventComments { get; set; }
+
+        public DbSet<Notification> Notifications { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
