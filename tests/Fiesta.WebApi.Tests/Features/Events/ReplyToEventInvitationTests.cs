@@ -45,7 +45,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
             var notification = await AssertDb.Notifications.SingleAsync();
             notification.Seen.Should().BeFalse();
             notification.UserId.Should().Be(organizer.Id);
-            notification.GetModel<EventInvitationReplyNotification>().Should().BeEquivalentTo(new
+            notification.GetModel<EventInvitationReplyNotification>().Should().BeEquivalentTo(new EventInvitationReplyNotification
             {
                 EventId = @event.Id,
                 EventName = @event.Name,
@@ -78,7 +78,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
             var notification = await AssertDb.Notifications.SingleAsync();
             notification.Seen.Should().BeFalse();
             notification.UserId.Should().Be(organizer.Id);
-            notification.GetModel<EventInvitationReplyNotification>().Should().BeEquivalentTo(new
+            notification.GetModel<EventInvitationReplyNotification>().Should().BeEquivalentTo(new EventInvitationReplyNotification
             {
                 EventId = @event.Id,
                 EventName = @event.Name,

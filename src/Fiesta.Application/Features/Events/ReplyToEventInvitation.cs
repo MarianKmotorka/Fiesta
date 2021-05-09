@@ -70,7 +70,7 @@ namespace Fiesta.Application.Features.Events
                 var notificationModel = new EventInvitationReplyNotification(invitation, accepted);
                 _db.Notifications.Add(new Notification(invitation.Inviter, notificationModel));
 
-                //TODO: SignalR notification
+                await Task.CompletedTask; // TODO replace with SignalR call
             }
         }
 
