@@ -2,6 +2,7 @@
 using Fiesta.Domain.Common;
 using Fiesta.Domain.Entities.Users;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Fiesta.Domain.Entities.Notifications
 {
@@ -16,8 +17,12 @@ namespace Fiesta.Domain.Entities.Notifications
             Type = model.Type;
             User = user;
             UserId = user.Id;
-            Model = JsonConvert.SerializeObject(model);
             CreatedAt = DateTime.UtcNow;
+
+            Model = JsonConvert.SerializeObject(
+                model,
+                new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }
+                );
         }
 
         public NotificationType Type { get; private init; }
