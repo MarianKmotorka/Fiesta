@@ -10,6 +10,7 @@ namespace Fiesta.Application.Models.Notifications
             EventId = invitation.Event.Id;
             EventName = invitation.Event.Name;
             InviterId = invitation.Inviter.Id;
+            InviterPictureUrl = invitation.Inviter.PictureUrl;
             InviterUsername = invitation.Inviter.Username;
         }
 
@@ -22,6 +23,8 @@ namespace Fiesta.Application.Models.Notifications
         public string InviterUsername { get; set; }
 
         public string InviterId { get; set; }
+
+        public string InviterPictureUrl { get; set; }
 
         public string EventName { get; set; }
 
