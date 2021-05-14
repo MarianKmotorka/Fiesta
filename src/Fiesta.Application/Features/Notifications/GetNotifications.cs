@@ -6,19 +6,20 @@ using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Queries;
 using Fiesta.Domain.Entities.Notifications;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fiesta.Application.Features.Notifications
 {
     public class GetNotifications
     {
-        public class Query : IRequest<SkippedItemsResponse<NotificationDto>>
+        public class Query : IRequest<SkippedItemsResponse<NotificationDto, AdditionalData>>
         {
             public SkippedItemsDocument SkippedItemsDocument { get; set; } = new();
 
             public string CurrentUserId { get; set; }
         }
 
-        public class Handler : IRequestHandler<Query, SkippedItemsResponse<NotificationDto>>
+        public class Handler : IRequestHandler<Query, SkippedItemsResponse<NotificationDto, AdditionalData>>
         {
             private readonly IFiestaDbContext _db;
 
@@ -27,7 +28,7 @@ namespace Fiesta.Application.Features.Notifications
                 _db = db;
             }
 
-            public async Task<SkippedItemsResponse<NotificationDto>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<SkippedItemsResponse<NotificationDto, AdditionalData>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var notifications = await _db.Notifications
                     .Where(x => x.UserId == request.CurrentUserId)
@@ -43,13 +44,20 @@ namespace Fiesta.Application.Features.Notifications
                     Model = x.GetModel<object>()
                 });
 
-                return new SkippedItemsResponse<NotificationDto>(mappedEntries)
+                var unseenCount = await _db.Notifications.Where(x => x.UserId == request.CurrentUserId).CountAsync(x => !x.Seen, cancellationToken);
+
+                return new SkippedItemsResponse<NotificationDto, AdditionalData>(mappedEntries, new AdditionalData { UnseenCount = unseenCount })
                 {
                     Skip = notifications.Skip,
                     Take = notifications.Take,
                     TotalEntries = notifications.TotalEntries
                 };
             }
+        }
+
+        public class AdditionalData
+        {
+            public int UnseenCount { get; set; }
         }
 
         public class NotificationDto
