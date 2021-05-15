@@ -13,7 +13,7 @@ namespace Fiesta.WebApi.Controllers
     public class NotificationsController : BaseController
     {
         [HttpPost("query")]
-        public async Task<ActionResult<SkippedItemsResponse<GetNotifications.NotificationDto>>> Get(GetNotifications.Query request, CancellationToken cancellationToken)
+        public async Task<ActionResult<SkippedItemsResponse<NotificationDto>>> Get(GetNotifications.Query request, CancellationToken cancellationToken)
         {
             request.CurrentUserId = CurrentUserService.UserId;
             var response = await Mediator.Send(request, cancellationToken);
