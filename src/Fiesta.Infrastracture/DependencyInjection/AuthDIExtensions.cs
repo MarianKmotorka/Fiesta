@@ -52,9 +52,16 @@ namespace Fiesta.Infrastracture.DependencyInjection
                     OnTokenValidated = context =>
                     {
                         var isAccessTokenClaim = context.Principal.Claims.SingleOrDefault(x => x.Type == FiestaClaims.IsAccessToken);
-
                         if (isAccessTokenClaim is null)
                             context.Fail(new Exception("Token is missing 'IsAccessToken' claim."));
+
+                        return Task.CompletedTask;
+                    },
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        if (!string.IsNullOrEmpty(accessToken))
+                            context.Token = accessToken;
 
                         return Task.CompletedTask;
                     }

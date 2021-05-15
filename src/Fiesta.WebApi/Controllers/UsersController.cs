@@ -49,7 +49,7 @@ namespace Fiesta.WebApi.Controllers
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
         [HttpGet("selector")]
-        public async Task<ActionResult<List<UsersSelector.ResponseDto>>> UsersSelector([FromQuery] UsersSelector.Query query, CancellationToken cancellationToken)
+        public async Task<ActionResult<List<UserDto>>> UsersSelector([FromQuery] UsersSelector.Query query, CancellationToken cancellationToken)
         {
             var result = await Mediator.Send(query, cancellationToken);
             return Ok(result);

@@ -11,12 +11,12 @@ namespace Fiesta.Application.Features.Users
 {
     public class UsersSelector
     {
-        public class Query : IRequest<List<ResponseDto>>
+        public class Query : IRequest<List<UserDto>>
         {
             public string Search { get; set; }
         }
 
-        public class Handler : IRequestHandler<Query, List<ResponseDto>>
+        public class Handler : IRequestHandler<Query, List<UserDto>>
         {
             private readonly IFiestaDbContext _db;
 
@@ -25,30 +25,25 @@ namespace Fiesta.Application.Features.Users
                 _db = db;
             }
 
-            public async Task<List<ResponseDto>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<List<UserDto>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var query = _db.FiestaUsers.AsNoTracking();
 
                 if (!string.IsNullOrEmpty(request.Search))
                     query = query.Where(x => x.Username.Contains(request.Search) || (x.FirstName + " " + x.LastName).Contains(request.Search));
 
-                return await query.Select(x => new ResponseDto
+                return await query.Select(x => new UserDto
                 {
                     Id = x.Id,
                     Username = x.Username,
-                    FullName = x.FullName,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
                     PictureUrl = x.PictureUrl
                 })
                 .OrderBy(x => x.Username)
                 .Take(25)
                 .ToListAsync(cancellationToken);
-
             }
-        }
-
-        public class ResponseDto : UserDto
-        {
-            public string FullName { get; set; }
         }
     }
 }

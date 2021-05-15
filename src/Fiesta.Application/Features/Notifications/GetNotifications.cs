@@ -1,10 +1,8 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Queries;
-using Fiesta.Domain.Entities.Notifications;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -58,19 +56,6 @@ namespace Fiesta.Application.Features.Notifications
         public class AdditionalData
         {
             public int UnseenCount { get; set; }
-        }
-
-        public class NotificationDto
-        {
-            public long Id { get; set; }
-
-            public NotificationType Type { get; set; }
-
-            public bool Seen { get; set; }
-
-            public DateTime CreatedAt { get; set; }
-
-            public object Model { get; set; }
         }
     }
 }
