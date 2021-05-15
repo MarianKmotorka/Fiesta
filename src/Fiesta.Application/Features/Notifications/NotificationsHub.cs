@@ -6,21 +6,34 @@ using System.Threading.Tasks;
 using Fiesta.Application.Common.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fiesta.Application.Features.Notifications
 {
     [Authorize]
     public class NotificationsHub : Hub<INotificationsClient>
     {
+        private readonly IFiestaDbContext _db;
         private readonly ICurrentUserService _currentUser;
         private static ConcurrentDictionary<string, List<string>> _userConnections = new();
 
-        public NotificationsHub(ICurrentUserService currentUser)
+        public NotificationsHub(ICurrentUserService currentUser, IFiestaDbContext db)
         {
             _currentUser = currentUser;
+            _db = db;
         }
 
         public static IReadOnlyDictionary<string, List<string>> UserConnections => _userConnections;
+
+        public async Task SetSeen(long id)
+        {
+            var notification = await _db.Notifications.SingleOrDefaultAsync(x => x.Id == id && x.UserId == _currentUser.UserId);
+            if (notification is null)
+                return;
+
+            notification.SetSeen();
+            await _db.SaveChangesAsync();
+        }
 
         public override async Task OnConnectedAsync()
         {
