@@ -50,8 +50,6 @@ namespace Fiesta.Application.Features.Events
 
                 @event.AddInvitations(invitedUsers.ToArray());
                 await SendNotification(@event.Invitations, cancellationToken);
-
-                await _db.SaveChangesAsync(cancellationToken);
                 return Unit.Value;
             }
 
@@ -107,7 +105,6 @@ namespace Fiesta.Application.Features.Events
         {
             public async Task<bool> IsAuthorized(Command request, IFiestaDbContext db, ICurrentUserService currentUserService, CancellationToken cancellationToken)
                  => await Helpers.IsOrganizerOrAdmin(request.EventId, db, currentUserService, cancellationToken);
-
         }
     }
 }
