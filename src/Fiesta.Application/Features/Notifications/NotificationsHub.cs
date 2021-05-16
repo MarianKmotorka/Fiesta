@@ -35,6 +35,20 @@ namespace Fiesta.Application.Features.Notifications
             await _db.SaveChangesAsync();
         }
 
+        public async Task SetAllSeen()
+        {
+            var unseen = await _db.Notifications.Where(x => x.UserId == _currentUser.UserId && !x.Seen).ToListAsync();
+            unseen.ForEach(x => x.SetSeen());
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task DeleteAll()
+        {
+            var toDelete = await _db.Notifications.Where(x => x.UserId == _currentUser.UserId).ToListAsync();
+            _db.Notifications.RemoveRange(toDelete);
+            await _db.SaveChangesAsync();
+        }
+
         public override async Task OnConnectedAsync()
         {
             _userConnections.AddOrUpdate(
