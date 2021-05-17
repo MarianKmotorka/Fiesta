@@ -4,12 +4,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
+using Fiesta.Application.Features.Notifications;
 using Fiesta.Application.Models.Notifications;
 using Fiesta.Application.Utils;
 using Fiesta.Domain.Entities.Events;
 using Fiesta.Domain.Entities.Notifications;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fiesta.Application.Features.Events
@@ -30,10 +32,12 @@ namespace Fiesta.Application.Features.Events
         public class Handler : IRequestHandler<Command>
         {
             private IFiestaDbContext _db;
+            private readonly IHubContext<NotificationsHub, INotificationsClient> _hub;
 
-            public Handler(IFiestaDbContext db)
+            public Handler(IFiestaDbContext db, IHubContext<NotificationsHub, INotificationsClient> hub)
             {
                 _db = db;
+                _hub = hub;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
@@ -59,18 +63,18 @@ namespace Fiesta.Application.Features.Events
                     @event.AddAttendee(invitedUser);
                 }
 
-                await SendNotification(invitation, request.Accepted);
-
-                await _db.SaveChangesAsync(cancellationToken);
+                await SendNotification(invitation, request.Accepted, cancellationToken);
                 return Unit.Value;
             }
 
-            private async Task SendNotification(EventInvitation invitation, bool accepted)
+            private async Task SendNotification(EventInvitation invitation, bool accepted, CancellationToken cancellationToken)
             {
                 var notificationModel = new EventInvitationReplyNotification(invitation, accepted);
-                _db.Notifications.Add(new Notification(invitation.Inviter, notificationModel));
+                var notification = _db.Notifications.Add(new Notification(invitation.Inviter, notificationModel)).Entity;
+                await _db.SaveChangesAsync(cancellationToken);
 
-                await Task.CompletedTask; // TODO replace with SignalR call
+                if (NotificationsHub.UserConnections.TryGetValue(invitation.InviterId, out var connectionIds))
+                    await _hub.Clients.Clients(connectionIds).ReceiveNotification(NotificationDto.Map(notification));
             }
         }
 
