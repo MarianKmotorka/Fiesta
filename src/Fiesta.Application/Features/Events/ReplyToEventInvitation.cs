@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
+using Fiesta.Application.Features.Common;
 using Fiesta.Application.Features.Notifications;
 using Fiesta.Application.Models.Notifications;
 using Fiesta.Application.Utils;
@@ -73,8 +74,7 @@ namespace Fiesta.Application.Features.Events
                 var notification = _db.Notifications.Add(new Notification(invitation.Inviter, notificationModel)).Entity;
                 await _db.SaveChangesAsync(cancellationToken);
 
-                if (NotificationsHub.UserConnections.TryGetValue(invitation.InviterId, out var connectionIds))
-                    await _hub.Clients.Clients(connectionIds).ReceiveNotification(NotificationDto.Map(notification));
+                await _hub.Notify(notification);
             }
         }
 

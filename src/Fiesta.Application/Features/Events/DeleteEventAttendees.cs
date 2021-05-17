@@ -5,8 +5,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Behaviours.Authorization;
 using Fiesta.Application.Common.Interfaces;
+using Fiesta.Application.Features.Common;
 using Fiesta.Application.Features.Events.Common;
+using Fiesta.Application.Features.Notifications;
+using Fiesta.Application.Models.Notifications;
+using Fiesta.Domain.Entities.Events;
+using Fiesta.Domain.Entities.Notifications;
 using MediatR;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fiesta.Application.Features.Events
@@ -23,11 +29,15 @@ namespace Fiesta.Application.Features.Events
 
         public class Handler : IRequestHandler<Command>
         {
-            private IFiestaDbContext _db;
+            private readonly IFiestaDbContext _db;
+            private readonly ICurrentUserService _currentUser;
+            private readonly IHubContext<NotificationsHub, INotificationsClient> _hub;
 
-            public Handler(IFiestaDbContext db)
+            public Handler(IFiestaDbContext db, ICurrentUserService currentUser, IHubContext<NotificationsHub, INotificationsClient> hub)
             {
                 _db = db;
+                _currentUser = currentUser;
+                _hub = hub;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
@@ -37,9 +47,39 @@ namespace Fiesta.Application.Features.Events
                     .ToListAsync(cancellationToken);
 
                 _db.EventAttendees.RemoveRange(attendees);
+                await SendNotifications(attendees, request.EventId, cancellationToken);
 
-                await _db.SaveChangesAsync(cancellationToken);
                 return Unit.Value;
+            }
+
+            private async Task SendNotifications(List<EventAttendee> attendees, string eventId, CancellationToken cancellationToken)
+            {
+                var @event = await _db.Events.Include(x => x.Organizer).SingleAsync(x => x.Id == eventId, cancellationToken);
+                var currentUserLeftEvent = attendees.Count == 1 && _currentUser.UserId == attendees.Single().AttendeeId;
+
+                if (currentUserLeftEvent)
+                {
+                    var user = await _db.FiestaUsers.FindAsync(new[] { _currentUser.UserId }, cancellationToken);
+                    var notification = new Notification(@event.Organizer, new EventAttendeeLeft(@event, user));
+
+                    _db.Notifications.Add(notification);
+                    await _db.SaveChangesAsync(cancellationToken);
+
+                    await _hub.Notify(notification);
+                }
+                else
+                {
+                    var createdNotifications = new List<Notification>();
+
+                    foreach (var attendee in attendees)
+                        createdNotifications.Add(new Notification(attendee.AttendeeId, new EventAttendeeRemoved(@event)));
+
+                    _db.Notifications.AddRange(createdNotifications);
+                    await _db.SaveChangesAsync(cancellationToken);
+
+                    foreach (var notification in createdNotifications)
+                        await _hub.Notify(notification);
+                }
             }
         }
 

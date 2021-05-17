@@ -12,11 +12,15 @@ namespace Fiesta.Domain.Entities.Notifications
         {
         }
 
-        public Notification(FiestaUser user, INotificationModel model)
+        public Notification(FiestaUser user, INotificationModel model) : this(user.Id, model)
+        {
+            User = user;
+        }
+
+        public Notification(string userId, INotificationModel model)
         {
             Type = model.Type;
-            User = user;
-            UserId = user.Id;
+            UserId = userId;
             CreatedAt = DateTime.UtcNow;
 
             Model = JsonConvert.SerializeObject(
