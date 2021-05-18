@@ -63,6 +63,7 @@ namespace Fiesta.Infrastracture.DependencyInjection
             services.AddSingleton(cloudinaryOptions);
 
             services.AddScoped<IImageService, CloudinaryService>();
+            services.AddTransient<IDateTimeProvider, DateTimeProvider>();
 
             return services;
         }
