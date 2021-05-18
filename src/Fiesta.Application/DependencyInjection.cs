@@ -24,6 +24,7 @@ namespace Fiesta.Application
             services.AddHttpClient();
 
             services.AddHardDeleteUsersWorker(configuration);
+            services.AddNotificationDeletionWorker(configuration);
 
             return services;
         }
@@ -35,6 +36,16 @@ namespace Fiesta.Application
 
             var options = new HardDeleteUsersWorkerOptions();
             configuration.GetSection(nameof(HardDeleteUsersWorkerOptions)).Bind(options);
+            services.AddSingleton(options);
+        }
+
+        private static void AddNotificationDeletionWorker(this IServiceCollection services, IConfiguration configuration)
+        {
+            if (!configuration.IsTesting())
+                services.AddHostedService<NotificationDeletionWorker>();
+
+            var options = new NotificationDeletionWorkerOptions();
+            configuration.GetSection(nameof(NotificationDeletionWorkerOptions)).Bind(options);
             services.AddSingleton(options);
         }
     }
