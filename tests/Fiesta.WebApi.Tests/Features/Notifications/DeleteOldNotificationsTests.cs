@@ -7,6 +7,7 @@ using Fiesta.Domain.Entities.Notifications;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
+using TestBase;
 using TestBase.Assets;
 using TestBase.Helpers;
 using Xunit;
@@ -14,11 +15,11 @@ using Xunit;
 namespace Fiesta.WebApi.Tests.Features.Notifications
 {
     [Collection(nameof(TestCollection))]
-    public class DeleteOldNotificationsTests : WebAppTestBase
+    public class DeleteOldNotificationsTests : DbTestBase
     {
         private IDateTimeProvider _dateTime;
 
-        public DeleteOldNotificationsTests(FiestaAppFactory factory) : base(factory)
+        public DeleteOldNotificationsTests()
         {
             _dateTime = Substitute.For<IDateTimeProvider>();
             _dateTime.UtcNow.Returns(new DateTime(2021, 1, 1));
