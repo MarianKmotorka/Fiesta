@@ -48,6 +48,7 @@ namespace Fiesta.Application.Features.Events
                     InvitationsCount = x.Invitations.Count(),
                     IsCurrentUserInvited = x.Invitations.Any(x => x.InviteeId == request.CurrentUserId),
                     IsCurrentUserAttendee = x.Attendees.Any(x => x.AttendeeId == request.CurrentUserId),
+                    IsJoinRequestSentByCurrentUser = x.JoinRequests.Any(x => x.InterestedUserId == request.CurrentUserId),
                     Organizer = new UserDto
                     {
                         Id = x.Organizer.Id,
@@ -90,6 +91,8 @@ namespace Fiesta.Application.Features.Events
             public bool IsCurrentUserInvited { get; set; }
 
             public bool IsCurrentUserAttendee { get; set; }
+
+            public bool IsJoinRequestSentByCurrentUser { get; set; }
 
             public UserDto Organizer { get; set; }
         }
