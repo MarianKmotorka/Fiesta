@@ -10,6 +10,7 @@ using Fiesta.Application.Models.Notifications;
 using Fiesta.Application.Utils;
 using Fiesta.Domain.Entities.Events;
 using Fiesta.Domain.Entities.Notifications;
+using Fiesta.Domain.Entities.Users;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -32,11 +33,13 @@ namespace Fiesta.Application.Features.Events
         {
             private IFiestaDbContext _db;
             private readonly IHubContext<NotificationsHub, INotificationsClient> _hub;
+            private readonly ICurrentUserService _currentUserService;
 
-            public Handler(IFiestaDbContext db, IHubContext<NotificationsHub, INotificationsClient> hub)
+            public Handler(IFiestaDbContext db, IHubContext<NotificationsHub, INotificationsClient> hub, ICurrentUserService currentUserService)
             {
                 _db = db;
                 _hub = hub;
+                _currentUserService = currentUserService;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
@@ -59,15 +62,17 @@ namespace Fiesta.Application.Features.Events
                     @event.AddAttendee(requestedUser);
                 }
 
-                await SendNotification(joinRequest, request.Accepted, cancellationToken);
+                var currentUser = await _db.FiestaUsers.FindOrNotFoundAsync(cancellationToken, _currentUserService.UserId);
+
+                await SendNotification(joinRequest, currentUser, request.Accepted, cancellationToken);
 
                 await _db.SaveChangesAsync(cancellationToken);
                 return Unit.Value;
             }
 
-            private async Task SendNotification(EventJoinRequest joinRequest, bool accepted, CancellationToken cancellationToken)
+            private async Task SendNotification(EventJoinRequest joinRequest, FiestaUser responder, bool accepted, CancellationToken cancellationToken)
             {
-                var notificationModel = new EventJoinRequestReplyNotification(joinRequest, accepted);
+                var notificationModel = new EventJoinRequestReplyNotification(joinRequest, responder, accepted);
                 var notification = _db.Notifications.Add(new Notification(joinRequest.InterestedUser, notificationModel)).Entity;
                 await _db.SaveChangesAsync(cancellationToken);
 
