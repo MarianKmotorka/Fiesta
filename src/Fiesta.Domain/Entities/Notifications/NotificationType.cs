@@ -7,6 +7,7 @@
         EventInvitationCreated = 2,
         EventAttendeeRemoved = 3,
         EventAttendeeLeft = 4,
-        EventJoinRequestReply = 5
+        EventJoinRequestCreated = 5,
+        EventJoinRequestReply = 6
     }
 }

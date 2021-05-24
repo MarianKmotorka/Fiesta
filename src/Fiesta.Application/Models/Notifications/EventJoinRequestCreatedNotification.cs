@@ -18,7 +18,7 @@ namespace Fiesta.Application.Models.Notifications
         {
         }
 
-        public NotificationType Type => NotificationType.EventInvitationCreated;
+        public NotificationType Type => NotificationType.EventJoinRequestCreated;
 
         public string InterestedUserUsername { get; set; }
 
