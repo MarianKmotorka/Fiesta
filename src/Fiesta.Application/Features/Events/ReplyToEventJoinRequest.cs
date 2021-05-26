@@ -45,7 +45,7 @@ namespace Fiesta.Application.Features.Events
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 var joinRequest = await _db.EventJoinRequests
-                    .SingleOrNotFoundAsync(x => x.EventId == request.EventId && x.InterestedUserId == request.UserId, cancellationToken);
+                    .SingleOrDefaultAsync(x => x.EventId == request.EventId && x.InterestedUserId == request.UserId, cancellationToken);
 
                 _db.EventJoinRequests.Remove(joinRequest);
 
@@ -55,25 +55,26 @@ namespace Fiesta.Application.Features.Events
                 if (invitation is not null)
                     _db.EventInvitations.Remove(invitation);
 
+                var interestedUser = await _db.FiestaUsers.FindOrNotFoundAsync(cancellationToken, request.UserId);
+
                 if (request.Accepted)
                 {
-                    var requestedUser = await _db.FiestaUsers.FindOrNotFoundAsync(cancellationToken, request.UserId);
                     var @event = await _db.Events.FindOrNotFoundAsync(cancellationToken, request.EventId);
-                    @event.AddAttendee(requestedUser);
+                    @event.AddAttendee(interestedUser);
                 }
 
                 var currentUser = await _db.FiestaUsers.FindOrNotFoundAsync(cancellationToken, _currentUserService.UserId);
 
-                await SendNotification(joinRequest, currentUser, request.Accepted, cancellationToken);
+                await SendNotification(joinRequest, currentUser, interestedUser, request.Accepted, cancellationToken);
 
                 await _db.SaveChangesAsync(cancellationToken);
                 return Unit.Value;
             }
 
-            private async Task SendNotification(EventJoinRequest joinRequest, FiestaUser responder, bool accepted, CancellationToken cancellationToken)
+            private async Task SendNotification(EventJoinRequest joinRequest, FiestaUser responder, FiestaUser interestedUser, bool accepted, CancellationToken cancellationToken)
             {
                 var notificationModel = new EventJoinRequestReplyNotification(joinRequest, responder, accepted);
-                var notification = _db.Notifications.Add(new Notification(joinRequest.InterestedUser, notificationModel)).Entity;
+                var notification = _db.Notifications.Add(new Notification(interestedUser, notificationModel)).Entity;
                 await _db.SaveChangesAsync(cancellationToken);
 
                 await _hub.Notify(notification);
