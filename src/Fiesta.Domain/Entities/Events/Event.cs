@@ -73,12 +73,16 @@ namespace Fiesta.Domain.Entities.Events
                 _invitations.Add(new EventInvitation(this, Organizer, invitee));
         }
 
-        public void AddJoinRequest(FiestaUser interestedUser)
+        public EventJoinRequest AddJoinRequest(FiestaUser interestedUser)
         {
             if (_joinRequests is null)
                 _joinRequests = new();
 
-            _joinRequests.Add(new EventJoinRequest(this, interestedUser));
+            var joinRequest = new EventJoinRequest(this, interestedUser);
+
+            _joinRequests.Add(joinRequest);
+
+            return joinRequest;
         }
 
         public void SetDescription(string description)

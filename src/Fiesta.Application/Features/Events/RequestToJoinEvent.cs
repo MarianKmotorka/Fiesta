@@ -3,9 +3,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
+using Fiesta.Application.Features.Common;
+using Fiesta.Application.Features.Notifications;
+using Fiesta.Application.Models.Notifications;
 using Fiesta.Application.Utils;
+using Fiesta.Domain.Entities.Events;
+using Fiesta.Domain.Entities.Notifications;
+using Fiesta.Domain.Entities.Users;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fiesta.Application.Features.Events
@@ -22,20 +29,35 @@ namespace Fiesta.Application.Features.Events
         public class Handler : IRequestHandler<Command>
         {
             private IFiestaDbContext _db;
+            private readonly IHubContext<NotificationsHub, INotificationsClient> _hub;
 
-            public Handler(IFiestaDbContext db)
+            public Handler(IFiestaDbContext db, IHubContext<NotificationsHub, INotificationsClient> hub)
             {
                 _db = db;
+                _hub = hub;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var @event = await _db.Events.FindOrNotFoundAsync(cancellationToken, request.EventId);
+                var @event = await _db.Events.Include(x => x.Organizer).SingleOrNotFoundAsync(x => x.Id == request.EventId, cancellationToken);
                 var user = await _db.FiestaUsers.FindOrNotFoundAsync(cancellationToken, request.CurrentUserId);
 
-                @event.AddJoinRequest(user);
+                var joinRequest = @event.AddJoinRequest(user);
                 await _db.SaveChangesAsync(cancellationToken);
+
+                await SendNotification(joinRequest, @event.Organizer, cancellationToken);
+
                 return Unit.Value;
+            }
+
+            private async Task SendNotification(EventJoinRequest joinRequest, FiestaUser organizer, CancellationToken cancellationToken)
+            {
+                //TODO: Send to all permission holders
+                var notificationModel = new EventJoinRequestCreatedNotification(joinRequest);
+                var notification = _db.Notifications.Add(new Notification(organizer, notificationModel)).Entity;
+                await _db.SaveChangesAsync(cancellationToken);
+
+                await _hub.Notify(notification);
             }
         }
 
