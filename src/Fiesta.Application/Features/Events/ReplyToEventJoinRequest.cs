@@ -45,7 +45,7 @@ namespace Fiesta.Application.Features.Events
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 var joinRequest = await _db.EventJoinRequests
-                    .SingleOrDefaultAsync(x => x.EventId == request.EventId && x.InterestedUserId == request.UserId, cancellationToken);
+                    .SingleOrNotFoundAsync(x => x.EventId == request.EventId && x.InterestedUserId == request.UserId, cancellationToken);
 
                 _db.EventJoinRequests.Remove(joinRequest);
 

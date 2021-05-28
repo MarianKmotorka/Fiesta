@@ -42,10 +42,9 @@ namespace Fiesta.Application.Features.Events
                 var @event = await _db.Events.Include(x => x.Organizer).SingleOrNotFoundAsync(x => x.Id == request.EventId, cancellationToken);
                 var user = await _db.FiestaUsers.FindOrNotFoundAsync(cancellationToken, request.CurrentUserId);
 
-                @event.AddJoinRequest(user);
+                var joinRequest = @event.AddJoinRequest(user);
                 await _db.SaveChangesAsync(cancellationToken);
 
-                var joinRequest = await _db.EventJoinRequests.FindOrNotFoundAsync(cancellationToken, new[] { request.EventId, request.CurrentUserId });
                 await SendNotification(joinRequest, @event.Organizer, cancellationToken);
 
                 return Unit.Value;
