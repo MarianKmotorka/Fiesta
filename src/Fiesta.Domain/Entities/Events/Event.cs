@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Fiesta.Domain.Common;
 using Fiesta.Domain.Entities.Users;
 
@@ -79,9 +78,11 @@ namespace Fiesta.Domain.Entities.Events
             if (_joinRequests is null)
                 _joinRequests = new();
 
-            _joinRequests.Add(new EventJoinRequest(this, interestedUser));
+            var joinRequest = new EventJoinRequest(this, interestedUser);
 
-            return _joinRequests.SingleOrDefault(x => x.InterestedUser == interestedUser && x.Event == this);
+            _joinRequests.Add(joinRequest);
+
+            return joinRequest;
         }
 
         public void SetDescription(string description)
