@@ -1,26 +1,26 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-using Fiesta.Application.Common.Behaviours.Authorization;
 using Fiesta.Application.Common.Interfaces;
-using Fiesta.Application.Common.Queries;
 using Fiesta.Application.Features.Common;
-using Fiesta.Application.Utils;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fiesta.Application.Features.Users.Friends
 {
     public class GetFriends
     {
-        public class Query : IRequest<QueryResponse<UserDto>>
+        public class Query : IRequest<List<UserDto>>
         {
             [JsonIgnore]
-            public string Id { get; set; }
-            public QueryDocument QueryDocument { get; set; } = new();
+            public string UserId { get; set; }
+            [JsonIgnore]
+            public string Search { get; set; }
         }
 
-        public class Handler : IRequestHandler<Query, QueryResponse<UserDto>>
+        public class Handler : IRequestHandler<Query, List<UserDto>>
         {
             private readonly IFiestaDbContext _db;
 
@@ -29,23 +29,23 @@ namespace Fiesta.Application.Features.Users.Friends
                 _db = db;
             }
 
-            public async Task<QueryResponse<UserDto>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<List<UserDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                return await _db.UserFriends.Where(x => x.UserId == request.Id)
-                    .Select(x => new UserDto
-                    {
-                        Id = x.Friend.Id,
-                        Username = x.Friend.Username,
-                        PictureUrl = x.Friend.PictureUrl
-                    })
-                    .BuildResponse(request.QueryDocument, cancellationToken);
-            }
-        }
+                var usersQuery = _db.UserFriends.AsNoTracking().Where(x => x.UserId == request.UserId)
+                   .Select(x => new UserDto
+                   {
+                       Id = x.Friend.Id,
+                       Username = x.Friend.Username,
+                       FirstName = x.Friend.FirstName,
+                       LastName = x.Friend.LastName,
+                       PictureUrl = x.Friend.PictureUrl
+                   });
 
-        public class AuthorizationCheck : IAuthorizationCheck<Query>
-        {
-            public Task<bool> IsAuthorized(Query request, IFiestaDbContext db, ICurrentUserService currentUserService, CancellationToken cancellationToken)
-                => Task.FromResult(currentUserService.IsResourceOwnerOrAdmin(request.Id));
+                if (!string.IsNullOrEmpty(request.Search))
+                    usersQuery = usersQuery.Where(x => (x.FirstName + " " + x.LastName).Contains(request.Search));
+
+                return await usersQuery.Take(25).ToListAsync(cancellationToken);
+            }
         }
     }
 }
