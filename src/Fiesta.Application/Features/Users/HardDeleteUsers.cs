@@ -41,6 +41,12 @@ namespace Fiesta.Application.Features.Users
 
                     var friendRequests = await _db.FriendRequests.IgnoreQueryFilters().Where(x => x.ToId == deletedUser.Id || x.FromId == deletedUser.Id).ToListAsync(cancellationToken);
                     _db.FriendRequests.RemoveRange(friendRequests);
+
+                    var organizedEvents = await _db.Events.IgnoreQueryFilters().Where(x => x.OrganizerId == deletedUser.Id).ToListAsync(cancellationToken);
+                    _db.Events.RemoveRange(organizedEvents);
+
+                    var eventInvitations = await _db.EventInvitations.IgnoreQueryFilters().Where(x => x.InviteeId == deletedUser.Id || x.InviterId == deletedUser.Id).ToListAsync(cancellationToken);
+                    _db.EventInvitations.RemoveRange(eventInvitations);
                 }
 
                 await DeleteUserImages(deletedUsers, cancellationToken);
