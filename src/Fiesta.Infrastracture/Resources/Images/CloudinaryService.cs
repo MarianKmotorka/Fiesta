@@ -27,6 +27,8 @@ namespace Fiesta.Infrastracture.Resources.Images
                 );
         }
 
+        public string Domain => "res.cloudinary.com";
+
         public async Task<Result<string>> UploadImageToCloud(IFormFile picture, string filePath, CancellationToken cancellationToken)
         {
             var result = await UploadFileToCloudinary(picture, filePath, CloudinaryFileTypes.Image, cancellationToken);

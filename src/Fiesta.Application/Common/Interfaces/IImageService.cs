@@ -1,7 +1,7 @@
-﻿using Fiesta.Application.Common.Models;
-using Microsoft.AspNetCore.Http;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using Fiesta.Application.Common.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Fiesta.Application.Common.Interfaces
 {
@@ -10,5 +10,7 @@ namespace Fiesta.Application.Common.Interfaces
         Task<Result<string>> UploadImageToCloud(IFormFile picture, string filePath, CancellationToken cancellationToken);
 
         Task<Result> DeleteImageFromCloud(string filePath, CancellationToken cancellationToken);
+
+        string Domain { get; }
     }
 }

@@ -31,14 +31,14 @@ namespace Fiesta.Application.Features.Users
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var uploadResult = await _imageService.DeleteImageFromCloud($"{CloudinaryFolders.ProfilePictures}/{request.UserId}", cancellationToken);
+                var uploadResult = await _imageService.DeleteImageFromCloud(CloudinaryPaths.ProfilePicture(request.UserId), cancellationToken);
 
                 if (uploadResult.Failed)
                     throw new BadRequestException(uploadResult.Errors);
 
                 var fiestaUser = await _db.FiestaUsers.FindOrNotFoundAsync(cancellationToken, request.UserId);
 
-                fiestaUser.PictureUrl = string.Empty;
+                fiestaUser.PictureUrl = null;
                 await _db.SaveChangesAsync(cancellationToken);
 
                 return Unit.Value;

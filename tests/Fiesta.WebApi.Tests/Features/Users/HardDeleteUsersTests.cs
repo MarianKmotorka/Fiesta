@@ -3,6 +3,9 @@ using Fiesta.Application.Features.Users;
 using Fiesta.Domain.Entities.Users;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using NSubstitute;
+using TestBase.Mocks;
 using Xunit;
 
 namespace Fiesta.WebApi.Tests.Features.Users
@@ -14,7 +17,7 @@ namespace Fiesta.WebApi.Tests.Features.Users
 
         public HardDeleteUsersTests(FiestaAppFactory factory) : base(factory)
         {
-            _sut = new HardDeleteUsers.Handler(ActDb);
+            _sut = new HardDeleteUsers.Handler(ActDb, IImageServiceMock.Mock, Substitute.For<ILogger<HardDeleteUsers.Handler>>());
         }
 
         [Fact]
