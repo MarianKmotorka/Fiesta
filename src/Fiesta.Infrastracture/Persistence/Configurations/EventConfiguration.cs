@@ -11,6 +11,8 @@ namespace Fiesta.Infrastracture.Persistence.Configurations
             builder.Property(x => x.Id).HasMaxLength(36);
             builder.Property(x => x.Id).ValueGeneratedOnAdd();
             builder.OwnsOne(x => x.Location);
+
+            builder.HasQueryFilter(x => !x.Organizer.IsDeleted);
         }
     }
 }
