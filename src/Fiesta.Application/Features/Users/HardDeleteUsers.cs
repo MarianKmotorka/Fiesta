@@ -65,7 +65,7 @@ namespace Fiesta.Application.Features.Users
                         continue;
 
                     var path = CloudinaryPaths.ProfilePicture(user.Id);
-                    var result = await _imageService.DeleteImageFromCloud(path, cancellationToken);
+                    var result = await _imageService.Delete(path, cancellationToken);
 
                     if (result.Failed)
                         _logger.LogWarning($"Image with path {path} failed to be deleted. Reason: {string.Join(',', result.Errors)}");

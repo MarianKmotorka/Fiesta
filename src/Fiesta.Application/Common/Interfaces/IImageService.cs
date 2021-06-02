@@ -7,9 +7,9 @@ namespace Fiesta.Application.Common.Interfaces
 {
     public interface IImageService
     {
-        Task<Result<string>> UploadImageToCloud(IFormFile picture, string filePath, CancellationToken cancellationToken);
+        Task<Result<string>> Upload(IFormFile picture, string filePath, CancellationToken cancellationToken);
 
-        Task<Result> DeleteImageFromCloud(string filePath, CancellationToken cancellationToken);
+        Task<Result> Delete(string filePath, CancellationToken cancellationToken);
 
         string Domain { get; }
     }

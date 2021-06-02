@@ -32,7 +32,7 @@ namespace Fiesta.Application.Features.Users
 
             public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
             {
-                var uploadResult = await _imageService.UploadImageToCloud(request.ProfilePicture, CloudinaryPaths.ProfilePicture(request.UserId), cancellationToken);
+                var uploadResult = await _imageService.Upload(request.ProfilePicture, CloudinaryPaths.ProfilePicture(request.UserId), cancellationToken);
 
                 if (uploadResult.Failed)
                     throw new BadRequestException(uploadResult.Errors);

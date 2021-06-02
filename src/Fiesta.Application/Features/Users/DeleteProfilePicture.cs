@@ -31,7 +31,7 @@ namespace Fiesta.Application.Features.Users
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var uploadResult = await _imageService.DeleteImageFromCloud(CloudinaryPaths.ProfilePicture(request.UserId), cancellationToken);
+                var uploadResult = await _imageService.Delete(CloudinaryPaths.ProfilePicture(request.UserId), cancellationToken);
 
                 if (uploadResult.Failed)
                     throw new BadRequestException(uploadResult.Errors);

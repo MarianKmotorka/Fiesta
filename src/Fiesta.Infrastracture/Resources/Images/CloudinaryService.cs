@@ -29,7 +29,7 @@ namespace Fiesta.Infrastracture.Resources.Images
 
         public string Domain => "res.cloudinary.com";
 
-        public async Task<Result<string>> UploadImageToCloud(IFormFile picture, string filePath, CancellationToken cancellationToken)
+        public async Task<Result<string>> Upload(IFormFile picture, string filePath, CancellationToken cancellationToken)
         {
             var result = await UploadFileToCloudinary(picture, filePath, CloudinaryFileTypes.Image, cancellationToken);
 
@@ -39,7 +39,7 @@ namespace Fiesta.Infrastracture.Resources.Images
                 return Result<string>.Failure(result.Error.Message);
         }
 
-        public async Task<Result> DeleteImageFromCloud(string filePath, CancellationToken cancellationToken)
+        public async Task<Result> Delete(string filePath, CancellationToken cancellationToken)
         {
             var result = await _cloudinary.DeleteResourcesAsync
                 (
