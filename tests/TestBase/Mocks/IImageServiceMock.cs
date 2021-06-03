@@ -13,7 +13,7 @@ namespace TestBase.Mocks
         {
             Mock = Substitute.For<IImageService>();
 
-            Mock.DeleteImageFromCloud(default, default)
+            Mock.Delete(default, default)
                 .ReturnsForAnyArgs(Task.FromResult(Result.Success()));
         }
     }

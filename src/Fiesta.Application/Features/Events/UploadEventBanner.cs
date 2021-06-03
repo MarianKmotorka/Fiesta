@@ -35,7 +35,7 @@ namespace Fiesta.Application.Features.Events
             public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
             {
                 var @event = await _db.Events.FindOrNotFoundAsync(cancellationToken, request.EventId);
-                var uploadResult = await _imageService.UploadImageToCloud(request.Banner, $"{CloudinaryFolders.Events}/{@event.Id}/banner", cancellationToken);
+                var uploadResult = await _imageService.Upload(request.Banner, CloudinaryPaths.EventBanner(request.EventId), cancellationToken);
 
                 if (uploadResult.Failed)
                     throw new BadRequestException(uploadResult.Errors);
