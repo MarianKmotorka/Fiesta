@@ -62,6 +62,7 @@ namespace Fiesta.WebApi.Controllers
             var response = await Mediator.Send(new GetFriends.Query
             {
                 UserId = id,
+                CurrentUserId = CurrentUserService.UserId,
                 Search = search
             }, cancellationToken);
             return Ok(response);
