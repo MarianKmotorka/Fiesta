@@ -59,7 +59,7 @@ namespace Fiesta.Infrastracture.Resources.Images
             if ((int)deleteByPrefixResult.StatusCode >= 400)
                 return Result.Failure(deleteByPrefixResult.Error.Message);
 
-            //TODO DeleteFolderAsync return Error: FolderIsNotEmpty even when it is
+            //Backup needs to be disabled in cloudinary, otherwise "Folder is not empty" error is returned
             var deleteFolderResult = await _cloudinary.DeleteFolderAsync(folderPath, cancellationToken);
             return deleteFolderResult.StatusCode == HttpStatusCode.OK ? Result.Success() : Result.Failure(deleteFolderResult.Error.Message);
         }
