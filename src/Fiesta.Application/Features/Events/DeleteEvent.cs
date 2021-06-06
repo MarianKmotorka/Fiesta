@@ -26,6 +26,7 @@ namespace Fiesta.Application.Features.Events
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 var @event = await _db.Events.FindAsync(new[] { request.Id }, cancellationToken);
+                @event.PublishDeletedEvent();
                 _db.Events.Remove(@event);
 
                 await _db.SaveChangesAsync(cancellationToken);

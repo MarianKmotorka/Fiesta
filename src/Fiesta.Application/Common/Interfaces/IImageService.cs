@@ -11,6 +11,8 @@ namespace Fiesta.Application.Common.Interfaces
 
         Task<Result> Delete(string filePath, CancellationToken cancellationToken);
 
+        Task<Result> DeleteFolder(string folderPath, CancellationToken cancellationToken);
+
         string Domain { get; }
     }
 }

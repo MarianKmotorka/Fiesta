@@ -1,13 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Interfaces;
-using Fiesta.Domain.Entities.Users;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace Fiesta.Application.Features.Users
 {
@@ -20,14 +16,10 @@ namespace Fiesta.Application.Features.Users
         public class Handler : IRequestHandler<Command>
         {
             private readonly IFiestaDbContext _db;
-            private readonly IImageService _imageService;
-            private readonly ILogger<Handler> _logger;
 
-            public Handler(IFiestaDbContext db, IImageService imageService, ILogger<Handler> logger)
+            public Handler(IFiestaDbContext db)
             {
                 _db = db;
-                _imageService = imageService;
-                _logger = logger;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
@@ -49,27 +41,10 @@ namespace Fiesta.Application.Features.Users
                     _db.EventInvitations.RemoveRange(eventInvitations);
                 }
 
-                await DeleteUserImages(deletedUsers, cancellationToken);
-
                 _db.FiestaUsers.RemoveRange(deletedUsers);
                 await _db.SaveChangesAsync(cancellationToken);
 
                 return Unit.Value;
-            }
-
-            private async Task DeleteUserImages(IEnumerable<FiestaUser> users, CancellationToken cancellationToken)
-            {
-                foreach (var user in users)
-                {
-                    if (string.IsNullOrEmpty(user.PictureUrl) || !user.PictureUrl.Contains(_imageService.Domain))
-                        continue;
-
-                    var path = CloudinaryPaths.ProfilePicture(user.Id);
-                    var result = await _imageService.Delete(path, cancellationToken);
-
-                    if (result.Failed)
-                        _logger.LogWarning($"Image with path {path} failed to be deleted. Reason: {string.Join(',', result.Errors)}");
-                }
             }
         }
     }

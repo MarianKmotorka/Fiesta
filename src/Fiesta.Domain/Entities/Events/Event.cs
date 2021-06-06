@@ -89,6 +89,11 @@ namespace Fiesta.Domain.Entities.Events
         {
             Description = description?.Replace(Environment.NewLine, "").Trim();
         }
+
+        public void PublishDeletedEvent()
+        {
+            AddDomainEvent(new EventDeletedEvent(this));
+        }
     }
 
     public enum AccessibilityType

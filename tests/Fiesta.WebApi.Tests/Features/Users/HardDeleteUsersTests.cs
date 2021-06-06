@@ -1,11 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Fiesta.Application.Features.Users;
-using Fiesta.Domain.Entities.Users;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using NSubstitute;
-using TestBase.Mocks;
+using TestBase.Assets;
 using Xunit;
 
 namespace Fiesta.WebApi.Tests.Features.Users
@@ -17,14 +14,14 @@ namespace Fiesta.WebApi.Tests.Features.Users
 
         public HardDeleteUsersTests(FiestaAppFactory factory) : base(factory)
         {
-            _sut = new HardDeleteUsers.Handler(ActDb, IImageServiceMock.Mock, Substitute.For<ILogger<HardDeleteUsers.Handler>>());
+            _sut = new HardDeleteUsers.Handler(ActDb);
         }
 
         [Fact]
         public async Task GivenSomeUsersMarkedAsDeleted_WhenHandlerIsCalled_OnlyMarkedUsersAreDeleted()
         {
-            var deletedUser = ArrangeDb.FiestaUsers.Add(new FiestaUser("deleted@email.com", "Deleted") { IsDeleted = true }).Entity;
-            var notDeletedUser = ArrangeDb.FiestaUsers.Add(new FiestaUser("NOTdeleted@email.com", "NotDeleted")).Entity;
+            var (_, deletedUser) = ArrangeDb.SeedBasicUser(x => x.SetDeleted());
+            var (_, notDeletedUser) = ArrangeDb.SeedBasicUser();
             await ArrangeDb.SaveChangesAsync();
 
             await _sut.Handle(new HardDeleteUsers.Command(), default);

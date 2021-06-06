@@ -17,15 +17,27 @@ namespace Fiesta.Domain.Entities.Users
         private List<EventInvitation> _sentEventInvitations;
         private List<EventJoinRequest> _sentEventJoinRequests;
 
+        private FiestaUser()
+        {
+        }
+
         public FiestaUser(string email, string username)
         {
             Email = email;
             Username = username;
             CreatedOnUtc = DateTime.UtcNow;
+            _organizedEvents = new();
+            _friends = new();
+            _recievedFriendRequests = new();
+            _sentFriendRequests = new();
+            _attendedEvents = new();
+            _recievedEventInvitations = new();
+            _sentEventInvitations = new();
+            _sentEventJoinRequests = new();
         }
 
         public static FiestaUser CreateWithId(string id, string email, string username)
-            => new FiestaUser(email, username) { Id = id };
+            => new(email, username) { Id = id };
 
         public string FirstName { get; set; }
 
@@ -41,7 +53,7 @@ namespace Fiesta.Domain.Entities.Users
 
         public string Bio { get; private set; }
 
-        public bool IsDeleted { get; set; }
+        public bool IsDeleted { get; private set; }
 
         public DateTime CreatedOnUtc { get; init; }
 
@@ -118,6 +130,21 @@ namespace Fiesta.Domain.Entities.Users
         public void SetBio(string bio)
         {
             Bio = bio.Replace(Environment.NewLine, "").Trim();
+        }
+
+        public void SetDeleted()
+        {
+            if (IsDeleted)
+                return;
+
+            IsDeleted = true;
+            AddDomainEvent(new FiestaUserDeletedEvent(this));
+
+            if (OrganizedEvents is null)
+                throw new Exception("FiestaUser.OrganizedEvents is not loaded.");
+
+            foreach (var @event in OrganizedEvents)
+                @event.PublishDeletedEvent();
         }
     }
 }
