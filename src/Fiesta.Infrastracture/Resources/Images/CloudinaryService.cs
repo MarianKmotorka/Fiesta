@@ -41,20 +41,27 @@ namespace Fiesta.Infrastracture.Resources.Images
 
         public async Task<Result> Delete(string filePath, CancellationToken cancellationToken)
         {
-            var result = await _cloudinary.DeleteResourcesAsync
-                (
+            var result = await _cloudinary.DeleteResourcesAsync(
                 new DelResParams()
                 {
                     ResourceType = ResourceType.Image,
                     PublicIds = new List<string>() { filePath }
                 },
-                cancellationToken
-                );
+                cancellationToken);
 
-            if (result.StatusCode == HttpStatusCode.OK)
-                return Result.Success();
-            else
-                return Result.Failure(result.Error.Message);
+            return result.StatusCode == HttpStatusCode.OK ? Result.Success() : Result.Failure(result.Error.Message);
+        }
+
+        public async Task<Result> DeleteFolder(string folderPath, CancellationToken cancellationToken)
+        {
+            var deleteByPrefixResult = await _cloudinary.DeleteResourcesByPrefixAsync(folderPath, cancellationToken);
+
+            if ((int)deleteByPrefixResult.StatusCode >= 400)
+                return Result.Failure(deleteByPrefixResult.Error.Message);
+
+            //TODO DeleteFolderAsync return Error: FolderIsNotEmpty even when it is
+            var deleteFolderResult = await _cloudinary.DeleteFolderAsync(folderPath, cancellationToken);
+            return deleteFolderResult.StatusCode == HttpStatusCode.OK ? Result.Success() : Result.Failure(deleteFolderResult.Error.Message);
         }
 
         private async Task<RawUploadResult> UploadFileToCloudinary(IFormFile formFile, string filePath, string fileType, CancellationToken cancellationToken, bool overwrite = true)

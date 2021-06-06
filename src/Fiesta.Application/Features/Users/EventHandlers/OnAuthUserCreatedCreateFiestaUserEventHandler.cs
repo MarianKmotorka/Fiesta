@@ -1,16 +1,16 @@
-﻿using Fiesta.Application.Common.Interfaces;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Fiesta.Application.Common.Interfaces;
 using Fiesta.Domain.Entities.Users;
 using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Fiesta.Application.Features.Users.EventHandlers
 {
-    public class OnAuthUserCreatedCreateFiestaUserEventHanlder : INotificationHandler<AuthUserCreatedEvent>
+    public class OnAuthUserCreatedCreateFiestaUserEventHandler : INotificationHandler<AuthUserCreatedEvent>
     {
         private readonly IFiestaDbContext _db;
 
-        public OnAuthUserCreatedCreateFiestaUserEventHanlder(IFiestaDbContext db)
+        public OnAuthUserCreatedCreateFiestaUserEventHandler(IFiestaDbContext db)
         {
             _db = db;
         }
