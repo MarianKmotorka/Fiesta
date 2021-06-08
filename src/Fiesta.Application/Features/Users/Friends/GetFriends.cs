@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Interfaces;
+using Fiesta.Application.Common.Queries;
 using Fiesta.Application.Features.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -12,17 +12,18 @@ namespace Fiesta.Application.Features.Users.Friends
 {
     public class GetFriends
     {
-        public class Query : IRequest<List<ResponseDto>>
+        public class Query : IRequest<QueryResponse<ResponseDto>>
         {
             [JsonIgnore]
-            public string UserId { get; set; }
-            [JsonIgnore]
-            public string CurrentUserId { get; set; }
+            public string Id { get; set; }
             [JsonIgnore]
             public string Search { get; set; }
+            [JsonIgnore]
+            public string CurrentUserId { get; set; }
+            public QueryDocument QueryDocument { get; set; } = new();
         }
 
-        public class Handler : IRequestHandler<Query, List<ResponseDto>>
+        public class Handler : IRequestHandler<Query, QueryResponse<ResponseDto>>
         {
             private readonly IFiestaDbContext _db;
 
@@ -31,53 +32,34 @@ namespace Fiesta.Application.Features.Users.Friends
                 _db = db;
             }
 
-            public async Task<List<ResponseDto>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<QueryResponse<ResponseDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var usersQuery = _db.UserFriends.AsNoTracking().Where(x => x.UserId == request.UserId)
+                var usersQuery = _db.UserFriends.AsNoTracking().Where(x => x.UserId == request.Id)
                    .Select(x => new ResponseDto
                    {
                        Id = x.Friend.Id,
                        Username = x.Friend.Username,
                        FirstName = x.Friend.FirstName,
                        LastName = x.Friend.LastName,
-                       PictureUrl = x.Friend.PictureUrl
+                       PictureUrl = x.Friend.PictureUrl,
+                       FriendStatus = x.Friend.Friends.Any(x => x.FriendId == request.CurrentUserId)
+                       ? FriendStatus.Friend
+                       : x.Friend.RecievedFriendRequests.Any(x => x.FromId == request.CurrentUserId)
+                       ? FriendStatus.FriendRequestSent
+                       : x.Friend.SentFriendRequests.Any(x => x.ToId == request.CurrentUserId)
+                       ? FriendStatus.FriendRequestRecieved
+                       : FriendStatus.None
                    });
 
                 if (!string.IsNullOrEmpty(request.Search))
-                    usersQuery = usersQuery.Where(x => (x.FirstName + " " + x.LastName).Contains(request.Search));
+                    usersQuery = usersQuery.Where(x => (x.FirstName + " " + x.LastName).Contains(request.Search) || (x.Username).Contains(request.Search));
 
-                var users = await usersQuery.OrderBy(x => x.Username).Take(25).ToListAsync(cancellationToken);
-
-                foreach (var user in users)
-                {
-                    if (await _db.UserFriends.AnyAsync(x => x.UserId == request.CurrentUserId && x.FriendId == user.Id, cancellationToken))
-                        user.FriendStatus = FriendStatus.Friend;
-                    else if (await _db.FriendRequests.AnyAsync(x => x.FromId == request.CurrentUserId && x.ToId == user.Id, cancellationToken))
-                        user.FriendStatus = FriendStatus.FriendRequestSent;
-                    else if (await _db.FriendRequests.AnyAsync(x => x.FromId == user.Id && x.ToId == request.CurrentUserId, cancellationToken))
-                        user.FriendStatus = FriendStatus.FriendRequestRecieved;
-                }
-
-                return users;
+                return await usersQuery.BuildResponse(request.QueryDocument, cancellationToken);
             }
         }
 
-        public class ResponseDto
+        public class ResponseDto : UserDto
         {
-            public string Id { get; set; }
-
-            [JsonIgnore]
-            public string FirstName { get; set; }
-
-            [JsonIgnore]
-            public string LastName { get; set; }
-
-            public string FullName { get => FirstName is null ? null : $"{FirstName} {LastName}"; }
-
-            public string Username { get; set; }
-
-            public string PictureUrl { get; set; }
-
             public FriendStatus FriendStatus { get; set; }
         }
     }
