@@ -57,9 +57,11 @@ namespace Fiesta.WebApi.Controllers
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
         [HttpPost("{id}/friends/query")]
-        public async Task<ActionResult<QueryResponse<UserDto>>> GetFriends(string id, GetFriends.Query query, CancellationToken cancellationToken)
+        public async Task<ActionResult<QueryResponse<GetFriends.ResponseDto>>> GetFriends(string id, string search, GetFriends.Query query, CancellationToken cancellationToken)
         {
             query.Id = id;
+            query.CurrentUserId = CurrentUserService.UserId;
+            query.Search = search;
             var response = await Mediator.Send(query, cancellationToken);
             return Ok(response);
         }
