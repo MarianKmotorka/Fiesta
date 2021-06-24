@@ -4,6 +4,7 @@ using Fiesta.Application.Common.Behaviours.Authorization;
 using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Models;
 using Fiesta.Application.Features.Notifications;
+using Fiesta.Application.Features.Users.Friends;
 using Fiesta.Infrastracture.DependencyInjection;
 using Fiesta.WebApi.Extensions;
 using Fiesta.WebApi.Middleware.ExceptionHanlding;
@@ -75,6 +76,7 @@ namespace Fiesta.WebApi
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<NotificationsHub>("/api/notifications-hub");
+                endpoints.MapHub<FriendsHub>("/api/friends-hub");
             });
         }
     }

@@ -1,12 +1,10 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Behaviours.Authorization;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Queries;
-using Fiesta.Application.Features.Common;
 using Fiesta.Application.Utils;
 using MediatR;
 
@@ -14,14 +12,14 @@ namespace Fiesta.Application.Features.Users.Friends
 {
     public class GetFriendRequests
     {
-        public class Query : IRequest<SkippedItemsResponse<ResponseDto>>
+        public class Query : IRequest<SkippedItemsResponse<FriendRequestDto>>
         {
             [JsonIgnore]
             public string Id { get; set; }
             public SkippedItemsDocument SkippedItemsDocument { get; set; } = new();
         }
 
-        public class Handler : IRequestHandler<Query, SkippedItemsResponse<ResponseDto>>
+        public class Handler : IRequestHandler<Query, SkippedItemsResponse<FriendRequestDto>>
         {
             private readonly IFiestaDbContext _db;
 
@@ -30,11 +28,11 @@ namespace Fiesta.Application.Features.Users.Friends
                 _db = db;
             }
 
-            public async Task<SkippedItemsResponse<ResponseDto>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<SkippedItemsResponse<FriendRequestDto>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var requests = await _db.FriendRequests.Where(x => x.ToId == request.Id)
                     .OrderByDescending(x => x.RequestedOn)
-                    .Select(x => new ResponseDto
+                    .Select(x => new FriendRequestDto
                     {
                         User = new()
                         {
@@ -48,20 +46,13 @@ namespace Fiesta.Application.Features.Users.Friends
                     })
                     .BuildResponse(request.SkippedItemsDocument, cancellationToken);
 
-                return new SkippedItemsResponse<ResponseDto>(requests.Entries)
+                return new SkippedItemsResponse<FriendRequestDto>(requests.Entries)
                 {
                     Skip = requests.Skip,
                     Take = requests.Take,
                     TotalEntries = requests.TotalEntries
                 };
             }
-        }
-
-        public class ResponseDto
-        {
-            public UserDto User { get; set; }
-
-            public DateTime RequestedOn { get; set; }
         }
 
         public class AuthorizationCheck : IAuthorizationCheck<Query>
