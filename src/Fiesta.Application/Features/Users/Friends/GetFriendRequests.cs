@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,14 +14,14 @@ namespace Fiesta.Application.Features.Users.Friends
 {
     public class GetFriendRequests
     {
-        public class Query : IRequest<QueryResponse<UserDto>>
+        public class Query : IRequest<SkippedItemsResponse<ResponseDto>>
         {
             [JsonIgnore]
             public string Id { get; set; }
-            public QueryDocument QueryDocument { get; set; } = new();
+            public SkippedItemsDocument SkippedItemsDocument { get; set; } = new();
         }
 
-        public class Handler : IRequestHandler<Query, QueryResponse<UserDto>>
+        public class Handler : IRequestHandler<Query, SkippedItemsResponse<ResponseDto>>
         {
             private readonly IFiestaDbContext _db;
 
@@ -29,18 +30,38 @@ namespace Fiesta.Application.Features.Users.Friends
                 _db = db;
             }
 
-            public async Task<QueryResponse<UserDto>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<SkippedItemsResponse<ResponseDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-
-                return await _db.FriendRequests.Where(x => x.ToId == request.Id)
-                    .Select(x => new UserDto
+                var requests = await _db.FriendRequests.Where(x => x.ToId == request.Id)
+                    .OrderByDescending(x => x.RequestedOn)
+                    .Select(x => new ResponseDto
                     {
-                        Id = x.From.Id,
-                        Username = x.From.Username,
-                        PictureUrl = x.From.PictureUrl
+                        User = new()
+                        {
+                            Id = x.From.Id,
+                            Username = x.From.Username,
+                            FirstName = x.From.FirstName,
+                            LastName = x.From.LastName,
+                            PictureUrl = x.From.PictureUrl
+                        },
+                        RequestedOn = x.RequestedOn
                     })
-                    .BuildResponse(request.QueryDocument, cancellationToken);
+                    .BuildResponse(request.SkippedItemsDocument, cancellationToken);
+
+                return new SkippedItemsResponse<ResponseDto>(requests.Entries)
+                {
+                    Skip = requests.Skip,
+                    Take = requests.Take,
+                    TotalEntries = requests.TotalEntries
+                };
             }
+        }
+
+        public class ResponseDto
+        {
+            public UserDto User { get; set; }
+
+            public DateTime RequestedOn { get; set; }
         }
 
         public class AuthorizationCheck : IAuthorizationCheck<Query>
