@@ -90,13 +90,17 @@ namespace Fiesta.Domain.Entities.Users
             Username = username;
         }
 
-        public void SendFriendRequest(FiestaUser friend)
+        public FriendRequest SendFriendRequest(FiestaUser friend)
         {
             if (_sentFriendRequests is null)
                 _sentFriendRequests = new List<FriendRequest>();
 
             _ = friend ?? throw new ArgumentNullException(nameof(friend));
-            _sentFriendRequests.Add(new FriendRequest(this, friend));
+
+            var request = new FriendRequest(this, friend);
+            _sentFriendRequests.Add(request);
+
+            return request;
         }
 
         public void AddFriend(FiestaUser friend)

@@ -2,7 +2,6 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Fiesta.Domain.Entities.Users;
-using Fiesta.WebApi.Middleware.ExceptionHanlding;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using TestBase.Assets;
@@ -49,7 +48,7 @@ namespace Fiesta.WebApi.Tests.Features.Users.Friends
         }
 
         [Fact]
-        public async Task GivenInvalidId_WhenConfirmingFriendRequest_BadRequestIsReturned()
+        public async Task GivenInvalidId_WhenConfirmingFriendRequest_NotFoundIsReturned()
         {
             var (authFriend, fiestaFriend) = ArrangeDb.SeedBasicUser();
             var fiestaUser = await ArrangeDb.FiestaUsers.FindAsync(LoggedInUserId);
@@ -61,18 +60,11 @@ namespace Fiesta.WebApi.Tests.Features.Users.Friends
 
             var response = await client.PostAsJsonAsync("api/friends/confirm-request", new { friendId = "InvalidId" });
 
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-
-            var errorResposne = await response.Content.ReadAsAsync<ErrorResponse>();
-            errorResposne.Should().BeEquivalentTo(new
-            {
-                ErrorCode = "BadRequest",
-                ErrorMessage = "Friend request does not exist",
-            });
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
         [Fact]
-        public async Task GivenSenderConfirmingRequest_WhenConfirmingFriendRequest_BadRequestIsReturned()
+        public async Task GivenSenderConfirmingRequest_WhenConfirmingFriendRequest_NotFoundIsReturned()
         {
             var (authFriend, fiestaFriend) = ArrangeDb.SeedBasicUser();
             var fiestaUser = await ArrangeDb.FiestaUsers.FindAsync(LoggedInUserId);
@@ -84,14 +76,7 @@ namespace Fiesta.WebApi.Tests.Features.Users.Friends
 
             var response = await Client.PostAsJsonAsync("api/friends/confirm-request", new { friendId = fiestaFriend.Id });
 
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-
-            var errorResposne = await response.Content.ReadAsAsync<ErrorResponse>();
-            errorResposne.Should().BeEquivalentTo(new
-            {
-                ErrorCode = "BadRequest",
-                ErrorMessage = "Friend request does not exist",
-            });
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
     }
 }
