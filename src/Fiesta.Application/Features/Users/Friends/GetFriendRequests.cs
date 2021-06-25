@@ -30,7 +30,7 @@ namespace Fiesta.Application.Features.Users.Friends
 
             public async Task<SkippedItemsResponse<FriendRequestDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var requests = await _db.FriendRequests.Where(x => x.ToId == request.Id)
+                return await _db.FriendRequests.Where(x => x.ToId == request.Id)
                     .OrderByDescending(x => x.RequestedOn)
                     .Select(x => new FriendRequestDto
                     {
@@ -45,13 +45,6 @@ namespace Fiesta.Application.Features.Users.Friends
                         RequestedOn = x.RequestedOn
                     })
                     .BuildResponse(request.SkippedItemsDocument, cancellationToken);
-
-                return new SkippedItemsResponse<FriendRequestDto>(requests.Entries)
-                {
-                    Skip = requests.Skip,
-                    Take = requests.Take,
-                    TotalEntries = requests.TotalEntries
-                };
             }
         }
 
