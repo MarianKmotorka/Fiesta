@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Fiesta.Application.Features.Users
 {
-    public class GetUserOrganizedEvents
+    public class GetUserAttendedEvents
     {
         public class Query : IRequest<QueryResponse<EventDto>>
         {
@@ -28,7 +28,7 @@ namespace Fiesta.Application.Features.Users
 
         public class Handler : IRequestHandler<Query, QueryResponse<EventDto>>
         {
-            private readonly IFiestaDbContext _db;
+            private IFiestaDbContext _db;
 
             public Handler(IFiestaDbContext db)
             {
@@ -43,7 +43,7 @@ namespace Fiesta.Application.Features.Users
                     eventsQuery = eventsQuery.Where(x => x.Name.Contains(request.Search));
 
                 var events = await eventsQuery
-                    .Where(x => x.OrganizerId == request.UserId)
+                    .Where(x => x.Attendees.Any(a => a.AttendeeId == request.UserId))
                     .Where(x => request.Role == FiestaRoleEnum.Admin
                                 || x.OrganizerId == request.CurrentUserId
                                 || x.AccessibilityType == AccessibilityType.Public
