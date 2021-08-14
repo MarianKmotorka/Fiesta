@@ -1,13 +1,12 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Behaviours.Authorization;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Queries;
+using Fiesta.Application.Features.Common;
 using Fiesta.Application.Utils;
-using Fiesta.Domain.Entities.Events;
 using MediatR;
 
 namespace Fiesta.Application.Features.Users
@@ -41,7 +40,7 @@ namespace Fiesta.Application.Features.Users
                         AccessibilityType = x.AccessibilityType,
                         StartDate = x.StartDate,
                         EndDate = x.EndDate,
-                        PictureUrl = "TODO: picture url"
+                        BannerUrl = "TODO: picture url"
                     }).BuildResponse(request.QueryDocument, cancellationToken);
 
                 return events;
@@ -52,21 +51,6 @@ namespace Fiesta.Application.Features.Users
         {
             public Task<bool> IsAuthorized(Query request, IFiestaDbContext db, ICurrentUserService currentUserService, CancellationToken cancellationToken)
                 => Task.FromResult(currentUserService.IsResourceOwnerOrAdmin(request.UserId));
-        }
-
-        public class EventDto
-        {
-            public string Id { get; set; }
-
-            public string Name { get; set; }
-
-            public string PictureUrl { get; set; }
-
-            public DateTime StartDate { get; set; }
-
-            public DateTime EndDate { get; set; }
-
-            public AccessibilityType AccessibilityType { get; set; }
         }
     }
 }
