@@ -57,8 +57,11 @@ namespace Fiesta.Application.Features.Users
                         AccessibilityType = x.AccessibilityType,
                         EndDate = x.EndDate,
                         StartDate = x.StartDate,
-                        BannerUrl = x.BannerUrl
+                        BannerUrl = x.BannerUrl,
+                        City = x.Location.City,
+                        State = x.Location.State
                     })
+                    .OrderBy(x => x.StartDate)
                     .BuildResponse(request.QueryDocument, cancellationToken);
 
                 return events;

@@ -77,22 +77,24 @@ namespace Fiesta.WebApi.Controllers
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
         [HttpPost("{id}/attended-events")]
-        public async Task<ActionResult<QueryResponse<EventDto>>> GetUserEvents(string id, GetUserAttendedEvents.Query query, CancellationToken cancellationToken)
+        public async Task<ActionResult<QueryResponse<EventDto>>> GetUserEvents(string id, string search, GetUserAttendedEvents.Query query, CancellationToken cancellationToken)
         {
             query.UserId = id;
             query.CurrentUserId = CurrentUserService.UserId;
             query.Role = CurrentUserService.Role;
+            query.Search = search;
             var response = await Mediator.Send(query, cancellationToken);
             return Ok(response);
         }
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
         [HttpPost("{id}/organized-events")]
-        public async Task<ActionResult<QueryResponse<EventDto>>> GetOrganizedEvents(string id, GetUserOrganizedEvents.Query query, CancellationToken cancellationToken)
+        public async Task<ActionResult<QueryResponse<EventDto>>> GetOrganizedEvents(string id, string search, GetUserOrganizedEvents.Query query, CancellationToken cancellationToken)
         {
             query.UserId = id;
             query.CurrentUserId = CurrentUserService.UserId;
             query.Role = CurrentUserService.Role;
+            query.Search = search;
             var response = await Mediator.Send(query, cancellationToken);
             return Ok(response);
         }
