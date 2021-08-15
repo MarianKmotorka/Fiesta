@@ -59,7 +59,8 @@ namespace Fiesta.Application.Features.Users
                         StartDate = x.StartDate,
                         BannerUrl = x.BannerUrl,
                         City = x.Location.City,
-                        State = x.Location.State
+                        State = x.Location.State,
+                        IsCurrentUserAttending = x.Attendees.Any(x => x.AttendeeId == request.CurrentUserId) || x.OrganizerId == request.CurrentUserId
                     })
                     .OrderBy(x => x.StartDate)
                     .BuildResponse(request.QueryDocument, cancellationToken);

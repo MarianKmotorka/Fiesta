@@ -18,6 +18,8 @@ namespace Fiesta.Application.Features.Common
 
         public AccessibilityType AccessibilityType { get; set; }
 
+        public bool IsCurrentUserAttending { get; set; }
+
         public string Location { get => City is null ? null : $"{City}, {State}"; }
 
         [JsonIgnore]
