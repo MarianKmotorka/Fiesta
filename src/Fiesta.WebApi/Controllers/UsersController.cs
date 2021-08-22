@@ -98,5 +98,15 @@ namespace Fiesta.WebApi.Controllers
             var response = await Mediator.Send(query, cancellationToken);
             return Ok(response);
         }
+
+        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
+        [HttpPost("{id}/event-invitations")]
+        public async Task<ActionResult<QueryResponse<EventDto>>> GetInvitations(string id, string search, GetUserEventInvitations.Query query, CancellationToken cancellationToken)
+        {
+            query.UserId = id;
+            query.Search = search;
+            var response = await Mediator.Send(query, cancellationToken);
+            return Ok(response);
+        }
     }
 }
