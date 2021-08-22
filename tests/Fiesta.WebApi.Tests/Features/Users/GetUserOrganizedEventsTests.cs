@@ -4,13 +4,14 @@ using Fiesta.Application.Common.Constants;
 using Fiesta.Domain.Entities.Events;
 using Fiesta.Domain.Entities.Users;
 using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestBase;
 using TestBase.Assets;
-using Xunit;
 using static Fiesta.Application.Features.Users.GetUserOrganizedEvents;
 
 namespace Fiesta.WebApi.Tests.Features.Users
 {
+    [TestClass]
     public class GetUserOrganizedEventsTests : DbTestBase
     {
         private FiestaUser _organizer;
@@ -20,7 +21,8 @@ namespace Fiesta.WebApi.Tests.Features.Users
         private Event _privateEvent;
         private Handler _sut;
 
-        public GetUserOrganizedEventsTests()
+        [TestInitialize]
+        public void Init()
         {
             _organizer = ArrangeDb.SeedBasicUser().fiestaUser;
             _currentUser = ArrangeDb.SeedBasicUser().fiestaUser;
@@ -32,7 +34,7 @@ namespace Fiesta.WebApi.Tests.Features.Users
             ArrangeDb.SaveChanges();
         }
 
-        [Fact]
+        [TestMethod]
         public async Task GiveUserWithNoRelationToEventOrOrganizer_WhenUserRequestsOrganizedEvents_OnlyPublicEventsAreReturned()
         {
             var query = new Query { CurrentUserId = _currentUser.Id, UserId = _organizer.Id };
@@ -41,7 +43,7 @@ namespace Fiesta.WebApi.Tests.Features.Users
             returnedEvent.Id.Should().Be(_publicEvent.Id);
         }
 
-        [Fact]
+        [TestMethod]
         public async Task GiveUserInvitedToPrivateEvent_WhenUserRequestsOrganizedEvents_AlsoPrivateEventIsReturned()
         {
             _privateEvent.AddInvitations(_currentUser);
@@ -53,7 +55,7 @@ namespace Fiesta.WebApi.Tests.Features.Users
             result.Should().BeEquivalentTo(new[] { _publicEvent.Id, _privateEvent.Id });
         }
 
-        [Fact]
+        [TestMethod]
         public async Task GiveUserBeingAttendeeOfPrivateEvent_WhenUserRequestsOrganizedEvents_AlsoPrivateEventIsReturned()
         {
             _privateEvent.AddAttendee(_currentUser);
@@ -65,7 +67,7 @@ namespace Fiesta.WebApi.Tests.Features.Users
             result.Should().BeEquivalentTo(new[] { _publicEvent.Id, _privateEvent.Id });
         }
 
-        [Fact]
+        [TestMethod]
         public async Task GiveUserBeingFriendOfOrganizer_WhenUserRequestsOrganizedEvents_AlsoFriendsOnlyEventIsReturned()
         {
             _organizer.AddFriend(_currentUser);
@@ -77,7 +79,7 @@ namespace Fiesta.WebApi.Tests.Features.Users
             result.Should().BeEquivalentTo(new[] { _publicEvent.Id, _friendsOnlyEvent.Id });
         }
 
-        [Fact]
+        [TestMethod]
         public async Task GiveUserBeingAttendeeToEvents_WhenUserRequestsOrganizedEvents_AlsoEventsWhereUserIsAttendeeAreReturned()
         {
             _publicEvent.AddAttendee(_currentUser);
@@ -91,7 +93,7 @@ namespace Fiesta.WebApi.Tests.Features.Users
             result.Should().BeEquivalentTo(new[] { _publicEvent.Id, _friendsOnlyEvent.Id, _privateEvent.Id });
         }
 
-        [Fact]
+        [TestMethod]
         public async Task GiveUserBeingAdmin_WhenUserRequestsOrganizedEvents_AllAreReturned()
         {
             var query = new Query { CurrentUserId = _currentUser.Id, UserId = _organizer.Id, Role = FiestaRoleEnum.Admin };
@@ -100,7 +102,7 @@ namespace Fiesta.WebApi.Tests.Features.Users
             result.Should().BeEquivalentTo(new[] { _publicEvent.Id, _friendsOnlyEvent.Id, _privateEvent.Id });
         }
 
-        [Fact]
+        [TestMethod]
         public async Task WhenOrganizerRequestsOwnOrganizedEvents_AllAreReturned()
         {
             var query = new Query { CurrentUserId = _organizer.Id, UserId = _organizer.Id };
