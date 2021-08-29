@@ -41,7 +41,7 @@ namespace Fiesta.Application.Features.Events
                     .Where(x => x.Attendees.All(x => x.AttendeeId != request.CurrentUserId))
                     .Where(x => x.OrganizerId != request.CurrentUserId)
                     .Where(x => x.AccessibilityType == AccessibilityType.Public ||
-                               (x.AccessibilityType == AccessibilityType.FriendsOnly && x.Attendees.Any(a => a.Attendee.Friends.Any(f => f.FriendId == request.CurrentUserId))))
+                               (x.AccessibilityType == AccessibilityType.FriendsOnly && x.Organizer.Friends.Any(f => f.FriendId == request.CurrentUserId)))
                     .Select(x => new ResponseDto
                     {
                         Id = x.Id,
