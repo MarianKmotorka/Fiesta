@@ -162,7 +162,7 @@ namespace Fiesta.WebApi.Controllers
         }
 
         [HttpPost("explore")]
-        public async Task<ActionResult<QueryResponse<UserDto>>> GetExploreEvents(GetExploreEvents.Query request, CancellationToken cancellationToken)
+        public async Task<ActionResult<QueryResponse<GetExploreEvents.ResponseDto>>> GetExploreEvents(GetExploreEvents.Query request, CancellationToken cancellationToken)
         {
             request.CurrentUserId = CurrentUserService.UserId;
             var result = await Mediator.Send(request, cancellationToken);

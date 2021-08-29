@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,6 +37,7 @@ namespace Fiesta.Application.Features.Events
             public async Task<QueryResponse<ResponseDto>> Handle(Query request, CancellationToken cancellationToken)
             {
                 return await _db.Events.AsNoTracking()
+                    .Where(x => x.StartDate > DateTime.UtcNow)
                     .Where(x => x.Attendees.All(x => x.AttendeeId != request.CurrentUserId))
                     .Where(x => x.OrganizerId != request.CurrentUserId)
                     .Where(x => x.AccessibilityType == AccessibilityType.Public ||
@@ -44,6 +46,8 @@ namespace Fiesta.Application.Features.Events
                     {
                         Id = x.Id,
                         AccessibilityType = x.AccessibilityType,
+                        OrganizerUsername = x.Organizer.Username,
+                        OrganizerId = x.OrganizerId,
                         StartDate = x.StartDate,
                         EndDate = x.EndDate,
                         Name = x.Name,
@@ -63,6 +67,10 @@ namespace Fiesta.Application.Features.Events
         public class ResponseDto : EventDto
         {
             public string OrganizerPictureUrl { get; set; }
+
+            public string OrganizerUsername { get; set; }
+
+            public string OrganizerId { get; set; }
 
             public string Description { get; set; }
 
