@@ -1,6 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Interfaces;
+using Fiesta.Application.Models.Notifications;
+using Fiesta.Domain.Entities.Notifications;
 using Fiesta.Domain.Entities.Users;
 using MediatR;
 
@@ -15,15 +17,20 @@ namespace Fiesta.Application.Features.Users.EventHandlers
             _db = db;
         }
 
-        public async Task Handle(AuthUserCreatedEvent notification, CancellationToken cancellationToken)
+        public async Task Handle(AuthUserCreatedEvent @event, CancellationToken cancellationToken)
         {
-            var fiestaUser = FiestaUser.CreateWithId(notification.UserId, notification.Email, notification.Username);
+            var fiestaUser = FiestaUser.CreateWithId(@event.UserId, @event.Email, @event.Username);
 
-            fiestaUser.FirstName = notification.FirstName;
-            fiestaUser.LastName = notification.LastName;
-            fiestaUser.PictureUrl = notification.PictureUrl;
-
+            fiestaUser.FirstName = @event.FirstName;
+            fiestaUser.LastName = @event.LastName;
+            fiestaUser.PictureUrl = @event.PictureUrl;
             _db.FiestaUsers.Add(fiestaUser);
+
+            // NOTE: Calling save before saving notification so FiestaUser.Id would be filled
+            await _db.SaveChangesAsync(cancellationToken);
+
+            var notification = new Notification(fiestaUser, new NewUserWelcomeNotification(fiestaUser));
+            _db.Notifications.Add(notification);
             await _db.SaveChangesAsync(cancellationToken);
         }
     }
