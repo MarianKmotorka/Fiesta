@@ -34,6 +34,8 @@ namespace Fiesta.WebApi
 
             services.AddSignalR().AddNewtonsoftJsonProtocol();
 
+            services.AddApplicationInsightsTelemetry();
+
             services.AddHttpContextAccessor();
             services.AddControllers()
                 .AddNewtonsoftJson(options =>

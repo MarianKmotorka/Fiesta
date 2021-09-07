@@ -36,5 +36,6 @@
         public const string InvalidOperation = "invalidOperation";
         public const string EventIsFull = "eventIsFull";
         public const string CannotBeLessThanCurrentAttendeesCount = "cannotBeLessThanCurrentAttendeesCount";
+        public const string ServiceUnavailable = "serviceUnavailable";
     }
 }
