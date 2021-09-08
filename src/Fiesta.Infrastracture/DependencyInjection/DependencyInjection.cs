@@ -1,6 +1,4 @@
-﻿using System.Net;
-using System.Net.Mail;
-using Fiesta.Application.Common.Interfaces;
+﻿using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Options;
 using Fiesta.Infrastracture.Auth;
 using Fiesta.Infrastracture.Messaging.Email;
@@ -10,6 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net;
+using System.Net.Mail;
 
 namespace Fiesta.Infrastracture.DependencyInjection
 {
@@ -41,15 +41,15 @@ namespace Fiesta.Infrastracture.DependencyInjection
             services.AddScoped<IFiestaDbContext, FiestaDbContext>();
             services.AddScoped<IGoogleService, GoogleService>();
 
-            var emailVerificationOptions = new EmailOptions();
-            configuration.GetSection(nameof(EmailOptions)).Bind(emailVerificationOptions);
+            var emailOptions = new EmailOptions();
+            configuration.GetSection(nameof(EmailOptions)).Bind(emailOptions);
 
             services
-            .AddFluentEmail(emailVerificationOptions.Email)
+            .AddFluentEmail(emailOptions.Email)
             .AddRazorRenderer()
             .AddSmtpSender(
-                new SmtpClient(emailVerificationOptions.Host, emailVerificationOptions.Port)
-                { Credentials = new NetworkCredential(emailVerificationOptions.Email, emailVerificationOptions.Password), EnableSsl = true }
+                new SmtpClient(emailOptions.Host, emailOptions.Port)
+                { Credentials = new NetworkCredential("apikey", emailOptions.Password), EnableSsl = true }
                 );
 
             services.AddTransient<IEmailService, EmailService>();
