@@ -22,7 +22,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
         }
 
         [Fact]
-        public async Task GivenValidRequest_WhenCreateEvent_EventIsCreated()
+        public async Task GivenValidRequest_WhenCreateEventWithLocation_EventIsCreated()
         {
             var location = new LocationDto()
             {
@@ -56,6 +56,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
                 request.EndDate,
                 request.Capacity,
                 request.Description,
+                request.ExternalLink,
                 Location = new
                 {
                     location.City,
@@ -64,6 +65,38 @@ namespace Fiesta.WebApi.Tests.Features.Events
                     location.Longitude,
                     GoogleMapsUrl = $"https://www.google.com/maps/search/?api=1&query={location.Latitude},{location.Longitude}"
                 }
+            });
+        }
+
+        [Fact]
+        public async Task GivenValidRequest_WhenCreateEventWithExternalLink_EventIsCreated()
+        {
+            var request = new CreateOrUpdateEvent.Command
+            {
+                Name = "Welding competition",
+                StartDate = DateTime.Now,
+                EndDate = DateTime.Now.AddDays(1),
+                AccessibilityType = AccessibilityType.Public,
+                Capacity = 10,
+                ExternalLink = "https://some-external-resource.com/events/23234adad",
+                Description = "Description",
+            };
+
+            var createResponse = await Client.PostAsJsonAsync("/api/events", request);
+            createResponse.EnsureSuccessStatusCode();
+            var content = await createResponse.Content.ReadAsAsync<CreateOrUpdateEvent.Response>();
+
+            var eventDb = await AssertDb.Events.FindAsync(content.Id);
+            eventDb.Should().BeEquivalentTo(new
+            {
+                content.Id,
+                request.AccessibilityType,
+                request.StartDate,
+                request.EndDate,
+                request.Capacity,
+                request.Description,
+                request.ExternalLink,
+                request.Location
             });
         }
 
