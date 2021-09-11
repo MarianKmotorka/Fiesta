@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Fiesta.Application.Features.Common;
 using Fiesta.Application.Features.Events;
+using Fiesta.Application.Features.Events.Common;
 using Fiesta.Domain.Entities.Events;
 using FluentAssertions;
 using TestBase.Assets;
@@ -45,8 +46,7 @@ namespace Fiesta.WebApi.Tests.Features.Events
                 StartDate = @event.StartDate,
                 BannerUrl = @event.BannerUrl,
                 Capacity = @event.Capacity,
-                Location = $"{@event.Location.City}, {@event.Location.State}",
-                GoogleMapsUrl = $"https://www.google.com/maps/search/?api=1&query={@event.Location.Latitude},{@event.Location.Latitude}",
+                Location = LocationDto.Map(@event.Location),
                 Organizer = new UserDto
                 {
                     Id = organizer.Id,

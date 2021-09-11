@@ -41,7 +41,20 @@ namespace Fiesta.Application.Features.Events
                     EndDate = x.EndDate,
                     Description = x.Description,
                     BannerUrl = x.BannerUrl,
-                    Location = x.Location != null ? LocationDto.Map(x.Location) : null,
+                    Location = x.Location != null ? new()
+                    {
+                        Latitude = x.Location.Latitude,
+                        Longitude = x.Location.Longitude,
+                        Street = x.Location.Street,
+                        StreetNumber = x.Location.StreetNumber,
+                        Premise = x.Location.Premise,
+                        City = x.Location.City,
+                        State = x.Location.State,
+                        AdministrativeAreaLevel1 = x.Location.AdministrativeAreaLevel1,
+                        AdministrativeAreaLevel2 = x.Location.AdministrativeAreaLevel2,
+                        PostalCode = x.Location.PostalCode,
+                        GoogleMapsUrl = x.Location.GoogleMapsUrl
+                    } : null,
                     ExternalLink = x.ExternalLink,
                     AccessibilityType = x.AccessibilityType,
                     Capacity = x.Capacity,
@@ -86,8 +99,6 @@ namespace Fiesta.Application.Features.Events
             public LocationDto Location { get; set; }
 
             public string ExternalLink { get; set; }
-
-            public string GoogleMapsUrl { get; set; }
 
             public int Capacity { get; set; }
 
