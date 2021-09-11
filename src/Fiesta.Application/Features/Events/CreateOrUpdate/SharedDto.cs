@@ -22,6 +22,8 @@ namespace Fiesta.Application.Features.Events.CreateOrUpdate
 
         public LocationDto Location { get; set; }
 
+        public string ExternalLink { get; set; }
+
         public string Description { get; set; }
     }
 }

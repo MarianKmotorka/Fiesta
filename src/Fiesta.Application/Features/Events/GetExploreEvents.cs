@@ -56,6 +56,7 @@ namespace Fiesta.Application.Features.Events
                         OrganizerPictureUrl = x.Organizer.PictureUrl,
                         City = x.Location.City,
                         State = x.Location.State,
+                        ExternalLink = x.ExternalLink,
                         Capacity = x.Capacity,
                         AttendeesCount = x.Attendees.Count(),
                     })

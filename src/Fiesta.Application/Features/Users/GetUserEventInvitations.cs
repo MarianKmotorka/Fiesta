@@ -51,6 +51,7 @@ namespace Fiesta.Application.Features.Users
                        BannerUrl = x.BannerUrl,
                        City = x.Location.City,
                        State = x.Location.State,
+                       ExternalLink = x.ExternalLink,
                    })
                    .OrderBy(x => x.StartDate)
                    .BuildResponse(request.QueryDocument, cancellationToken);
