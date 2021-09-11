@@ -22,6 +22,8 @@ namespace Fiesta.Application.Features.Common
 
         public string Location { get => City is null ? null : $"{City}, {State}"; }
 
+        public string ExternalLink { get; set; }
+
         [JsonIgnore]
         public string City { get; set; }
 

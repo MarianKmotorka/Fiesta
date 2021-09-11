@@ -60,6 +60,7 @@ namespace Fiesta.Application.Features.Users
                         BannerUrl = x.BannerUrl,
                         City = x.Location.City,
                         State = x.Location.State,
+                        ExternalLink = x.ExternalLink,
                         IsCurrentUserAttending = x.Attendees.Any(x => x.AttendeeId == request.CurrentUserId) || x.OrganizerId == request.CurrentUserId
                     })
                     .OrderBy(x => x.StartDate)
