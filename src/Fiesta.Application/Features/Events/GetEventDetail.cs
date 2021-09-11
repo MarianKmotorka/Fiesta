@@ -40,8 +40,9 @@ namespace Fiesta.Application.Features.Events
                     EndDate = x.EndDate,
                     Description = x.Description,
                     BannerUrl = x.BannerUrl,
-                    Location = $"{x.Location.City}, {x.Location.State}",
-                    GoogleMapsUrl = x.Location.GoogleMapsUrl,
+                    Location = x.Location != null ? $"{x.Location.City}, {x.Location.State}" : null,
+                    ExternalLink = x.ExternalLink,
+                    GoogleMapsUrl = x.Location != null ? x.Location.GoogleMapsUrl : null,
                     AccessibilityType = x.AccessibilityType,
                     Capacity = x.Capacity,
                     AttendeesCount = x.Attendees.Count(),
@@ -83,6 +84,8 @@ namespace Fiesta.Application.Features.Events
             public int InvitationsCount { get; set; }
 
             public string Location { get; set; }
+
+            public string ExternalLink { get; set; }
 
             public string GoogleMapsUrl { get; set; }
 
