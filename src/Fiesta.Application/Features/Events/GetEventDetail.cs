@@ -9,6 +9,7 @@ using Fiesta.Application.Features.Events.Common;
 using Fiesta.Application.Utils;
 using Fiesta.Domain.Entities.Events;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fiesta.Application.Features.Events
 {
@@ -32,7 +33,7 @@ namespace Fiesta.Application.Features.Events
 
             public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
             {
-                var @event = await _db.Events.Select(x => new Response
+                var @event = await _db.Events.AsNoTracking().Select(x => new Response
                 {
                     Id = x.Id,
                     Name = x.Name,
@@ -40,9 +41,8 @@ namespace Fiesta.Application.Features.Events
                     EndDate = x.EndDate,
                     Description = x.Description,
                     BannerUrl = x.BannerUrl,
-                    Location = x.Location != null ? $"{x.Location.City}, {x.Location.State}" : null,
+                    Location = x.Location != null ? LocationDto.Map(x.Location) : null,
                     ExternalLink = x.ExternalLink,
-                    GoogleMapsUrl = x.Location != null ? x.Location.GoogleMapsUrl : null,
                     AccessibilityType = x.AccessibilityType,
                     Capacity = x.Capacity,
                     AttendeesCount = x.Attendees.Count(),
@@ -83,7 +83,7 @@ namespace Fiesta.Application.Features.Events
 
             public int InvitationsCount { get; set; }
 
-            public string Location { get; set; }
+            public LocationDto Location { get; set; }
 
             public string ExternalLink { get; set; }
 
