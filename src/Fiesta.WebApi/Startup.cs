@@ -6,6 +6,7 @@ using Fiesta.Application.Common.Models;
 using Fiesta.Application.Features.Notifications;
 using Fiesta.Application.Features.Users.Friends;
 using Fiesta.Infrastracture.DependencyInjection;
+using Fiesta.Infrastracture.Persistence;
 using Fiesta.WebApi.Extensions;
 using Fiesta.WebApi.Middleware.ExceptionHanlding;
 using Microsoft.AspNetCore.Builder;
@@ -32,9 +33,9 @@ namespace Fiesta.WebApi
                     .AddApplication(Configuration)
                     .AddInfrastructure(Configuration);
 
-            services.AddSignalR().AddNewtonsoftJsonProtocol();
-
             services.AddApplicationInsightsTelemetry();
+            services.AddSignalR().AddNewtonsoftJsonProtocol();
+            services.AddHealthChecks().AddDbContextCheck<FiestaDbContext>();
 
             services.AddHttpContextAccessor();
             services.AddControllers()
@@ -77,6 +78,7 @@ namespace Fiesta.WebApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHealthChecks("/health");
                 endpoints.MapHub<NotificationsHub>("/api/notifications-hub");
                 endpoints.MapHub<FriendsHub>("/api/friends-hub");
             });
