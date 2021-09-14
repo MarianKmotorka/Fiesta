@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Queries;
@@ -45,14 +44,6 @@ namespace Fiesta.WebApi.Controllers
             query.UserId = id;
             var response = await Mediator.Send(query, cancellationToken);
             return Ok(response);
-        }
-
-        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
-        [HttpGet("selector")]
-        public async Task<ActionResult<List<UserDto>>> UsersSelector([FromQuery] UsersSelector.Query query, CancellationToken cancellationToken)
-        {
-            var result = await Mediator.Send(query, cancellationToken);
-            return Ok(result);
         }
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
@@ -104,6 +95,15 @@ namespace Fiesta.WebApi.Controllers
         public async Task<ActionResult<QueryResponse<EventDto>>> GetInvitations(string id, string search, GetUserEventInvitations.Query query, CancellationToken cancellationToken)
         {
             query.UserId = id;
+            query.Search = search;
+            var response = await Mediator.Send(query, cancellationToken);
+            return Ok(response);
+        }
+
+        [Authorize(nameof(FiestaRoleEnum.Admin))]
+        [HttpPost("query")]
+        public async Task<ActionResult<QueryResponse<GetAllUsers.ResponseDto>>> GetAllUsers(string search, GetAllUsers.Query query, CancellationToken cancellationToken)
+        {
             query.Search = search;
             var response = await Mediator.Send(query, cancellationToken);
             return Ok(response);
