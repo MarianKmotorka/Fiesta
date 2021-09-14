@@ -14,6 +14,7 @@ namespace Fiesta.PreventWebApiFromSleepModeService
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
+                    services.AddApplicationInsightsTelemetry();
                     services.AddHttpClient();
                     services.AddHostedService<Worker>();
                 });
