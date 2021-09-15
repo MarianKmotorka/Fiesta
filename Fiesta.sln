@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fiesta.Application.Tests", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{16C7186E-7AEA-4A0F-AEC6-DE5083AEDA4C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fiesta.PreventSleepModeService", "src\tools\Fiesta.PreventSleepModeService\Fiesta.PreventSleepModeService.csproj", "{F321B322-02F6-497A-8E79-847FD55D63DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FiestaAzureFunctions", "src\tools\FiestaAzureFunctions\FiestaAzureFunctions.csproj", "{F3A44A26-41CB-4DDA-8CE7-74D7E220CA77}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,10 +59,10 @@ Global
 		{02A6050F-EB90-41BF-96DA-DA1966031405}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02A6050F-EB90-41BF-96DA-DA1966031405}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{02A6050F-EB90-41BF-96DA-DA1966031405}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F321B322-02F6-497A-8E79-847FD55D63DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F321B322-02F6-497A-8E79-847FD55D63DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F321B322-02F6-497A-8E79-847FD55D63DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F321B322-02F6-497A-8E79-847FD55D63DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3A44A26-41CB-4DDA-8CE7-74D7E220CA77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3A44A26-41CB-4DDA-8CE7-74D7E220CA77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3A44A26-41CB-4DDA-8CE7-74D7E220CA77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3A44A26-41CB-4DDA-8CE7-74D7E220CA77}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -76,7 +76,7 @@ Global
 		{5358982C-7907-4D74-97E5-F222F88D3B41} = {C95658A8-DC61-49BD-BD90-B0C54ABB9B41}
 		{02A6050F-EB90-41BF-96DA-DA1966031405} = {C95658A8-DC61-49BD-BD90-B0C54ABB9B41}
 		{16C7186E-7AEA-4A0F-AEC6-DE5083AEDA4C} = {FC2FEEF6-A2DC-4723-B49C-C900CB3CB277}
-		{F321B322-02F6-497A-8E79-847FD55D63DE} = {16C7186E-7AEA-4A0F-AEC6-DE5083AEDA4C}
+		{F3A44A26-41CB-4DDA-8CE7-74D7E220CA77} = {16C7186E-7AEA-4A0F-AEC6-DE5083AEDA4C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {509E8E62-A3E2-4EB3-AB7A-255E7E63A7FB}
