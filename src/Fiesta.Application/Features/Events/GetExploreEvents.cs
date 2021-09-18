@@ -23,6 +23,8 @@ namespace Fiesta.Application.Features.Events
             public string CurrentUserId { get; set; }
 
             public QueryDocument QueryDocument { get; set; } = new();
+
+            public OnlineFilter OnlineFilter { get; set; }
         }
 
         public class Handler : IRequestHandler<Query, QueryResponse<ResponseDto>>
@@ -36,12 +38,21 @@ namespace Fiesta.Application.Features.Events
 
             public async Task<QueryResponse<ResponseDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                return await _db.Events.AsNoTracking()
+                var query = _db.Events.AsNoTracking()
                     .Where(x => x.StartDate > DateTime.UtcNow)
                     .Where(x => x.Attendees.All(x => x.AttendeeId != request.CurrentUserId))
                     .Where(x => x.OrganizerId != request.CurrentUserId)
                     .Where(x => x.AccessibilityType == AccessibilityType.Public ||
-                               (x.AccessibilityType == AccessibilityType.FriendsOnly && x.Organizer.Friends.Any(f => f.FriendId == request.CurrentUserId)))
+                               (x.AccessibilityType == AccessibilityType.FriendsOnly && x.Organizer.Friends.Any(f => f.FriendId == request.CurrentUserId)));
+
+                query = request.OnlineFilter switch
+                {
+                    OnlineFilter.OfflineOnly => query.Where(x => x.Location != null),
+                    OnlineFilter.OnlineOnly => query.Where(x => x.ExternalLink != null),
+                    _ => query
+                };
+
+                return await query
                     .Select(x => new ResponseDto
                     {
                         Id = x.Id,
@@ -78,6 +89,13 @@ namespace Fiesta.Application.Features.Events
             public int Capacity { get; set; }
 
             public int AttendeesCount { get; set; }
+        }
+
+        public enum OnlineFilter
+        {
+            All = 0,
+            OnlineOnly = 1,
+            OfflineOnly = 2
         }
     }
 }
