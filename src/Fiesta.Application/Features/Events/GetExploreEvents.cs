@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Common.Queries;
 using Fiesta.Application.Features.Common;
+using Fiesta.Application.Features.Events.Common;
 using Fiesta.Domain.Entities.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,13 @@ namespace Fiesta.Application.Features.Events
             public QueryDocument QueryDocument { get; set; } = new();
 
             public OnlineFilter OnlineFilter { get; set; }
+
+            public LatLon CurrentUserLocation { get; set; }
+
+            /// <summary>
+            /// Max distance in km
+            /// </summary>
+            public int MaxDistanceFilter { get; set; }
         }
 
         public class Handler : IRequestHandler<Query, QueryResponse<ResponseDto>>
@@ -52,6 +60,8 @@ namespace Fiesta.Application.Features.Events
                     _ => query
                 };
 
+                query = FilterByDistance(request, query);
+
                 return await query
                     .Select(x => new ResponseDto
                     {
@@ -73,6 +83,26 @@ namespace Fiesta.Application.Features.Events
                     })
                     .OrderBy(x => x.StartDate)
                     .BuildResponse(request.QueryDocument, cancellationToken);
+            }
+
+            private IQueryable<Event> FilterByDistance(Query request, IQueryable<Event> query)
+            {
+                if (request.OnlineFilter != OnlineFilter.OfflineOnly || request.CurrentUserLocation is null || request.MaxDistanceFilter <= 0)
+                    return query;
+
+                const double earthCircumference = 40_075;
+                var degreesPerKilometer = 360 / earthCircumference;
+                var degreesDifference = request.MaxDistanceFilter * degreesPerKilometer;
+                var maxLat = request.CurrentUserLocation.Latitude + degreesDifference;
+                var minLat = request.CurrentUserLocation.Latitude - degreesDifference;
+                var maxLon = request.CurrentUserLocation.Longitude + degreesDifference;
+                var minLon = request.CurrentUserLocation.Longitude - degreesDifference;
+
+                return query
+                    .Where(x => x.Location.Latitude < maxLat)
+                    .Where(x => x.Location.Latitude > minLat)
+                    .Where(x => x.Location.Longitude < maxLon)
+                    .Where(x => x.Location.Longitude > minLon);
             }
         }
 
