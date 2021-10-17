@@ -168,5 +168,14 @@ namespace Fiesta.WebApi.Controllers
             var result = await Mediator.Send(request, cancellationToken);
             return Ok(result);
         }
+
+        [HttpPost("query")]
+        [Authorize(nameof(FiestaRoleEnum.Admin))]
+        public async Task<ActionResult<QueryResponse<EventDto>>> GetAllEvents(string search, GetAllEvents.Query request, CancellationToken cancellationToken)
+        {
+            request.Search = search;
+            var result = await Mediator.Send(request, cancellationToken);
+            return Ok(result);
+        }
     }
 }

@@ -44,6 +44,7 @@ namespace Fiesta.Application.Features.Users
                     PictureUrl = x.PictureUrl,
                     IsDeleted = x.IsDeleted,
                 })
+                .OrderBy(x => x.Username)
                 .BuildResponse(request.QueryDocument, cancellationToken);
 
                 return users;
