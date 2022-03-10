@@ -161,6 +161,7 @@ namespace Fiesta.WebApi.Controllers
             return Ok(result);
         }
 
+        [AllowAnonymous]
         [HttpPost("explore")]
         public async Task<ActionResult<QueryResponse<GetExploreEvents.ResponseDto>>> GetExploreEvents(GetExploreEvents.Query request, CancellationToken cancellationToken)
         {

@@ -48,10 +48,13 @@ namespace Fiesta.Application.Features.Events
             {
                 var query = _db.Events.AsNoTracking()
                     .Where(x => x.StartDate > DateTime.UtcNow)
-                    .Where(x => x.Attendees.All(x => x.AttendeeId != request.CurrentUserId))
-                    .Where(x => x.OrganizerId != request.CurrentUserId)
                     .Where(x => x.AccessibilityType == AccessibilityType.Public ||
                                (x.AccessibilityType == AccessibilityType.FriendsOnly && x.Organizer.Friends.Any(f => f.FriendId == request.CurrentUserId)));
+
+                if (!string.IsNullOrEmpty(request.CurrentUserId))
+                    query = query
+                        .Where(x => x.Attendees.All(x => x.AttendeeId != request.CurrentUserId))
+                        .Where(x => x.OrganizerId != request.CurrentUserId);
 
                 query = request.OnlineFilter switch
                 {
