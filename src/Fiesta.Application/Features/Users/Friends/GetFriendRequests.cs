@@ -16,6 +16,7 @@ namespace Fiesta.Application.Features.Users.Friends
         {
             [JsonIgnore]
             public string Id { get; set; }
+
             public SkippedItemsDocument SkippedItemsDocument { get; set; } = new();
         }
 
