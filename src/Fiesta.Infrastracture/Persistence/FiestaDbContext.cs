@@ -17,6 +17,7 @@ namespace Fiesta.Infrastracture.Persistence
     public class FiestaDbContext : IdentityDbContext<AuthUser, AuthRole, string>, IFiestaDbContext
     {
         public const string TestDbName = "TestDb";
+        public const string SchemaName = "fiesta";
         private readonly IMediator _mediator;
 
         public FiestaDbContext(DbContextOptions<FiestaDbContext> options, IMediator mediator) : base(options)
@@ -59,6 +60,7 @@ namespace Fiesta.Infrastracture.Persistence
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.HasDefaultSchema("fiesta");
             builder.RemovePluralizingTableNameConvention();
             base.OnModelCreating(builder);
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
