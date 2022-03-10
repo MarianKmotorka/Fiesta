@@ -4,22 +4,21 @@ using Fiesta.Infrastracture.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Fiesta.Infrastracture.Persistence.Migrations
+namespace Fiesta.Infrastracture.Migrations
 {
     [DbContext(typeof(FiestaDbContext))]
-    [Migration("20210421140213_EventInvitationCreatedAt")]
-    partial class EventInvitationCreatedAt
+    partial class FiestaDbContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("fiesta")
                 .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.2");
+                .HasAnnotation("ProductVersion", "5.0.9");
 
             modelBuilder.Entity("Fiesta.Domain.Entities.Events.Event", b =>
                 {
@@ -42,6 +41,9 @@ namespace Fiesta.Infrastracture.Persistence.Migrations
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("ExternalLink")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -72,6 +74,45 @@ namespace Fiesta.Infrastracture.Persistence.Migrations
                     b.HasIndex("AttendeeId");
 
                     b.ToTable("EventAttendees");
+                });
+
+            modelBuilder.Entity("Fiesta.Domain.Entities.Events.EventComment", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EventId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<bool>("IsEdited")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ParentId")
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<string>("SenderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("EventComment");
                 });
 
             modelBuilder.Entity("Fiesta.Domain.Entities.Events.EventInvitation", b =>
@@ -110,6 +151,37 @@ namespace Fiesta.Infrastracture.Persistence.Migrations
                     b.HasIndex("InterestedUserId");
 
                     b.ToTable("EventJoinRequests");
+                });
+
+            modelBuilder.Entity("Fiesta.Domain.Entities.Notifications.Notification", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(36)
+                        .HasColumnType("bigint")
+                        .UseIdentityColumn();
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Model")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Seen")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notification");
                 });
 
             modelBuilder.Entity("Fiesta.Domain.Entities.Users.FiestaUser", b =>
@@ -156,6 +228,9 @@ namespace Fiesta.Infrastracture.Persistence.Migrations
 
                     b.Property<string>("ToId")
                         .HasColumnType("nvarchar(36)");
+
+                    b.Property<DateTime>("RequestedOn")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("FromId", "ToId");
 
@@ -473,6 +548,32 @@ namespace Fiesta.Infrastracture.Persistence.Migrations
                     b.Navigation("Event");
                 });
 
+            modelBuilder.Entity("Fiesta.Domain.Entities.Events.EventComment", b =>
+                {
+                    b.HasOne("Fiesta.Domain.Entities.Events.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Fiesta.Domain.Entities.Events.EventComment", "Parent")
+                        .WithMany("Replies")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Fiesta.Domain.Entities.Users.FiestaUser", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+
+                    b.Navigation("Parent");
+
+                    b.Navigation("Sender");
+                });
+
             modelBuilder.Entity("Fiesta.Domain.Entities.Events.EventInvitation", b =>
                 {
                     b.HasOne("Fiesta.Domain.Entities.Events.Event", "Event")
@@ -517,6 +618,17 @@ namespace Fiesta.Infrastracture.Persistence.Migrations
                     b.Navigation("Event");
 
                     b.Navigation("InterestedUser");
+                });
+
+            modelBuilder.Entity("Fiesta.Domain.Entities.Notifications.Notification", b =>
+                {
+                    b.HasOne("Fiesta.Domain.Entities.Users.FiestaUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Fiesta.Domain.Entities.Users.FriendRequest", b =>
@@ -615,6 +727,11 @@ namespace Fiesta.Infrastracture.Persistence.Migrations
                     b.Navigation("Invitations");
 
                     b.Navigation("JoinRequests");
+                });
+
+            modelBuilder.Entity("Fiesta.Domain.Entities.Events.EventComment", b =>
+                {
+                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("Fiesta.Domain.Entities.Users.FiestaUser", b =>
