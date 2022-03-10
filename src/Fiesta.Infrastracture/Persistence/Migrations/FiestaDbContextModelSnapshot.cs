@@ -42,6 +42,9 @@ namespace Fiesta.Infrastracture.Persistence.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("ExternalLink")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -225,6 +228,9 @@ namespace Fiesta.Infrastracture.Persistence.Migrations
 
                     b.Property<string>("ToId")
                         .HasColumnType("nvarchar(36)");
+
+                    b.Property<DateTime>("RequestedOn")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("FromId", "ToId");
 

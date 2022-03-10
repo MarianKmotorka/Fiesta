@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using Fiesta.Application.Common.Interfaces;
@@ -27,14 +29,21 @@ namespace Fiesta.Infrastracture.Messaging.Email
             var urlEncodedToken = HttpUtility.UrlEncode(model.Token);
             var redirectUrl = $"{_webClientOptions.BaseUrl}/reset-password?token={urlEncodedToken}&email={emailAddress}";
 
-            var result = await BuildEmailUsingTemplate(
+            var template = BuildEmailUsingTemplate(
                 emailAddress,
                 EmailSubjects.PasswordReset,
                 TemplateNames.ResetPasswordEmail,
                 new { RedirectUrl = redirectUrl }
-                ).SendAsync(cancellationToken);
+                );
 
-            return result;
+            try
+            {
+                return await template.SendAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                return new SendResponse { ErrorMessages = new List<string>() { ex.Message } };
+            }
         }
 
         public async Task<SendResponse> SendVerificationEmail(string emailAddress, VerificationEmailTemplateModel model, CancellationToken cancellationToken)
@@ -42,7 +51,7 @@ namespace Fiesta.Infrastracture.Messaging.Email
             var urlEncodedCode = HttpUtility.UrlEncode(model.Code);
             var redirectUrl = $"{_webClientOptions.BaseUrl}/confirm-email?code={urlEncodedCode}&email={emailAddress}";
 
-            var result = await BuildEmailUsingTemplate(
+            var template = BuildEmailUsingTemplate(
                 emailAddress,
                 EmailSubjects.VerificationEmail,
                 TemplateNames.VerificationEmail,
@@ -50,10 +59,16 @@ namespace Fiesta.Infrastracture.Messaging.Email
                 {
                     model.Name,
                     RedirectUrl = redirectUrl
-                }
-                ).SendAsync(cancellationToken);
+                });
 
-            return result;
+            try
+            {
+                return await template.SendAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                return new SendResponse { ErrorMessages = new List<string>() { ex.Message } };
+            }
         }
 
         private IFluentEmail BuildEmailUsingTemplate(string emailAddress, string subject, string template, object model)

@@ -30,6 +30,8 @@ namespace TestBase
         public void Dispose()
         {
             ArrangeDb.Database.EnsureDeleted();
+            ActDb.Database.EnsureDeleted();
+            AssertDb.Database.EnsureDeleted();
             ArrangeDb.Dispose();
             ActDb.Dispose();
             AssertDb.Dispose();

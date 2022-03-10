@@ -46,6 +46,7 @@ namespace Fiesta.Application.Features.Selectors
                         StartDate = null,
                         City = null,
                         State = null,
+                        ExternalLink = null,
                         Type = ItemType.User,
                     });
 
@@ -67,6 +68,7 @@ namespace Fiesta.Application.Features.Selectors
                         StartDate = x.StartDate,
                         City = x.Location.City,
                         State = x.Location.State,
+                        ExternalLink = x.ExternalLink,
                         Type = ItemType.Event,
                     });
 
@@ -94,6 +96,8 @@ namespace Fiesta.Application.Features.Selectors
             public string PictureUrl { get; set; }
 
             public string Location { get => City is null ? null : $"{City}, {State}"; }
+
+            public string ExternalLink { get; set; }
 
             public ItemType Type { get; set; }
 

@@ -35,7 +35,8 @@ namespace Fiesta.Application.Features.Events.CreateOrUpdate
                     StartDate = x.StartDate,
                     EndDate = x.EndDate,
                     Description = x.Description,
-                    Location = LocationDto.Map(x.Location),
+                    Location = x.Location != null ? LocationDto.Map(x.Location) : null,
+                    ExternalLink = x.ExternalLink,
                     AccessibilityType = x.AccessibilityType,
                     Capacity = x.Capacity,
                 })

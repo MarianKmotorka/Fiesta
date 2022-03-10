@@ -4,7 +4,9 @@ using Fiesta.Application.Common.Behaviours.Authorization;
 using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Models;
 using Fiesta.Application.Features.Notifications;
+using Fiesta.Application.Features.Users.Friends;
 using Fiesta.Infrastracture.DependencyInjection;
+using Fiesta.Infrastracture.Persistence;
 using Fiesta.WebApi.Extensions;
 using Fiesta.WebApi.Middleware.ExceptionHanlding;
 using Microsoft.AspNetCore.Builder;
@@ -31,7 +33,9 @@ namespace Fiesta.WebApi
                     .AddApplication(Configuration)
                     .AddInfrastructure(Configuration);
 
+            services.AddApplicationInsightsTelemetry();
             services.AddSignalR().AddNewtonsoftJsonProtocol();
+            services.AddHealthChecks().AddDbContextCheck<FiestaDbContext>();
 
             services.AddHttpContextAccessor();
             services.AddControllers()
@@ -55,13 +59,13 @@ namespace Fiesta.WebApi
             {
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fiesta.WebApi v1"));
-                app.UseCors(config =>
-                {
-                    config.AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader();
-                });
             }
+            app.UseCors(config =>
+            {
+                config.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+            });
 
             app.UseHttpsRedirection();
 
@@ -74,7 +78,9 @@ namespace Fiesta.WebApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHealthChecks("/health");
                 endpoints.MapHub<NotificationsHub>("/api/notifications-hub");
+                endpoints.MapHub<FriendsHub>("/api/friends-hub");
             });
         }
     }

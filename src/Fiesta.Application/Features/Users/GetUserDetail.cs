@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Interfaces;
+using Fiesta.Application.Features.Common;
 using Fiesta.Application.Utils;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -72,14 +73,6 @@ namespace Fiesta.Application.Features.Users
             public int NumberOfFriends { get; set; }
 
             public FriendStatus FriendStatus { get; set; }
-        }
-
-        public enum FriendStatus
-        {
-            None,
-            Friend,
-            FriendRequestSent,
-            FriendRequestRecieved
         }
     }
 }

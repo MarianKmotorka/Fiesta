@@ -22,6 +22,7 @@
         public const string MustBeAfterStartDate = "mustBeAfterStartDate";
         public const string Max = "max";
         public const string Min = "min";
+        public const string Invalid = "invalid";
         public const string InvalidEnumValue = "invalidEnumValue";
         public const string InvalidLatitudeOrLongitude = "invalidLatitudeOrLongitude";
         public const string UnsupportedMediaType = "unsupportedMediaType";
@@ -36,5 +37,7 @@
         public const string InvalidOperation = "invalidOperation";
         public const string EventIsFull = "eventIsFull";
         public const string CannotBeLessThanCurrentAttendeesCount = "cannotBeLessThanCurrentAttendeesCount";
+        public const string ServiceUnavailable = "serviceUnavailable";
+        public const string EitherExternalLinkOrLocationMustBeSet = "eitherExternalLinkOrLocationMustBeSet";
     }
 }

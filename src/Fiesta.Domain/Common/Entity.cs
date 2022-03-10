@@ -61,7 +61,7 @@ namespace Fiesta.Domain.Common
     {
         private List<INotification> _notifications;
 
-        protected void AddEvent(INotification notification)
+        protected void AddDomainEvent(INotification notification)
         {
             if (_notifications == null)
                 _notifications = new List<INotification>();

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Queries;
@@ -48,25 +47,19 @@ namespace Fiesta.WebApi.Controllers
         }
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
-        [HttpGet("selector")]
-        public async Task<ActionResult<List<UserDto>>> UsersSelector([FromQuery] UsersSelector.Query query, CancellationToken cancellationToken)
-        {
-            var result = await Mediator.Send(query, cancellationToken);
-            return Ok(result);
-        }
-
-        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
         [HttpPost("{id}/friends/query")]
-        public async Task<ActionResult<QueryResponse<UserDto>>> GetFriends(string id, GetFriends.Query query, CancellationToken cancellationToken)
+        public async Task<ActionResult<QueryResponse<GetFriends.ResponseDto>>> GetFriends(string id, string search, GetFriends.Query query, CancellationToken cancellationToken)
         {
             query.Id = id;
+            query.CurrentUserId = CurrentUserService.UserId;
+            query.Search = search;
             var response = await Mediator.Send(query, cancellationToken);
             return Ok(response);
         }
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
         [HttpPost("{id}/friend-requests/query")]
-        public async Task<ActionResult<QueryResponse<UserDto>>> GetFriendRequests(string id, GetFriendRequests.Query query, CancellationToken cancellationToken)
+        public async Task<ActionResult<SkippedItemsResponse<FriendRequestDto>>> GetFriendRequests(string id, GetFriendRequests.Query query, CancellationToken cancellationToken)
         {
             query.Id = id;
             var response = await Mediator.Send(query, cancellationToken);
@@ -74,10 +67,44 @@ namespace Fiesta.WebApi.Controllers
         }
 
         [Authorize(nameof(FiestaRoleEnum.BasicUser))]
-        [HttpPost("{id}/events/query")]
-        public async Task<ActionResult<QueryResponse<GetUserEvents.EventDto>>> GetUserEvents(string id, GetUserEvents.Query query, CancellationToken cancellationToken)
+        [HttpPost("{id}/attended-events")]
+        public async Task<ActionResult<QueryResponse<EventDto>>> GetUserEvents(string id, string search, GetUserAttendedEvents.Query query, CancellationToken cancellationToken)
         {
             query.UserId = id;
+            query.CurrentUserId = CurrentUserService.UserId;
+            query.Role = CurrentUserService.Role;
+            query.Search = search;
+            var response = await Mediator.Send(query, cancellationToken);
+            return Ok(response);
+        }
+
+        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
+        [HttpPost("{id}/organized-events")]
+        public async Task<ActionResult<QueryResponse<EventDto>>> GetOrganizedEvents(string id, string search, GetUserOrganizedEvents.Query query, CancellationToken cancellationToken)
+        {
+            query.UserId = id;
+            query.CurrentUserId = CurrentUserService.UserId;
+            query.Role = CurrentUserService.Role;
+            query.Search = search;
+            var response = await Mediator.Send(query, cancellationToken);
+            return Ok(response);
+        }
+
+        [Authorize(nameof(FiestaRoleEnum.BasicUser))]
+        [HttpPost("{id}/event-invitations")]
+        public async Task<ActionResult<QueryResponse<EventDto>>> GetInvitations(string id, string search, GetUserEventInvitations.Query query, CancellationToken cancellationToken)
+        {
+            query.UserId = id;
+            query.Search = search;
+            var response = await Mediator.Send(query, cancellationToken);
+            return Ok(response);
+        }
+
+        [Authorize(nameof(FiestaRoleEnum.Admin))]
+        [HttpPost("query")]
+        public async Task<ActionResult<QueryResponse<GetAllUsers.ResponseDto>>> GetAllUsers(string search, GetAllUsers.Query query, CancellationToken cancellationToken)
+        {
+            query.Search = search;
             var response = await Mediator.Send(query, cancellationToken);
             return Ok(response);
         }

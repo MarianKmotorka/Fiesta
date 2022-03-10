@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
-using Fiesta.Application.Features.Users;
 using FluentAssertions;
 using TestBase.Assets;
 using Xunit;
@@ -10,11 +9,8 @@ namespace Fiesta.WebApi.Tests.Features.Users
     [Collection(nameof(TestCollection))]
     public class DeleteProfilePictureTests : WebAppTestBase
     {
-        private HardDeleteUsers.Handler _sut;
-
         public DeleteProfilePictureTests(FiestaAppFactory factory) : base(factory)
         {
-            _sut = new HardDeleteUsers.Handler(ActDb);
         }
 
         [Fact]

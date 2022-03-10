@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Fiesta.Application.Common.Constants;
 using Fiesta.Application.Common.Exceptions;
 using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Models.Emails;
@@ -36,7 +37,10 @@ namespace Fiesta.Application.Features.Auth
 
                 var sendResult = await _emailService.SendResetPasswordEmail(request.Email, new ResetPasswordEmailTemplateModel(tokenResult.Data), cancellationToken);
                 if (!sendResult.Successful)
+                {
                     _logger.LogError($"ResetPassword email to {request.Email} was not sent. Reason: {string.Join('\n', sendResult.ErrorMessages)}");
+                    throw new BadRequestException(ErrorCodes.ServiceUnavailable);
+                }
 
                 return Unit.Value;
             }

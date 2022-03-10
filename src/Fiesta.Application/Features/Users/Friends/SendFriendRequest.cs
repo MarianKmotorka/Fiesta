@@ -6,6 +6,7 @@ using Fiesta.Application.Common.Interfaces;
 using Fiesta.Application.Utils;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fiesta.Application.Features.Users.Friends
@@ -22,10 +23,13 @@ namespace Fiesta.Application.Features.Users.Friends
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IFiestaDbContext _db;
+            private readonly IHubContext<FriendsHub, IFriendsClient> _friendsHub;
 
-            public Handler(IFiestaDbContext db)
+            public Handler(IFiestaDbContext db, IHubContext<FriendsHub, IFriendsClient> friendsHub)
+
             {
                 _db = db;
+                _friendsHub = friendsHub;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
@@ -33,7 +37,22 @@ namespace Fiesta.Application.Features.Users.Friends
                 var fiestaUser = await _db.FiestaUsers.FindOrNotFoundAsync(cancellationToken, request.UserId);
                 var fiestaFriend = await _db.FiestaUsers.FindOrNotFoundAsync(cancellationToken, request.FriendId);
 
-                fiestaUser.SendFriendRequest(fiestaFriend);
+                var friendRequest = fiestaUser.SendFriendRequest(fiestaFriend);
+
+                if (FriendsHub.UserConnections.TryGetValue(friendRequest.ToId, out var connectionIds))
+                    await _friendsHub.Clients.Clients(connectionIds).ReceiveFriendRequest(new FriendRequestDto
+                    {
+                        RequestedOn = friendRequest.RequestedOn,
+                        User = new()
+                        {
+                            Id = friendRequest.From.Id,
+                            FirstName = friendRequest.From.FirstName,
+                            LastName = friendRequest.From.LastName,
+                            PictureUrl = friendRequest.From.PictureUrl,
+                            Username = friendRequest.From.Username
+                        }
+                    });
+
                 await _db.SaveChangesAsync(cancellationToken);
 
                 return Unit.Value;

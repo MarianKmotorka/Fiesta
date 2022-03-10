@@ -23,7 +23,9 @@ namespace Fiesta.Domain.Entities.Events
 
         public string Description { get; set; }
 
-        public LocationObject Location { get; set; }
+        public LocationObject Location { get; private set; }
+
+        public string ExternalLink { get; private set; }
 
         public FiestaUser Organizer { get; private set; }
 
@@ -38,6 +40,18 @@ namespace Fiesta.Domain.Entities.Events
         public IReadOnlyCollection<EventJoinRequest> JoinRequests => _joinRequests;
 
         public Event(string name, DateTime startDate, DateTime endDate, AccessibilityType accessibilityType, int capacity, FiestaUser organizer, LocationObject location)
+        : this(name, startDate, endDate, accessibilityType, capacity, organizer)
+        {
+            Location = location;
+        }
+
+        public Event(string name, DateTime startDate, DateTime endDate, AccessibilityType accessibilityType, int capacity, FiestaUser organizer, string externalLink)
+        : this(name, startDate, endDate, accessibilityType, capacity, organizer)
+        {
+            ExternalLink = externalLink;
+        }
+
+        private Event(string name, DateTime startDate, DateTime endDate, AccessibilityType accessibilityType, int capacity, FiestaUser organizer)
         {
             Name = name;
             StartDate = startDate;
@@ -46,7 +60,6 @@ namespace Fiesta.Domain.Entities.Events
             Capacity = capacity;
             Organizer = organizer;
             OrganizerId = organizer.Id;
-            Location = location;
         }
 
         private Event()
@@ -73,17 +86,41 @@ namespace Fiesta.Domain.Entities.Events
                 _invitations.Add(new EventInvitation(this, Organizer, invitee));
         }
 
-        public void AddJoinRequest(FiestaUser interestedUser)
+        public EventJoinRequest AddJoinRequest(FiestaUser interestedUser)
         {
             if (_joinRequests is null)
                 _joinRequests = new();
 
-            _joinRequests.Add(new EventJoinRequest(this, interestedUser));
+            var joinRequest = new EventJoinRequest(this, interestedUser);
+
+            _joinRequests.Add(joinRequest);
+
+            return joinRequest;
         }
 
         public void SetDescription(string description)
         {
             Description = description?.Replace(Environment.NewLine, "").Trim();
+        }
+
+        public void PublishDeletedEvent()
+        {
+            AddDomainEvent(new EventDeletedEvent(this));
+        }
+
+        public void SetLocation(LocationObject location)
+        {
+            Location = location ?? throw new ArgumentNullException(nameof(location));
+            ExternalLink = null;
+        }
+
+        public void SetExternalLink(string link)
+        {
+            ExternalLink = string.IsNullOrEmpty(link)
+                ? throw new ArgumentException("Parameter link cannot be null or empty")
+                : link;
+
+            Location = null;
         }
     }
 

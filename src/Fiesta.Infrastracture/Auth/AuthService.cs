@@ -187,8 +187,8 @@ namespace Fiesta.Infrastracture.Auth
             if (!result.Succeeded)
                 return Result.Failure(result.Errors.Select(x => x.Description));
 
-            var fiestaUser = await _db.FiestaUsers.FindAsync(new[] { userId }, cancellationToken);
-            fiestaUser.IsDeleted = true;
+            var fiestaUser = await _db.FiestaUsers.Include(x => x.OrganizedEvents).SingleAsync(x => x.Id == userId, cancellationToken);
+            fiestaUser.SetDeleted();
 
             await _db.SaveChangesAsync(cancellationToken);
             return Result.Success();
@@ -208,8 +208,8 @@ namespace Fiesta.Infrastracture.Auth
             if (!result.Succeeded)
                 return Result.Failure(result.Errors.Select(x => x.Description));
 
-            var fiestaUser = await _db.FiestaUsers.FindAsync(new[] { userId }, cancellationToken);
-            fiestaUser.IsDeleted = true;
+            var fiestaUser = await _db.FiestaUsers.Include(x => x.OrganizedEvents).SingleAsync(x => x.Id == userId, cancellationToken);
+            fiestaUser.SetDeleted();
 
             await _db.SaveChangesAsync(cancellationToken);
             return Result.Success();
@@ -252,7 +252,7 @@ namespace Fiesta.Infrastracture.Auth
 
         public async Task<bool> IsUsernameUnique(string username, string userId, CancellationToken cancellationToken)
         {
-            var usernameExists = await _db.Users.AnyAsync(x => x.UserName == username && x.Id != userId, cancellationToken);
+            var usernameExists = await _db.Users.Where(x => x.Id != userId).AnyAsync(x => x.UserName == username || x.Email == username, cancellationToken);
             return !usernameExists;
         }
     }

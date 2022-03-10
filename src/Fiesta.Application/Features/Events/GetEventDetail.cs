@@ -9,6 +9,7 @@ using Fiesta.Application.Features.Events.Common;
 using Fiesta.Application.Utils;
 using Fiesta.Domain.Entities.Events;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fiesta.Application.Features.Events
 {
@@ -32,7 +33,7 @@ namespace Fiesta.Application.Features.Events
 
             public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
             {
-                var @event = await _db.Events.Select(x => new Response
+                var @event = await _db.Events.AsNoTracking().Select(x => new Response
                 {
                     Id = x.Id,
                     Name = x.Name,
@@ -40,14 +41,28 @@ namespace Fiesta.Application.Features.Events
                     EndDate = x.EndDate,
                     Description = x.Description,
                     BannerUrl = x.BannerUrl,
-                    Location = $"{x.Location.City}, {x.Location.State}",
-                    GoogleMapsUrl = x.Location.GoogleMapsUrl,
+                    Location = x.Location != null ? new()
+                    {
+                        Latitude = x.Location.Latitude,
+                        Longitude = x.Location.Longitude,
+                        Street = x.Location.Street,
+                        StreetNumber = x.Location.StreetNumber,
+                        Premise = x.Location.Premise,
+                        City = x.Location.City,
+                        State = x.Location.State,
+                        AdministrativeAreaLevel1 = x.Location.AdministrativeAreaLevel1,
+                        AdministrativeAreaLevel2 = x.Location.AdministrativeAreaLevel2,
+                        PostalCode = x.Location.PostalCode,
+                        GoogleMapsUrl = x.Location.GoogleMapsUrl
+                    } : null,
+                    ExternalLink = x.ExternalLink,
                     AccessibilityType = x.AccessibilityType,
                     Capacity = x.Capacity,
                     AttendeesCount = x.Attendees.Count(),
                     InvitationsCount = x.Invitations.Count(),
                     IsCurrentUserInvited = x.Invitations.Any(x => x.InviteeId == request.CurrentUserId),
                     IsCurrentUserAttendee = x.Attendees.Any(x => x.AttendeeId == request.CurrentUserId),
+                    IsJoinRequestSentByCurrentUser = x.JoinRequests.Any(x => x.InterestedUserId == request.CurrentUserId),
                     Organizer = new UserDto
                     {
                         Id = x.Organizer.Id,
@@ -81,15 +96,17 @@ namespace Fiesta.Application.Features.Events
 
             public int InvitationsCount { get; set; }
 
-            public string Location { get; set; }
+            public LocationDto Location { get; set; }
 
-            public string GoogleMapsUrl { get; set; }
+            public string ExternalLink { get; set; }
 
             public int Capacity { get; set; }
 
             public bool IsCurrentUserInvited { get; set; }
 
             public bool IsCurrentUserAttendee { get; set; }
+
+            public bool IsJoinRequestSentByCurrentUser { get; set; }
 
             public UserDto Organizer { get; set; }
         }

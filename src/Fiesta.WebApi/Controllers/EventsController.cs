@@ -93,6 +93,15 @@ namespace Fiesta.WebApi.Controllers
             return NoContent();
         }
 
+        [HttpPost("{id}/join-requests/query")]
+        public async Task<ActionResult> GetJoinRequests(string id, string search, GetEventJoinRequests.Query query, CancellationToken cancellationToken)
+        {
+            query.EventId = id;
+            query.Search = search;
+            var response = await Mediator.Send(query, cancellationToken);
+            return Ok(response);
+        }
+
         [HttpPost("{id}/join-requests/delete")]
         public async Task<ActionResult> DeleteJoinRequest(string id, CancellationToken cancellationToken)
         {
@@ -101,7 +110,7 @@ namespace Fiesta.WebApi.Controllers
         }
 
         [HttpPost("{id}/attendees/delete")]
-        public async Task<ActionResult> ReplyToJoinRequest(string id, DeleteEventAttendees.Command command, CancellationToken cancellationToken)
+        public async Task<ActionResult> DeleteEventAttendees(string id, DeleteEventAttendees.Command command, CancellationToken cancellationToken)
         {
             command.EventId = id;
             await Mediator.Send(command, cancellationToken);
@@ -133,7 +142,7 @@ namespace Fiesta.WebApi.Controllers
         }
 
         [HttpPost("{id}/banner")]
-        public async Task<ActionResult<UploadEventBanner.Response>> GetAttendees(string id, [FromForm] UploadEventBanner.Command request, CancellationToken cancellationToken)
+        public async Task<ActionResult<UploadEventBanner.Response>> UploadEventBanner(string id, [FromForm] UploadEventBanner.Command request, CancellationToken cancellationToken)
         {
             request.EventId = id;
             var result = await Mediator.Send(request, cancellationToken);
@@ -149,6 +158,23 @@ namespace Fiesta.WebApi.Controllers
                 EventId = id,
                 Search = search
             }, cancellationToken);
+            return Ok(result);
+        }
+
+        [HttpPost("explore")]
+        public async Task<ActionResult<QueryResponse<GetExploreEvents.ResponseDto>>> GetExploreEvents(GetExploreEvents.Query request, CancellationToken cancellationToken)
+        {
+            request.CurrentUserId = CurrentUserService.UserId;
+            var result = await Mediator.Send(request, cancellationToken);
+            return Ok(result);
+        }
+
+        [HttpPost("query")]
+        [Authorize(nameof(FiestaRoleEnum.Admin))]
+        public async Task<ActionResult<QueryResponse<EventDto>>> GetAllEvents(string search, GetAllEvents.Query request, CancellationToken cancellationToken)
+        {
+            request.Search = search;
+            var result = await Mediator.Send(request, cancellationToken);
             return Ok(result);
         }
     }

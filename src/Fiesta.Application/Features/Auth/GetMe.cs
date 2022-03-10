@@ -30,6 +30,8 @@ namespace Fiesta.Application.Features.Auth
             public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
             {
                 var user = await _db.FiestaUsers.SingleOrNotFoundAsync(x => x.Id == request.Id, cancellationToken);
+                var role = await _authService.GetRole(user.Id, cancellationToken);
+
                 return new Response
                 {
                     Id = user.Id,
@@ -39,9 +41,11 @@ namespace Fiesta.Application.Features.Auth
                     FullName = user.FullName,
                     Username = user.Username,
                     PictureUrl = user.PictureUrl,
-                    Role = await _authService.GetRole(user.Id, cancellationToken),
                     GoogleEmail = await _authService.GetGoogleEmail(user.Id, cancellationToken),
                     AuthProvider = await _authService.GetAuthProvider(user.Id, cancellationToken),
+                    Role = role,
+                    IsAdmin = role == FiestaRoleEnum.Admin,
+                    IsPremium = role == FiestaRoleEnum.PremiumUser
                 };
             }
         }
@@ -67,6 +71,10 @@ namespace Fiesta.Application.Features.Auth
             public AuthProviderEnum AuthProvider { get; set; }
 
             public FiestaRoleEnum Role { get; set; }
+
+            public bool IsAdmin { get; set; }
+
+            public bool IsPremium { get; set; }
         }
     }
 }
